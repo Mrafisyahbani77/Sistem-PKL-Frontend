@@ -252,7 +252,7 @@ const FormPengajuan = ({ onClose }) => {
               />
             </div>
 
-            <label className="block text-sm font-semibold mt-4 mb-2">Email:</label>
+            <label className="block text-sm font-semibold mt-4 mb-2">Email Perusahaan:</label>
             <input
               type="email"
               className="w-full p-2 border rounded"
@@ -260,7 +260,7 @@ const FormPengajuan = ({ onClose }) => {
               onChange={(e) => handleInputChange(e, "email", index)}
             />
 
-            <label className="block text-sm font-semibold mt-4 mb-2">Alamat:</label>
+            <label className="block text-sm font-semibold mt-4 mb-2">Alamat Perusahaan:</label>
             <textarea
               className="w-full p-2 border rounded"
               value={form.alamat}

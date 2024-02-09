@@ -22,7 +22,7 @@ const ControlAbsen = () => {
       api
         .get("/api/admin/absensi", {
           headers: {
-            Authorization: `Bearer ${token}`, // Perbaiki tanda kutip di sini
+            Authorization: `Bearer ${token}`,
           },
         })
         .then((response) => setSiswaList(response.data))
@@ -34,18 +34,16 @@ const ControlAbsen = () => {
     // Mengambil daftar absensi dari API saat ada siswa yang dipilih
     if (selectedSiswa && (selectedSiswa.id || selectedSiswa.nama) && token) {
       api
-        .get(`/api/admin/absensi/${selectedSiswa.id || selectedSiswa.nama}`, { // Perbaiki tanda kutip di sini
+        .get(`/api/admin/absensi/${selectedSiswa.id || selectedSiswa.nama}`, {
           headers: {
-            Authorization: `Bearer ${token}`, // Perbaiki tanda kutip di sini
+            Authorization: `Bearer ${token}`,
           },
         })
         .then((response) => {
-          console.log(response.data); // Tambahkan ini untuk memeriksa data yang diterima dari API
-          const { siswa, absensiList } = response.data;
-          // Periksa apakah ada foto dalam setiap data absensi
+          const { absensiList } = response.data;
           const updatedAbsensiList = absensiList.map((item) => ({
             ...item,
-            foto: item.foto ? `http://localhost:8000${item.foto}` : null, // Perbaiki URL foto di sini
+            foto: item.foto ? `http://localhost:8000${item.foto}` : null,
           }));
           setAbsensiList(updatedAbsensiList);
         })
@@ -63,10 +61,10 @@ const ControlAbsen = () => {
     setSearchTerm(event.target.value);
   };
 
-  // Filtering siswaList based on searchTerm
+  // Filtering siswaList based on searchTerm for NISN and nama
   const filteredSiswaList = siswaList.filter(
     (siswa) =>
-      siswa.nama &&
+      siswa.nisn.toLowerCase().includes(searchTerm.toLowerCase()) ||
       siswa.nama.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -86,7 +84,7 @@ const ControlAbsen = () => {
           <input
             type="text"
             id="search"
-            placeholder="Masukkan nama siswa..."
+            placeholder="Masukkan NISN atau nama siswa..."
             value={searchTerm}
             onChange={handleSearch}
             className="w-full p-2 border rounded"
@@ -96,12 +94,12 @@ const ControlAbsen = () => {
         <table className="min-w-full divide-y divide-gray-200 border rounded overflow-hidden mb-4">
           <thead className="bg-gray-100">
             <tr>
-              <th className="py-2 px-4 border-b">Nisn</th>
-              <th className="py-2 px-4 border-b">Nama User</th>
+              <th className="py-2 px-4 border-b">NISN</th>
+              <th className="py-2 px-4 border-b">Nama Siswa</th>
             </tr>
           </thead>
           <tbody>
-            {siswaList.map((siswa) => (
+            {filteredSiswaList.map((siswa) => (
               <tr
                 key={siswa.nisn}
                 className={`hover:bg-gray-50 cursor-pointer ${
