@@ -78,8 +78,8 @@ Api.getAllPengajuan = (token, formData) => {
   });
 };
 
-Api.updateStatus = (token, nama, formData) => {
-  return axios.put(`/api/admin/pengajuan/update-status/${nama}`, formData, {
+Api.updatePengajuanStatus = (token, id, formData) => {
+  return axios.put(`/api/admin/update-status/${id}`, formData, {
     headers: {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'multipart/form-data',

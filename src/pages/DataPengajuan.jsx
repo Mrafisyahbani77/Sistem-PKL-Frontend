@@ -3,43 +3,54 @@ import Swal from "sweetalert2";
 import Api from "../Api";
 import Sidebar from "../components/Sidebar";
 import PdfViewer from "./PdfViewer";
+import axios from 'axios'; // Import axios
 
 const DataPengajuan = () => {
   const [dataPengajuan, setDataPengajuan] = useState([]);
   const [selectedPengajuan, setSelectedPengajuan] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState("");
+  
+  useEffect(() => {
+    if (selectedPengajuan) {
+      setSelectedStatus(selectedPengajuan.status);
+    }
+  }, [selectedPengajuan]);
 
   useEffect(() => {
     // Ambil data pengajuan dari API saat komponen dimuat
     Api.getAllPengajuan()
       .then((response) => {
         // Menambahkan URL CV dan Portofolio ke data pengajuan
-        setDataPengajuan(response.data.data);
+        const pengajuanData = response.data.data.map((pengajuan) => ({
+          ...pengajuan,
+          cv_url: pengajuan.cv_url,
+          portofolio_url: pengajuan.portofolio_url,
+        }));
+
+        setDataPengajuan(pengajuanData);
       })
       .catch((error) => {
         console.error("Error fetching pengajuan data:", error);
       });
   }, []);
 
-  const handleStatusChange = async (id, selectedStatus) => {
+  const handleStatusUpdate = async () => {
     try {
-      // Kirim perubahan status ke server
-      await Api.updateStatus(id, { status: selectedStatus });
-
-      // Perbarui status langsung di antarmuka pengguna
-      setDataPengajuan((prevData) =>
-        prevData.map((pengajuan) =>
-          pengajuan.id === id
-            ? { ...pengajuan, status: selectedStatus }
-            : pengajuan
-        )
-      );
-
+      const token = localStorage.getItem('token');
+      const config = {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      };
+  
+      await axios.put(`http://localhost:8000/api/admin/update-status/${selectedPengajuan.id}`, { status: selectedStatus }, config);
       // Tampilkan notifikasi berhasil
       Swal.fire({
         icon: "success",
         title: "Status Updated Successfully!",
       });
+      setSelectedPengajuan({ ...selectedPengajuan, status: selectedStatus }); // Update status di selectedPengajuan
+      handleCloseDetail();
     } catch (error) {
       console.error("Error updating status:", error);
       // Tampilkan notifikasi kesalahan
@@ -50,24 +61,17 @@ const DataPengajuan = () => {
       });
     }
   };
-
-  const handleDetailClick = (pengajuan) => {
-    setSelectedPengajuan(pengajuan);
-    setSelectedStatus(pengajuan.status);
-  };
+  
+  
 
   const handleCloseDetail = () => {
     setSelectedPengajuan(null);
     setSelectedStatus("");
   };
 
-  const handleStatusUpdate = async () => {
-    try {
-      await handleStatusChange(selectedPengajuan.id, selectedStatus);
-      handleCloseDetail();
-    } catch (error) {
-      console.error("Error updating status:", error);
-    }
+  const handleDetailClick = (pengajuan) => {
+    setSelectedPengajuan(pengajuan);
+    setSelectedStatus(pengajuan.status);
   };
 
   const openPdfViewer = (pdfUrl, title) => {
@@ -133,16 +137,37 @@ const DataPengajuan = () => {
               <h2 className="text-2xl font-semibold mb-4 text-gray-800">
                 Detail Pengajuan - {selectedPengajuan.nama}
               </h2>
-              <div>
-                <h3 className="text-xl font-semibold mb-2">
-                  Detail Pengajuan
-                </h3>
-                <ul>
-                  <li>
-                    <p>
-                      <span className="font-semibold">NISN:</span> {selectedPengajuan.nisn}
-                    </p>
-                  </li>
+              <ul>
+                {selectedPengajuan.siswa && selectedPengajuan.siswa.length > 1 ? (
+                  // Jika ada lebih dari satu siswa yang mengajukan, tampilkan informasi mereka
+                  selectedPengajuan.siswa.map((siswa, index) => (
+                    <li key={index}>
+                      <h3 className="text-xl font-semibold mb-2">
+                        Detail Pengajuan - {siswa.nama}
+                      </h3>
+                      <ul>
+                        <li>
+                          <p>
+                            <span className="font-semibold">NISN:</span> {siswa.nisn}
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <span className="font-semibold">Status:</span>{" "}
+                            <StatusDropdown
+                              selectedStatus={selectedStatus}
+                              onStatusChange={setSelectedStatus}
+                            />
+                          </p>
+                        </li>
+                        {/* Sisipkan informasi lainnya di sini */}
+                      </ul>
+                      {/* Tombol untuk melihat CV dan portofolio */}
+                      {/* Anda perlu menyesuaikan fungsi onClick untuk menampilkan CV dan portofolio */}
+                    </li>
+                  ))
+                ) : (
+                  // Jika hanya satu siswa yang mengajukan, tampilkan informasi seperti biasa
                   <li>
                     <p>
                       <span className="font-semibold">Status:</span>{" "}
@@ -152,11 +177,61 @@ const DataPengajuan = () => {
                       />
                     </p>
                   </li>
-                  {/* Sisipkan informasi lainnya di sini */}
-                </ul>
-                {/* Tombol untuk melihat CV dan portofolio */}
-                {/* Anda perlu menyesuaikan fungsi onClick untuk menampilkan CV dan portofolio */}
-              </div>
+                )}
+                <li>
+                  <p>
+                    <span className="font-semibold">Alamat:</span>{" "}
+                    {selectedPengajuan.alamat}
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    <span className="font-semibold">CV:</span>{" "}
+                    <button
+                      onClick={() =>
+                        openPdfViewer(selectedPengajuan.cv_url, "CV")
+                      }
+                      className="text-blue-500 hover:underline focus:outline-none"
+                    >
+                      Lihat CV
+                    </button>
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    <span className="font-semibold">Portofolio:</span>{" "}
+                    <button
+                      onClick={() =>
+                        openPdfViewer(
+                          selectedPengajuan.portofolio_url,
+                          "Portofolio"
+                        )
+                      }
+                      className="text-blue-500 hover:underline focus:outline-none"
+                    >
+                      Lihat Portofolio
+                    </button>
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    <span className="font-semibold">NISN:</span>{" "}
+                    {selectedPengajuan.nisn}
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    <span className="font-semibold">Bis:</span>{" "}
+                    {selectedPengajuan.bis}
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    <span className="font-semibold">Link:</span>{" "}
+                    {selectedPengajuan.link}
+                  </p>
+                </li>
+              </ul>
               <button
                 onClick={handleStatusUpdate}
                 className="text-blue-500 hover:underline focus:outline-none mt-4"
@@ -172,7 +247,7 @@ const DataPengajuan = () => {
               {/* Tombol untuk generate PDF */}
               <button
                 onClick={() =>
-                  openPdfViewer(selectedPengajuan.portofolio_url, "Detail Pengajuan")
+                  openPdfViewer(selectedPengajuan, "Detail Pengajuan")
                 }
                 className="text-blue-500 hover:underline focus:outline-none mt-4 ml-4"
               >
