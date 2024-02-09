@@ -14,13 +14,7 @@ const DataPengajuan = () => {
     Api.getAllPengajuan()
       .then((response) => {
         // Menambahkan URL CV dan Portofolio ke data pengajuan
-        const pengajuanData = response.data.data.map((pengajuan) => ({
-          ...pengajuan,
-          cv_url: pengajuan.cv_url,
-          portofolio_url: pengajuan.portofolio_url,
-        }));
-
-        setDataPengajuan(pengajuanData);
+        setDataPengajuan(response.data.data);
       })
       .catch((error) => {
         console.error("Error fetching pengajuan data:", error);
@@ -30,7 +24,7 @@ const DataPengajuan = () => {
   const handleStatusChange = async (id, selectedStatus) => {
     try {
       // Kirim perubahan status ke server
-      await Api.updatePengajuanStatus(id, selectedStatus);
+      await Api.updateStatus(id, { status: selectedStatus });
 
       // Perbarui status langsung di antarmuka pengguna
       setDataPengajuan((prevData) =>
@@ -139,37 +133,16 @@ const DataPengajuan = () => {
               <h2 className="text-2xl font-semibold mb-4 text-gray-800">
                 Detail Pengajuan - {selectedPengajuan.nama}
               </h2>
-              <ul>
-                {selectedPengajuan.siswa && selectedPengajuan.siswa.length > 1 ? (
-                  // Jika ada lebih dari satu siswa yang mengajukan, tampilkan informasi mereka
-                  selectedPengajuan.siswa.map((siswa, index) => (
-                    <li key={index}>
-                      <h3 className="text-xl font-semibold mb-2">
-                        Detail Pengajuan - {siswa.nama}
-                      </h3>
-                      <ul>
-                        <li>
-                          <p>
-                            <span className="font-semibold">NISN:</span> {siswa.nisn}
-                          </p>
-                        </li>
-                        <li>
-                          <p>
-                            <span className="font-semibold">Status:</span>{" "}
-                            <StatusDropdown
-                              selectedStatus={selectedStatus}
-                              onStatusChange={setSelectedStatus}
-                            />
-                          </p>
-                        </li>
-                        {/* Sisipkan informasi lainnya di sini */}
-                      </ul>
-                      {/* Tombol untuk melihat CV dan portofolio */}
-                      {/* Anda perlu menyesuaikan fungsi onClick untuk menampilkan CV dan portofolio */}
-                    </li>
-                  ))
-                ) : (
-                  // Jika hanya satu siswa yang mengajukan, tampilkan informasi seperti biasa
+              <div>
+                <h3 className="text-xl font-semibold mb-2">
+                  Detail Pengajuan
+                </h3>
+                <ul>
+                  <li>
+                    <p>
+                      <span className="font-semibold">NISN:</span> {selectedPengajuan.nisn}
+                    </p>
+                  </li>
                   <li>
                     <p>
                       <span className="font-semibold">Status:</span>{" "}
@@ -179,61 +152,11 @@ const DataPengajuan = () => {
                       />
                     </p>
                   </li>
-                )}
-                <li>
-                  <p>
-                    <span className="font-semibold">Alamat:</span>{" "}
-                    {selectedPengajuan.alamat}
-                  </p>
-                </li>
-                <li>
-                  <p>
-                    <span className="font-semibold">CV:</span>{" "}
-                    <button
-                      onClick={() =>
-                        openPdfViewer(selectedPengajuan.cv_url, "CV")
-                      }
-                      className="text-blue-500 hover:underline focus:outline-none"
-                    >
-                      Lihat CV
-                    </button>
-                  </p>
-                </li>
-                <li>
-                  <p>
-                    <span className="font-semibold">Portofolio:</span>{" "}
-                    <button
-                      onClick={() =>
-                        openPdfViewer(
-                          selectedPengajuan.portofolio_url,
-                          "Portofolio"
-                        )
-                      }
-                      className="text-blue-500 hover:underline focus:outline-none"
-                    >
-                      Lihat Portofolio
-                    </button>
-                  </p>
-                </li>
-                <li>
-                  <p>
-                    <span className="font-semibold">NISN:</span>{" "}
-                    {selectedPengajuan.nisn}
-                  </p>
-                </li>
-                <li>
-                  <p>
-                    <span className="font-semibold">Bis:</span>{" "}
-                    {selectedPengajuan.bis}
-                  </p>
-                </li>
-                <li>
-                  <p>
-                    <span className="font-semibold">Link:</span>{" "}
-                    {selectedPengajuan.link}
-                  </p>
-                </li>
-              </ul>
+                  {/* Sisipkan informasi lainnya di sini */}
+                </ul>
+                {/* Tombol untuk melihat CV dan portofolio */}
+                {/* Anda perlu menyesuaikan fungsi onClick untuk menampilkan CV dan portofolio */}
+              </div>
               <button
                 onClick={handleStatusUpdate}
                 className="text-blue-500 hover:underline focus:outline-none mt-4"
@@ -249,7 +172,7 @@ const DataPengajuan = () => {
               {/* Tombol untuk generate PDF */}
               <button
                 onClick={() =>
-                  openPdfViewer(selectedPengajuan, "Detail Pengajuan")
+                  openPdfViewer(selectedPengajuan.portofolio_url, "Detail Pengajuan")
                 }
                 className="text-blue-500 hover:underline focus:outline-none mt-4 ml-4"
               >
