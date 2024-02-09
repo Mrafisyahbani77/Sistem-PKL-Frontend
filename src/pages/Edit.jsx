@@ -86,15 +86,22 @@ const Edit = ({ formData, onInputChange, onSubmit, onClose }) => {
         >
           Peran
         </label>
-        <input
-          type="text"
+        {/* Ubah input role menjadi dropdown */}
+        <select
           id="role"
           name="role"
           value={formData.role}
           onChange={onInputChange}
           className="mt-1 p-2 border rounded-md w-full"
           required
-        />
+        >
+          <option value="">Pilih peran...</option>
+          <option value="admin">Admin</option>
+          <option value="siswa">Siswa</option>
+          <option value="siswa">Kaprog</option>
+          <option value="siswa">Pembimbing</option>
+        
+        </select>
       </div>
 
       <div className="flex justify-end">
