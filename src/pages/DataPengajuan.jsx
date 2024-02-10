@@ -9,12 +9,6 @@ const DataPengajuan = () => {
   const [dataPengajuan, setDataPengajuan] = useState([]);
   const [selectedPengajuan, setSelectedPengajuan] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState("");
-  
-  useEffect(() => {
-    if (selectedPengajuan) {
-      setSelectedStatus(selectedPengajuan.status);
-    }
-  }, [selectedPengajuan]);
 
   useEffect(() => {
     // Ambil data pengajuan dari API saat komponen dimuat
@@ -42,14 +36,24 @@ const DataPengajuan = () => {
           'Authorization': `Bearer ${token}`
         }
       };
-  
+
       await axios.put(`http://localhost:8000/api/admin/update-status/${selectedPengajuan.id}`, { status: selectedStatus }, config);
       // Tampilkan notifikasi berhasil
       Swal.fire({
         icon: "success",
         title: "Status Updated Successfully!",
       });
-      setSelectedPengajuan({ ...selectedPengajuan, status: selectedStatus }); // Update status di selectedPengajuan
+      // Update status langsung pada data pengajuan
+      const updatedDataPengajuan = dataPengajuan.map(pengajuan => {
+        if (pengajuan.id === selectedPengajuan.id) {
+          return {
+            ...pengajuan,
+            status: selectedStatus
+          };
+        }
+        return pengajuan;
+      });
+      setDataPengajuan(updatedDataPengajuan);
       handleCloseDetail();
     } catch (error) {
       console.error("Error updating status:", error);
@@ -61,8 +65,6 @@ const DataPengajuan = () => {
       });
     }
   };
-  
-  
 
   const handleCloseDetail = () => {
     setSelectedPengajuan(null);
