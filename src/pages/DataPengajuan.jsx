@@ -62,6 +62,30 @@ const DataPengajuan = () => {
     }
   };
   
+  const openPdfViewer = async (pdfUrl, title) => {
+    try {
+      const response = await axios.get(pdfUrl);
+      const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
+      const pdfData = URL.createObjectURL(pdfBlob);
+  
+      // Tampilkan PDF menggunakan PdfViewer
+      Swal.fire({
+        html: <PdfViewer pdfUrl={pdfData} />,
+        showCloseButton: true,
+        showConfirmButton: false,
+        customClass: "pdf-viewer-modal",
+        title,
+      });
+    } catch (error) {
+      console.error("Error fetching PDF:", error);
+      // Tampilkan pesan error jika gagal mengambil PDF
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Failed to fetch PDF. Please try again.",
+      });
+    }
+  };
   
 
   const handleCloseDetail = () => {
@@ -72,17 +96,6 @@ const DataPengajuan = () => {
   const handleDetailClick = (pengajuan) => {
     setSelectedPengajuan(pengajuan);
     setSelectedStatus(pengajuan.status);
-  };
-
-  const openPdfViewer = (pdfUrl, title) => {
-    // Implementasi tampilan PDF, Anda dapat menggunakan modal atau library PDF viewer
-    Swal.fire({
-      html: <PdfViewer pdfUrl={pdfUrl} />,
-      showCloseButton: true,
-      showConfirmButton: false,
-      customClass: "pdf-viewer-modal",
-      title,
-    });
   };
 
   return (
