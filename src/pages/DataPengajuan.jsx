@@ -9,25 +9,17 @@ const DataPengajuan = () => {
   const [dataPengajuan, setDataPengajuan] = useState([]);
   const [selectedPengajuan, setSelectedPengajuan] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState("");
-  
-  useEffect(() => {
-    if (selectedPengajuan) {
-      setSelectedStatus(selectedPengajuan.status);
-    }
-  }, [selectedPengajuan]);
+
+  const handleCloseDetail = () => {
+    setSelectedPengajuan(null);
+    setSelectedStatus("");
+  };
 
   useEffect(() => {
     // Ambil data pengajuan dari API saat komponen dimuat
     Api.getAllPengajuan()
       .then((response) => {
-        // Menambahkan URL CV dan Portofolio ke data pengajuan
-        const pengajuanData = response.data.data.map((pengajuan) => ({
-          ...pengajuan,
-          cv_url: pengajuan.cv_url,
-          portofolio_url: pengajuan.portofolio_url,
-        }));
-
-        setDataPengajuan(pengajuanData);
+        setDataPengajuan(response.data.data);
       })
       .catch((error) => {
         console.error("Error fetching pengajuan data:", error);
@@ -42,15 +34,24 @@ const DataPengajuan = () => {
           'Authorization': `Bearer ${token}`
         }
       };
-  
+
       await axios.put(`http://localhost:8000/api/admin/update-status/${selectedPengajuan.id}`, { status: selectedStatus }, config);
       // Tampilkan notifikasi berhasil
       Swal.fire({
         icon: "success",
         title: "Status Updated Successfully!",
       });
-      setSelectedPengajuan({ ...selectedPengajuan, status: selectedStatus }); // Update status di selectedPengajuan
-      handleCloseDetail();
+      // Update status langsung pada data pengajuan
+      const updatedDataPengajuan = dataPengajuan.map(pengajuan => {
+        if (pengajuan.id === selectedPengajuan.id) {
+          return {
+            ...pengajuan,
+            status: selectedStatus
+          };
+        }
+        return pengajuan;
+      });
+      setDataPengajuan(updatedDataPengajuan);
     } catch (error) {
       console.error("Error updating status:", error);
       // Tampilkan notifikasi kesalahan
@@ -61,21 +62,19 @@ const DataPengajuan = () => {
       });
     }
   };
-  
+
   const openPdfViewer = async (pdfUrl, title) => {
     try {
+      if (!pdfUrl) {
+        throw new Error("PDF URL is empty or undefined");
+      }
+
       const response = await axios.get(pdfUrl);
       const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
       const pdfData = URL.createObjectURL(pdfBlob);
-  
+
       // Tampilkan PDF menggunakan PdfViewer
-      Swal.fire({
-        html: <PdfViewer pdfUrl={pdfData} />,
-        showCloseButton: true,
-        showConfirmButton: false,
-        customClass: "pdf-viewer-modal",
-        title,
-      });
+      window.open(pdfData, '_blank');
     } catch (error) {
       console.error("Error fetching PDF:", error);
       // Tampilkan pesan error jika gagal mengambil PDF
@@ -86,12 +85,21 @@ const DataPengajuan = () => {
       });
     }
   };
-  
 
-  const handleCloseDetail = () => {
-    setSelectedPengajuan(null);
-    setSelectedStatus("");
+  const handlePdfButtonClick = (pdfUrl) => {
+    if (!pdfUrl) {
+      // Tampilkan pesan kesalahan jika URL PDF kosong atau tidak terdefinisi
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "PDF URL is empty or undefined",
+      });
+      return;
+    }
+    openPdfViewer(pdfUrl, "PDF Viewer"); // Panggil fungsi openPdfViewer jika URL PDF tersedia
   };
+
+
 
   const handleDetailClick = (pengajuan) => {
     setSelectedPengajuan(pengajuan);
@@ -201,9 +209,7 @@ const DataPengajuan = () => {
                   <p>
                     <span className="font-semibold">CV:</span>{" "}
                     <button
-                      onClick={() =>
-                        openPdfViewer(selectedPengajuan.cv_url, "CV")
-                      }
+                      onClick={() => handlePdfButtonClick(selectedPengajuan.cv_url)}
                       className="text-blue-500 hover:underline focus:outline-none"
                     >
                       Lihat CV
@@ -282,13 +288,12 @@ const StatusDropdown = ({ selectedStatus, onStatusChange }) => {
     <select
       value={selectedStatus}
       onChange={(e) => onStatusChange(e.target.value)}
-      className={`block w-full p-2 border rounded focus:outline-none ${
-        selectedStatus === "Diterima"
+      className={`block w-full p-2 border rounded focus:outline-none ${selectedStatus === "Diterima"
           ? "bg-green-200"
           : selectedStatus === "Ditolak"
-          ? "bg-red-200"
-          : "bg-yellow-200"
-      }`}
+            ? "bg-red-200"
+            : "bg-yellow-200"
+        }`}
     >
       {statusOptions.map((status) => (
         <option key={status} value={status}>

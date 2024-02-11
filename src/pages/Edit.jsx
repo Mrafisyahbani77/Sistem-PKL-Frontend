@@ -97,10 +97,10 @@ const Edit = ({ formData, onInputChange, onSubmit, onClose }) => {
         >
           <option value="">Pilih peran...</option>
           <option value="admin">Admin</option>
+          <option value="kaprog">Kaprog</option>
           <option value="siswa">Siswa</option>
-          <option value="siswa">Kaprog</option>
-          <option value="siswa">Pembimbing</option>
-        
+          <option value="pembimbing">Pembimbing</option>
+          
         </select>
       </div>
 
