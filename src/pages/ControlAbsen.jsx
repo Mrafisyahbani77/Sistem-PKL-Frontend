@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import Sidebar from "../components/Sidebar.jsx";
-import api from "../Api/index.jsx";
+import Api from "../Api";
 
 const ControlAbsen = () => {
   const [siswaList, setSiswaList] = useState([]);
@@ -9,6 +8,7 @@ const ControlAbsen = () => {
   const [absensiList, setAbsensiList] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [token, setToken] = useState("");
+  const [showPopup, setShowPopup] = useState(false); // State untuk mengontrol tampilan pop-up
 
   useEffect(() => {
     // Mengambil token dari local storage
@@ -19,12 +19,11 @@ const ControlAbsen = () => {
   useEffect(() => {
     // Mengambil daftar akun siswa dari API
     if (token) {
-      api
-        .get("/api/admin/absensi", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
+      Api.get("/api/admin/absensi", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
         .then((response) => setSiswaList(response.data))
         .catch((error) => console.error(error));
     }
@@ -32,13 +31,12 @@ const ControlAbsen = () => {
 
   useEffect(() => {
     // Mengambil daftar absensi dari API saat ada siswa yang dipilih
-    if (selectedSiswa && (selectedSiswa.id || selectedSiswa.nama) && token) {
-      api
-        .get(`/api/admin/absensi/${selectedSiswa.id || selectedSiswa.nama}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
+    if (selectedSiswa && selectedSiswa.id && token) {
+      Api.get(`/api/admin/absensi/${selectedSiswa.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
         .then((response) => {
           const { absensiList } = response.data;
           const updatedAbsensiList = absensiList.map((item) => ({
@@ -55,6 +53,7 @@ const ControlAbsen = () => {
 
   const handleSiswaClick = (siswa) => {
     setSelectedSiswa(siswa);
+    setShowPopup(true); // Menampilkan pop-up saat akun siswa diklik
   };
 
   const handleSearch = (event) => {
@@ -64,8 +63,10 @@ const ControlAbsen = () => {
   // Filtering siswaList based on searchTerm for NISN and nama
   const filteredSiswaList = siswaList.filter(
     (siswa) =>
-      siswa.nisn.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      siswa.nama.toLowerCase().includes(searchTerm.toLowerCase())
+      (siswa.name &&
+        siswa.name.toLowerCase().includes(searchTerm?.toLowerCase())) ||
+      (siswa.nisn &&
+        siswa.nisn.toLowerCase().includes(searchTerm?.toLowerCase()))
   );
 
   return (
@@ -75,10 +76,7 @@ const ControlAbsen = () => {
         <h2 className="text-3xl font-bold mb-4">Control Absen</h2>
         {/* Pencarian Akun Siswa */}
         <div className="mb-4">
-          <label
-            htmlFor="search"
-            className="block text-sm font-semibold mb-2"
-          >
+          <label htmlFor="search" className="block text-sm font-semibold mb-2">
             Cari Akun Siswa:
           </label>
           <input
@@ -110,28 +108,36 @@ const ControlAbsen = () => {
                 onClick={() => handleSiswaClick(siswa)}
               >
                 <td className="py-2 px-4 border-b">{siswa.nisn}</td>
-                <td className="py-2 px-4 border-b">{siswa.nama}</td>
+                <td className="py-2 px-4 border-b">{siswa.name}</td>
               </tr>
             ))}
           </tbody>
         </table>
-        {/* Detail Absensi */}
-        {selectedSiswa && (
-          <div>
-            <h3 className="text-2xl font-bold mb-2">
-              Detail Absensi untuk {selectedSiswa.nama}
-            </h3>
-            <table className="min-w-full divide-y divide-gray-200 border rounded overflow-hidden">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th className="py-2 px-4 border-b">Lokasi</th>
-                  <th className="py-2 px-4 border-b">Foto Absensi</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Array.isArray(absensiList) &&
-                  absensiList.map((item, index) => (
+        {/* Detail Absensi Pop-up */}
+        {showPopup && selectedSiswa && (
+          <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
+            <div className="bg-white p-8 max-w-md rounded-md">
+              <h3 className="text-2xl font-bold mb-2">
+                Detail Absensi untuk {selectedSiswa.name}
+              </h3>
+              <button
+                onClick={() => setShowPopup(false)} // Menutup pop-up saat tombol diklik
+                className="text-white bg-red-500 px-4 py-2 rounded-md"
+              >
+                Tutup
+              </button>
+              <table className="min-w-full divide-y divide-gray-200 border rounded overflow-hidden mt-4">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="py-2 px-10 border-b">Tanggal</th>
+                    <th className="py-2 px-4 border-b">Lokasi</th>
+                    <th className="py-2 px-4 border-b">Foto Absensi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {absensiList.map((item, index) => (
                     <tr key={index} className="hover:bg-gray-50">
+                      <td className="py-2 px-4 border-b">{item.tanggal_absen}</td>
                       <td className="py-2 px-4 border-b">
                         {item.latitude}, {item.longitude}
                       </td>
@@ -144,8 +150,9 @@ const ControlAbsen = () => {
                       </td>
                     </tr>
                   ))}
-              </tbody>
-            </table>
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>

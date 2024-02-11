@@ -11,7 +11,7 @@ import { SiMinutemailer } from "react-icons/si";
 import { FaAddressBook } from "react-icons/fa";
 import { FaMagnifyingGlassChart } from "react-icons/fa6";
 
-const Sidebar = () => {
+const Sidepem = () => {
   const [open, setOpen] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
@@ -21,41 +21,41 @@ const Sidebar = () => {
     {
       title: "Dashboard",
       icon: <MdDashboard style={{ fontSize: "24px" }} />,
-      path: "/AdminDashboard",
+      path: "/PembimbingDashboard",
     },
     {
-      title: "Tambah User",
+      title: "",
       icon: <TiUserAdd style={{ fontSize: "24px" }} />,
-      path: "/Crud",
+      path: "",
     },
     {
-      title: "Jurnal Siswa",
+      title: "",
       icon: <FaBook style={{ fontSize: "24px" }} />,
       gap: true,
-      path: "/Jurnal",
+      path: "",
     },
     {
-      title: "PengajuanPkl",
+      title: "",
       icon: <SiMinutemailer style={{ fontSize: "24px" }} />,
-      path: "/PengajuanPkl",
+      path: "",
     },
     {
-      title: "Inbox",
+      title: "",
       icon: <MdMail style={{ fontSize: "24px" }} />,
-      path: "/Inbox",
+      path: "",
     },
     {
-      title: "AbsensiSiswa",
+      title: "",
       icon: <FaAddressBook style={{ fontSize: "24px" }} />,
-      path: "/ControlAbsen",
+      path: "",
     },
     {
-      title: "DataPengajuan",
+      title: "",
       icon: <FaMagnifyingGlassChart style={{ fontSize: "20px" }} />,
       gap: true,
-      path: "/DataPengajuan",
+      path: "",
     },
-    { title: "Setting", src: "Setting", path: "/Setting" },
+    { title: "", src: "Setting", path: "" },
   ];
 
   const handleNavigate = (path) => {
@@ -84,7 +84,7 @@ const Sidebar = () => {
                 alt={`Foto profil ${user.name}`}
                 src={`https://ui-avatars.com/api/?name=${user.name}&background=31316a&color=ffffff&size=100`}
               />
-              <div className="ml-2 text-white font-semibold text-lg">
+              <div className="ml-2 text-white font-semibold text-sm">
                 {user.name}
                 <br />
                 {user.email}
@@ -124,4 +124,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default Sidepem;

@@ -65,9 +65,10 @@ const Jurnal = () => {
     // Handle page change logic here
   };
 
-  const filteredSiswa = siswa.filter((user) =>
-    (user.name && user.name.toLowerCase().includes(searchTerm)) ||
-    (user.nisn && user.nisn.toLowerCase().includes(searchTerm))
+  const filteredSiswa = siswa.filter(
+    (user) =>
+      (user.name && user.name.toLowerCase().includes(searchTerm)) ||
+      (user.nisn && user.nisn.toLowerCase().includes(searchTerm))
   );
 
   return (
@@ -109,11 +110,16 @@ const Jurnal = () => {
                 <tr
                   key={user.id}
                   onClick={() => handleSiswaClick(user.id)}
-                  className={`cursor-pointer py-2 px-4 border-b ${selectedUserId === user.id ? "bg-gray-200" : ""
-                    }`}
+                  className={`cursor-pointer py-2 px-4 border-b ${
+                    selectedUserId === user.id ? "bg-gray-200" : ""
+                  }`}
                 >
-                  <td className="py-2 px-4 border-r text-center">{user.nisn}</td>
-                  <td className="py-2 px-4 border-r text-center">{user.name}</td>
+                  <td className="py-2 px-4 border-r text-center">
+                    {user.nisn}
+                  </td>
+                  <td className="py-2 px-4 border-r text-center">
+                    {user.name}
+                  </td>
                 </tr>
               ))
             ) : (
@@ -130,7 +136,7 @@ const Jurnal = () => {
           <div className="bg-black bg-opacity-50 fixed top-0 left-0 w-full h-full flex justify-center items-center">
             <div className="bg-white p-4 rounded-md">
               <h2 className="text-xl font-semibold mb-4">
-                Jurnal Details for{" "}
+                Jurnal Detail{" "}
                 {siswa.find((user) => user.id === selectedUserId)?.name}
               </h2>
               <table className="min-w-full border border-gray-300 mb-4">
@@ -140,13 +146,13 @@ const Jurnal = () => {
                       <span>Kegiatan</span>
                     </th>
                     <th className="py-2 px-4 border-r">
-                      <span>Tanggal</span>
+                      <span>Status</span>
                     </th>
                     <th className="py-2 px-4 border-r">
                       <span>Waktu</span>
                     </th>
                     <th className="py-2 px-4 border-r">
-                      <span>Status</span>
+                      <span>Tanggal</span>
                     </th>
                   </tr>
                 </thead>
@@ -160,20 +166,17 @@ const Jurnal = () => {
                         <td className="py-2 px-4 border-r">
                           {jurnal.kegiatan}
                         </td>
-                        <td className="py-2 px-4 border-r">
-                          {jurnal.tanggal}
-                        </td>
-                        <td className="py-2 px-4 border-r">
-                          {jurnal.waktu}
-                        </td>
                         <td
-                          className={`py-2 px-4 border-r ${jurnal.status === "selesai"
-                            ? "text-green-500"
-                            : "text-blue-500"
-                            }`}
+                          className={`py-2 px-4 border-r ${
+                            jurnal.status === "selesai"
+                              ? "text-white bg-green-500 rounded-full"
+                              : "text-white bg-blue-500 rounded-full"
+                          }`}
                         >
                           {jurnal.status}
                         </td>
+                        <td className="py-2 px-4 border-r">{jurnal.waktu}</td>
+                        <td className="py-2 px-4 border-r">{jurnal.tanggal}</td>
                       </tr>
                     ))
                   ) : (
