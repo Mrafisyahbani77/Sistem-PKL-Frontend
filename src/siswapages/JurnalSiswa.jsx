@@ -3,21 +3,28 @@ import Swal from "sweetalert2";
 import Api from "../Api";
 import { format } from "date-fns";
 import Siswasd from "../components/Siswasd";
-import StatusBadge from "../components/StatusBadge";
+
+//icon
+import {LuBook} from "react-icons/lu"
 
 const JurnalSiswa = () => {
   const [kegiatan, setKegiatan] = useState("");
-  const [status, setStatus] = useState("proses"); // Set default status
+  const [status, setStatus] = useState("proses");
   const [waktu, setWaktu] = useState("");
-  const [tanggal, setTanggal] = useState(format(new Date(), 'yyyy-MM-dd'));
+  const [tanggal, setTanggal] = useState(format(new Date(), "yyyy-MM-dd"));
   const [journals, setJournals] = useState([]);
   const [showForm, setShowForm] = useState(false);
-  const [editingId, setEditingId] = useState(null); // Add editingId state
+  const [editingId, setEditingId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [postsPerPage] = useState(5); // Jumlah jurnal per halaman
+  const [postsPerPage] = useState(5);
 
   const toggleForm = () => {
     setShowForm(!showForm);
+    setEditingId(null); // Reset editingId when toggling form
+    setKegiatan("");
+    setStatus("proses");
+    setWaktu("");
+    setTanggal(format(new Date(), "yyyy-MM-dd"));
   };
 
   useEffect(() => {
@@ -29,7 +36,10 @@ const JurnalSiswa = () => {
       const response = await Api.get("/api/siswa/jurnal");
       setJournals(response.data);
     } catch (error) {
-      console.error("Error fetching journal entries:", error.response ? error.response.data : error.message);
+      console.error(
+        "Error fetching journal entries:",
+        error.response ? error.response.data : error.message
+      );
     }
   };
 
@@ -37,41 +47,30 @@ const JurnalSiswa = () => {
     event.preventDefault();
 
     try {
+      const journalData = { kegiatan, status, waktu, tanggal };
       if (editingId) {
-        await Api.put(`/api/siswa/jurnal/${editingId}`, {
-          kegiatan,
-          status,
-          waktu,
-          tanggal,
+        await Api.put(`/api/siswa/jurnal/${editingId}`, journalData);
+        Swal.fire({
+          icon: "success",
+          title: "Berhasil!",
+          text: "Jurnal berhasil diubah!",
         });
       } else {
-        await Api.post("/api/siswa/jurnal", {
-          kegiatan,
-          status,
-          waktu,
-          tanggal,
+        await Api.post("/api/siswa/jurnal", journalData);
+        Swal.fire({
+          icon: "success",
+          title: "Berhasil!",
+          text: "Jurnal berhasil disubmit!",
         });
       }
 
-      setKegiatan("");
-      setStatus("proses"); // Reset status to default
-      setWaktu("");
-      setTanggal(format(new Date(), 'yyyy-MM-dd'));
-
       fetchJournals();
-
-      Swal.fire({
-        icon: "success",
-        title: "Berhasil!",
-        text: editingId ? "Jurnal berhasil diubah!" : "Jurnal berhasil disubmit!",
-      });
-
-      // Tutup form setelah submit
-      setShowForm(false);
-      setEditingId(null);
+      toggleForm(); // Close form after submit
     } catch (error) {
-      console.error("Error submitting journal entry:", error.response ? error.response.data : error.message);
-
+      console.error(
+        "Error submitting journal entry:",
+        error.response ? error.response.data : error.message
+      );
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -90,10 +89,12 @@ const JurnalSiswa = () => {
       setWaktu(journalData.waktu);
       setTanggal(journalData.tanggal);
       setEditingId(id);
-
-      toggleForm(); // Munculkan form
+      setShowForm(true); // Show form for editing
     } catch (error) {
-      console.error("Error fetching journal entry for edit:", error.response ? error.response.data : error.message);
+      console.error(
+        "Error fetching journal entry for edit:",
+        error.response ? error.response.data : error.message
+      );
     }
   };
 
@@ -107,8 +108,10 @@ const JurnalSiswa = () => {
         text: "Jurnal berhasil dihapus!",
       });
     } catch (error) {
-      console.error("Error deleting journal entry:", error.response ? error.response.data : error.message);
-
+      console.error(
+        "Error deleting journal entry:",
+        error.response ? error.response.data : error.message
+      );
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -118,24 +121,23 @@ const JurnalSiswa = () => {
   };
 
   const formatTanggal = (dateString) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString('id-ID', options);
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return new Date(dateString).toLocaleDateString("id-ID", options);
   };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'belum':
-        return 'text-red-500 text-lg';
-      case 'proses':
-        return 'text-white bg-blue rounded-full';
-      case 'selesai':
-        return 'text-white bg-green rounded-full';
+      case "belum":
+        return "text-red-500";
+      case "proses":
+        return "text-white bg-blue-500 rounded-full";
+      case "selesai":
+        return "text-white bg-green-500 rounded-full";
       default:
-        return '';
+        return "";
     }
   };
 
-  // Logic untuk pagination
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
   const currentJournals = journals.slice(indexOfFirstPost, indexOfLastPost);
@@ -148,12 +150,13 @@ const JurnalSiswa = () => {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
-    <div className="flex bg-">
+    <div className="flex bg-gray-100 min-h-screen">
       <Siswasd />
       <div className="container mx-auto p-4">
-        <h2 className="text-2xl font-semibold mt-8 mb-4 text-center">
-          Jurnal Siswa
-        </h2>
+        <div className="container mx-auto p-4 flex items-center justify-center">
+          <LuBook className="text-2xl mt-5 mr-2" />
+          <h2 className="text-2xl font-semibold mt-8 mb-4">Jurnal Siswa</h2>
+        </div>
 
         <button
           onClick={toggleForm}
@@ -168,7 +171,8 @@ const JurnalSiswa = () => {
               <div className="fixed inset-0 transition-opacity">
                 <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
               </div>
-              <span className="hidden sm:inline-block sm:align-middle sm:h-screen"></span>&#8203;
+              <span className="hidden sm:inline-block sm:align-middle sm:h-screen"></span>
+              &#8203;
               <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:w-full sm:max-w-md sm:p-6">
                 <div className="sm:flex sm:items-start">
                   <form onSubmit={handleSubmit} className="max-w-md mx-auto">
@@ -244,8 +248,8 @@ const JurnalSiswa = () => {
           </div>
         )}
 
-        <h3 className="text-xl font-semibold mb-4">Daftar Jurnal</h3>
         <div className="overflow-x-auto">
+          <br></br>
           <table className="min-w-full bg-white shadow-md rounded-md overflow-hidden border border-gray-300">
             <thead className="bg-gray-200">
               <tr>
@@ -259,12 +263,23 @@ const JurnalSiswa = () => {
             <tbody>
               {currentJournals.map((journal) => (
                 <tr key={journal.id} className="hover:bg-gray-100">
-                  <td className="py-2 px-4 border-r">{journal.kegiatan}</td>
-                  <td className={`py-2 px-4 border-r ${getStatusColor(journal.status)}`}>
-                    <StatusBadge status={journal.status} />
+                  <td
+                    className="py-2 px-4 border-r"
+                    style={{ overflowWrap: "break-word" }}
+                  >
+                    {journal.kegiatan}
+                  </td>
+                  <td
+                    className={`py-2 px-4 border-r text-center ${getStatusColor(
+                      journal.status
+                    )}`}
+                  >
+                    {journal.status}
                   </td>
                   <td className="py-2 px-4 border-r">{journal.waktu}</td>
-                  <td className="py-2 px-4 border-r">{formatTanggal(journal.tanggal)}</td>
+                  <td className="py-2 px-4 border-r">
+                    {formatTanggal(journal.tanggal)}
+                  </td>
                   <td className="py-2 px-4">
                     <button
                       onClick={() => handleEdit(journal.id)}
@@ -284,17 +299,17 @@ const JurnalSiswa = () => {
             </tbody>
           </table>
         </div>
-        {/* Pagination */}
         <div className="flex justify-center mt-4">
           <ul className="flex items-center">
             {pageNumbers.map((number) => (
               <li key={number}>
                 <button
                   onClick={() => paginate(number)}
-                  className={`${currentPage === number
+                  className={`${
+                    currentPage === number
                       ? "bg-blue-500 text-white"
                       : "text-blue-500"
-                    } py-2 px-4 mx-1 rounded-md hover:bg-blue-500 hover:text-white`}
+                  } py-2 px-4 mx-1 rounded-md hover:bg-blue-500 hover:text-white`}
                 >
                   {number}
                 </button>

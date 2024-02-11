@@ -63,48 +63,60 @@ const DataPengajuan = () => {
     }
   };
 
-  const openPdfViewer = async (pdfUrl, title) => {
+  const openPdfViewer = (fileName, fileType) => {
+    if (!fileName) {
+      // Tampilkan pesan kesalahan jika nama file kosong atau tidak terdefinisi
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: `${fileType} file name is empty or undefined`,
+      });
+      return;
+    }
+    // Panggil fungsi pdfViewer dengan nama file dan tipe file
+    pdfViewer(fileName, fileType);
+  };
+
+  const pdfViewer = async (fileName, fileType) => {
     try {
-      if (!pdfUrl) {
-        throw new Error("PDF URL is empty or undefined");
+      const token = localStorage.getItem('token'); // Mengambil token dari local storage
+      if (!token) {
+        throw new Error("Token is empty or undefined");
       }
 
-      const response = await axios.get(pdfUrl);
-      const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
-      const pdfData = URL.createObjectURL(pdfBlob);
+      const config = {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        responseType: 'blob' // Menetapkan tipe respons menjadi blob
+      };
 
-      // Tampilkan PDF menggunakan PdfViewer
+      const response = await axios.get(`http://localhost:8000/storage/${fileName}`, config); // Menggunakan token dalam permintaan
+      console.log("Response:", response); // Tambahkan log untuk respons
+
+      const pdfBlob = response.data; // Langsung gunakan data respons sebagai blob
+      console.log("PDF Blob:", pdfBlob); // Tambahkan log untuk objek blob
+
+      const pdfData = URL.createObjectURL(pdfBlob);
+      console.log("PDF Data URL:", pdfData); // Tambahkan log untuk URL objek
+      // Tampilkan PDF di jendela baru
       window.open(pdfData, '_blank');
     } catch (error) {
-      console.error("Error fetching PDF:", error);
+      console.error(`Error fetching ${fileType} PDF:`, error);
       // Tampilkan pesan error jika gagal mengambil PDF
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "Failed to fetch PDF. Please try again.",
+        text: `Failed to fetch ${fileType} PDF. Please try again.`,
       });
     }
   };
-
-  const handlePdfButtonClick = (pdfUrl) => {
-    if (!pdfUrl) {
-      // Tampilkan pesan kesalahan jika URL PDF kosong atau tidak terdefinisi
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "PDF URL is empty or undefined",
-      });
-      return;
-    }
-    openPdfViewer(pdfUrl, "PDF Viewer"); // Panggil fungsi openPdfViewer jika URL PDF tersedia
-  };
-
-
 
   const handleDetailClick = (pengajuan) => {
     setSelectedPengajuan(pengajuan);
     setSelectedStatus(pengajuan.status);
   };
+
 
   return (
     <div className="flex min-h-screen bg-gray-200">
@@ -209,7 +221,9 @@ const DataPengajuan = () => {
                   <p>
                     <span className="font-semibold">CV:</span>{" "}
                     <button
-                      onClick={() => handlePdfButtonClick(selectedPengajuan.cv_url)}
+                      onClick={() =>
+                        openPdfViewer(selectedPengajuan.file_cv, "CV")
+                      }
                       className="text-blue-500 hover:underline focus:outline-none"
                     >
                       Lihat CV
@@ -222,7 +236,7 @@ const DataPengajuan = () => {
                     <button
                       onClick={() =>
                         openPdfViewer(
-                          selectedPengajuan.portofolio_url,
+                          selectedPengajuan.file_portofolio,
                           "Portofolio"
                         )
                       }
@@ -289,10 +303,10 @@ const StatusDropdown = ({ selectedStatus, onStatusChange }) => {
       value={selectedStatus}
       onChange={(e) => onStatusChange(e.target.value)}
       className={`block w-full p-2 border rounded focus:outline-none ${selectedStatus === "Diterima"
-          ? "bg-green-200"
-          : selectedStatus === "Ditolak"
-            ? "bg-red-200"
-            : "bg-yellow-200"
+        ? "bg-green-200"
+        : selectedStatus === "Ditolak"
+          ? "bg-red-200"
+          : "bg-yellow-200"
         }`}
     >
       {statusOptions.map((status) => (
