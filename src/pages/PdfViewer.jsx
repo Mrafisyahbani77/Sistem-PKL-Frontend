@@ -1,16 +1,30 @@
 import React, { useState } from 'react';
-import Modal from './Modal';
+import { Worker, Viewer } from '@react-pdf-viewer/core';
+import '@react-pdf-viewer/core/lib/styles/index.css';
+import { pdfjs } from 'react-pdf';
 
 const PdfViewer = ({ pdfUrl }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [numPages, setNumPages] = useState(null);
+  const [pageNumber, setPageNumber] = useState(1);
 
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  function onDocumentLoadSuccess({ numPages }) {
+    setNumPages(numPages);
+  }
+<Viewer
+  fileUrl={pdfUrl}
+  onError={(error) => console.error('Error loading PDF:', error)}
+/>
 
   return (
     <div>
-      <button onClick={openModal}>Lihat PDF</button>
-      <Modal isOpen={isModalOpen} onClose={closeModal} pdfUrl={pdfUrl} />
+      <Worker workerUrl={`https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`}>
+        <Viewer fileUrl={pdfUrl} />
+      </Worker>
+      {numPages && (
+        <p>
+          Page {pageNumber} of {numPages}
+        </p>
+      )}
     </div>
   );
 };

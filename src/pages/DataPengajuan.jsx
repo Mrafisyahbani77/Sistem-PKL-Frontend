@@ -11,18 +11,16 @@ const DataPengajuan = () => {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [siswaDetails, setSiswaDetails] = useState([]);
 
+  const handleCloseDetail = () => {
+    setSelectedPengajuan(null);
+    setSelectedStatus("");
+  };
+
   useEffect(() => {
     // Ambil data pengajuan dari API saat komponen dimuat
     Api.getAllPengajuan()
       .then((response) => {
-        // Menambahkan URL CV dan Portofolio ke data pengajuan
-        const pengajuanData = response.data.data.map((pengajuan) => ({
-          ...pengajuan,
-          cv_url: pengajuan.cv_url,
-          portofolio_url: pengajuan.portofolio_url,
-        }));
-
-        setDataPengajuan(pengajuanData);
+        setDataPengajuan(response.data.data);
       })
       .catch((error) => {
         console.error("Error fetching pengajuan data:", error);
@@ -55,7 +53,6 @@ const DataPengajuan = () => {
         return pengajuan;
       });
       setDataPengajuan(updatedDataPengajuan);
-      handleCloseDetail();
     } catch (error) {
       console.error("Error updating status:", error);
       // Tampilkan notifikasi kesalahan
@@ -67,9 +64,53 @@ const DataPengajuan = () => {
     }
   };
 
-  const handleCloseDetail = () => {
-    setSelectedPengajuan(null);
-    setSelectedStatus("");
+  const openPdfViewer = (fileName, fileType) => {
+    if (!fileName) {
+      // Tampilkan pesan kesalahan jika nama file kosong atau tidak terdefinisi
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: `${fileType} file name is empty or undefined`,
+      });
+      return;
+    }
+    // Panggil fungsi pdfViewer dengan nama file dan tipe file
+    pdfViewer(fileName, fileType);
+  };
+
+  const pdfViewer = async (fileName, fileType) => {
+    try {
+      const token = localStorage.getItem('token'); // Mengambil token dari local storage
+      if (!token) {
+        throw new Error("Token is empty or undefined");
+      }
+
+      const config = {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        responseType: 'blob' // Menetapkan tipe respons menjadi blob
+      };
+
+      const response = await axios.get(`http://localhost:8000/storage/${fileName}`, config); // Menggunakan token dalam permintaan
+      console.log("Response:", response); // Tambahkan log untuk respons
+
+      const pdfBlob = response.data; // Langsung gunakan data respons sebagai blob
+      console.log("PDF Blob:", pdfBlob); // Tambahkan log untuk objek blob
+
+      const pdfData = URL.createObjectURL(pdfBlob);
+      console.log("PDF Data URL:", pdfData); // Tambahkan log untuk URL objek
+      // Tampilkan PDF di jendela baru
+      window.open(pdfData, '_blank');
+    } catch (error) {
+      console.error(`Error fetching ${fileType} PDF:`, error);
+      // Tampilkan pesan error jika gagal mengambil PDF
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: `Failed to fetch ${fileType} PDF. Please try again.`,
+      });
+    }
   };
 
   const handleDetailClick = async (pengajuan) => {
@@ -81,16 +122,6 @@ const DataPengajuan = () => {
     setSiswaDetails(response.data);
   };
 
-  const openPdfViewer = (pdfUrl, title) => {
-    // Implementasi tampilan PDF, Anda dapat menggunakan modal atau library PDF viewer
-    Swal.fire({
-      html: <PdfViewer pdfUrl={pdfUrl} />,
-      showCloseButton: true,
-      showConfirmButton: false,
-      customClass: "pdf-viewer-modal",
-      title,
-    });
-  };
 
   return (
     <div className="flex min-h-screen bg-gray-200">
@@ -180,7 +211,7 @@ const DataPengajuan = () => {
                     <span className="font-semibold">CV:</span>{" "}
                     <button
                       onClick={() =>
-                        openPdfViewer(selectedPengajuan.cv_url, "CV")
+                        openPdfViewer(selectedPengajuan.file_cv, "CV")
                       }
                       className="text-blue-500 hover:underline focus:outline-none"
                     >
@@ -194,7 +225,7 @@ const DataPengajuan = () => {
                     <button
                       onClick={() =>
                         openPdfViewer(
-                          selectedPengajuan.portofolio_url,
+                          selectedPengajuan.file_portofolio,
                           "Portofolio"
                         )
                       }
@@ -260,13 +291,12 @@ const StatusDropdown = ({ selectedStatus, onStatusChange }) => {
     <select
       value={selectedStatus}
       onChange={(e) => onStatusChange(e.target.value)}
-      className={`block w-full p-2 border rounded focus:outline-none ${
-        selectedStatus === "Diterima"
-          ? "bg-green-200"
-          : selectedStatus === "Ditolak"
+      className={`block w-full p-2 border rounded focus:outline-none ${selectedStatus === "Diterima"
+        ? "bg-green-200"
+        : selectedStatus === "Ditolak"
           ? "bg-red-200"
           : "bg-yellow-200"
-      }`}
+        }`}
     >
       {statusOptions.map((status) => (
         <option key={status} value={status}>
