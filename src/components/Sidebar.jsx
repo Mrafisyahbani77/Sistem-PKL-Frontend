@@ -10,6 +10,7 @@ import { MdMail } from "react-icons/md";
 import { SiMinutemailer } from "react-icons/si";
 import { FaAddressBook } from "react-icons/fa";
 import { FaMagnifyingGlassChart } from "react-icons/fa6";
+import { FaMailBulk } from "react-icons/fa";
 
 const Sidebar = () => {
   const [open, setOpen] = useState(true);
@@ -35,7 +36,7 @@ const Sidebar = () => {
       path: "/Jurnal",
     },
     {
-      title: "PengajuanPkl",
+      title: "Pengajuan Pkl",
       icon: <SiMinutemailer style={{ fontSize: "24px" }} />,
       path: "/PengajuanPkl",
     },
@@ -45,17 +46,17 @@ const Sidebar = () => {
       path: "/Inbox",
     },
     {
-      title: "AbsensiSiswa",
+      title: "Absensi Siswa",
       icon: <FaAddressBook style={{ fontSize: "24px" }} />,
       path: "/ControlAbsen",
     },
     {
-      title: "DataPengajuan",
+      title: "Data Pengajuan",
       icon: <FaMagnifyingGlassChart style={{ fontSize: "20px" }} />,
       gap: true,
       path: "/DataPengajuan",
     },
-    { title: "Setting", src: "Setting", path: "/Setting" },
+    { title: "Data Sppd", icon:<FaMailBulk className="size-5"/>, path: "/DataSppd" },
   ];
 
   const handleNavigate = (path) => {

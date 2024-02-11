@@ -8,7 +8,7 @@ const ControlAbsen = () => {
   const [absensiList, setAbsensiList] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [token, setToken] = useState("");
-  const [showPopup, setShowPopup] = useState(false); // State untuk mengontrol tampilan pop-up
+  const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
     // Mengambil token dari local storage
@@ -30,6 +30,11 @@ const ControlAbsen = () => {
   }, [token]);
 
   useEffect(() => {
+    // Reset absensiList saat memilih siswa baru
+    setAbsensiList([]);
+  }, [selectedSiswa]);
+
+  useEffect(() => {
     // Mengambil daftar absensi dari API saat ada siswa yang dipilih
     if (selectedSiswa && selectedSiswa.id && token) {
       Api.get(`/api/admin/absensi/${selectedSiswa.id}`, {
@@ -39,9 +44,10 @@ const ControlAbsen = () => {
       })
         .then((response) => {
           const { absensiList } = response.data;
+          // Periksa apakah ada foto dalam setiap data absensi
           const updatedAbsensiList = absensiList.map((item) => ({
             ...item,
-            foto: item.foto ? `http://localhost:8000${item.foto}` : null,
+            foto: item.foto ? `http://localhost:8000${item.foto}` : null, // Tambahkan URL lengkap foto dan sesuaikan dengan kebutuhan Anda
           }));
           setAbsensiList(updatedAbsensiList);
         })
@@ -60,7 +66,7 @@ const ControlAbsen = () => {
     setSearchTerm(event.target.value);
   };
 
-  // Filtering siswaList based on searchTerm for NISN and nama
+  // Filtering siswaList based on searchTerm
   const filteredSiswaList = siswaList.filter(
     (siswa) =>
       (siswa.name &&
@@ -82,7 +88,7 @@ const ControlAbsen = () => {
           <input
             type="text"
             id="search"
-            placeholder="Masukkan NISN atau nama siswa..."
+            placeholder="Masukkan nama siswa..."
             value={searchTerm}
             onChange={handleSearch}
             className="w-full p-2 border rounded"
@@ -92,14 +98,14 @@ const ControlAbsen = () => {
         <table className="min-w-full divide-y divide-gray-200 border rounded overflow-hidden mb-4">
           <thead className="bg-gray-100">
             <tr>
-              <th className="py-2 px-4 border-b">NISN</th>
-              <th className="py-2 px-4 border-b">Nama Siswa</th>
+              <th className="py-2 px-4 border-b">Nisn</th>
+              <th className="py-2 px-4 border-b">Nama User</th>
             </tr>
           </thead>
           <tbody>
             {filteredSiswaList.map((siswa) => (
               <tr
-                key={siswa.nisn}
+                key={siswa.nisn} // Tambahkan key di sini
                 className={`hover:bg-gray-50 cursor-pointer ${
                   selectedSiswa && selectedSiswa.nisn === siswa.nisn
                     ? "bg-gray-200"

@@ -18,13 +18,15 @@ import Edit from "../pages/Edit.jsx";
 import PengajuanPkl from "../pages/PengajuanPkl.jsx";
 import ControlAbsen from "../pages/ControlAbsen.jsx";
 import DataPengajuan from "../pages/DataPengajuan.jsx";
-import PdfViewer from "../pages/PdfViewer.jsx";
+import DataSppd from "../pages/DataSppd.jsx";
+
 
 //pages siswa
 import JurnalSiswa from "../siswapages/JurnalSiswa.jsx";
 import Info from "../siswapages/Info.jsx";
 import FormPengajuan from "../siswapages/FormPengajuan.jsx";
 import Absensi from "../siswapages/Absensi.jsx";
+
 
 
 
@@ -64,7 +66,8 @@ export default function RoutesIndex() {
       <Route path="/ControlAbsen" element={<ControlAbsen />} />
       <Route path="/PengajuanPkl" element={<PengajuanPkl />} />
       <Route path="/DataPengajuan" element={<DataPengajuan />} />
-      {/* <Route path="/PdfViewer" element={<PdfViewer />} /> */}
+      <Route path="/DataSppd" element={<DataSppd />} />
+  
 
 
       //pages siswa

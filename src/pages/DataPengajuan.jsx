@@ -9,6 +9,7 @@ const DataPengajuan = () => {
   const [dataPengajuan, setDataPengajuan] = useState([]);
   const [selectedPengajuan, setSelectedPengajuan] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [siswaDetails, setSiswaDetails] = useState([]);
 
   useEffect(() => {
     // Ambil data pengajuan dari API saat komponen dimuat
@@ -71,9 +72,13 @@ const DataPengajuan = () => {
     setSelectedStatus("");
   };
 
-  const handleDetailClick = (pengajuan) => {
+  const handleDetailClick = async (pengajuan) => {
     setSelectedPengajuan(pengajuan);
     setSelectedStatus(pengajuan.status);
+    
+    // Ambil detail siswa terkait dengan pengajuan ini
+    const response = await Api.getSiswaDetails(pengajuan.id); // Ganti dengan endpoint yang sesuai untuk mendapatkan detail siswa
+    setSiswaDetails(response.data);
   };
 
   const openPdfViewer = (pdfUrl, title) => {
@@ -140,46 +145,30 @@ const DataPengajuan = () => {
                 Detail Pengajuan - {selectedPengajuan.nama}
               </h2>
               <ul>
-                {selectedPengajuan.siswa && selectedPengajuan.siswa.length > 1 ? (
-                  // Jika ada lebih dari satu siswa yang mengajukan, tampilkan informasi mereka
-                  selectedPengajuan.siswa.map((siswa, index) => (
-                    <li key={index}>
-                      <h3 className="text-xl font-semibold mb-2">
-                        Detail Pengajuan - {siswa.nama}
-                      </h3>
-                      <ul>
-                        <li>
-                          <p>
-                            <span className="font-semibold">NISN:</span> {siswa.nisn}
-                          </p>
-                        </li>
-                        <li>
-                          <p>
-                            <span className="font-semibold">Status:</span>{" "}
-                            <StatusDropdown
-                              selectedStatus={selectedStatus}
-                              onStatusChange={setSelectedStatus}
-                            />
-                          </p>
-                        </li>
-                        {/* Sisipkan informasi lainnya di sini */}
-                      </ul>
-                      {/* Tombol untuk melihat CV dan portofolio */}
-                      {/* Anda perlu menyesuaikan fungsi onClick untuk menampilkan CV dan portofolio */}
-                    </li>
-                  ))
-                ) : (
-                  // Jika hanya satu siswa yang mengajukan, tampilkan informasi seperti biasa
-                  <li>
-                    <p>
-                      <span className="font-semibold">Status:</span>{" "}
-                      <StatusDropdown
-                        selectedStatus={selectedStatus}
-                        onStatusChange={setSelectedStatus}
-                      />
-                    </p>
+                {siswaDetails.map((siswa, index) => (
+                  <li key={index}>
+                    <h3 className="text-xl font-semibold mb-2">
+                      Detail Siswa - {siswa.nama}
+                    </h3>
+                    <ul>
+                      <li>
+                        <p>
+                          <span className="font-semibold">NISN:</span> {siswa.nisn}
+                        </p>
+                      </li>
+                      {/* Sisipkan informasi lainnya di sini */}
+                    </ul>
                   </li>
-                )}
+                ))}
+                <li>
+                  <p>
+                    <span className="font-semibold">Status:</span>{" "}
+                    <StatusDropdown
+                      selectedStatus={selectedStatus}
+                      onStatusChange={setSelectedStatus}
+                    />
+                  </p>
+                </li>
                 <li>
                   <p>
                     <span className="font-semibold">Alamat:</span>{" "}
