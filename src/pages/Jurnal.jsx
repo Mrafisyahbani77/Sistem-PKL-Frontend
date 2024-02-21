@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import ReactPaginate from "react-paginate";
-import { FaCalendarAlt, FaBookOpen, FaBook } from "react-icons/fa";
+import { FaBook } from "react-icons/fa";
 import Api from "../Api";
 
 const Jurnal = () => {
@@ -9,17 +9,14 @@ const Jurnal = () => {
   const [jurnals, setJurnals] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUserId, setSelectedUserId] = useState(null);
-  const [pageCount, setPageCount] = useState(1);
+  const [pageNumber, setPageNumber] = useState(0);
+  const usersPerPage = 6;
 
   useEffect(() => {
     const fetchSiswa = async () => {
       try {
         const { data } = await Api.get("/api/admin/jurnal-siswa");
-
-        // Ensure that data is an array
-        const siswaArray = Array.isArray(data) ? data : [];
-
-        setSiswa(siswaArray);
+        setSiswa(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Error fetching students:", error.message);
       }
@@ -31,12 +28,11 @@ const Jurnal = () => {
   useEffect(() => {
     const fetchJurnals = async () => {
       try {
-        if (selectedUserId) {
+        if (selectedUserId !== null) {
           const { data } = await Api.get(
-            `/api/admin/jurnal-siswa/${selectedUserId}`
+            `/api/admin/jurnal-siswa/${selectedUserId}?page=${pageNumber + 1}&perPage=${usersPerPage}`
           );
           setJurnals(data.user_jurnal.jurnal);
-          setPageCount(data.pageCount);
         }
       } catch (error) {
         console.error("Error fetching data:", error.message);
@@ -44,7 +40,7 @@ const Jurnal = () => {
     };
 
     fetchJurnals();
-  }, [selectedUserId]);
+  }, [selectedUserId, pageNumber]);
 
   const handleSearch = (event) => {
     const searchTerm = event.target.value.toLowerCase();
@@ -53,16 +49,17 @@ const Jurnal = () => {
 
   const handleSiswaClick = (userId) => {
     setSelectedUserId(userId);
+    setPageNumber(0); // Reset page number when selecting a new user
   };
 
   const handleCloseJurnal = () => {
     setSelectedUserId(null);
     setJurnals([]);
-    setPageCount(1);
+    setPageNumber(0); // Reset page number when closing jurnal
   };
 
-  const changePage = (selectedPage) => {
-    // Handle page change logic here
+  const changePage = ({ selected }) => {
+    setPageNumber(selected);
   };
 
   const filteredSiswa = siswa.filter(
@@ -70,6 +67,8 @@ const Jurnal = () => {
       (user.name && user.name.toLowerCase().includes(searchTerm)) ||
       (user.nisn && user.nisn.toLowerCase().includes(searchTerm))
   );
+
+  const pageCount = Math.ceil(siswa.length / usersPerPage);
 
   return (
     <div className="flex">
@@ -93,11 +92,14 @@ const Jurnal = () => {
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold">Daftar Siswa</h3>
         </div>
-        <table className="min-w-full border border-gray-300 mb-4">
-          <thead>
+        <table className="bg-white table-auto w-full shadow-md rounded-md overflow-hidden border border-gray-300">
+          <thead className="bg-gray-200">
             <tr className="bg-gray-200">
               <th className="py-2 px-4 border-r">
                 <span>NISN</span>
+              </th>
+              <th className="py-2 px-4 border-r">
+                <span>Kelas</span>
               </th>
               <th className="py-2 px-4 border-r">
                 <span>Nama Siswa</span>
@@ -105,8 +107,9 @@ const Jurnal = () => {
             </tr>
           </thead>
           <tbody>
-            {Array.isArray(filteredSiswa) && filteredSiswa.length > 0 ? (
-              filteredSiswa.map((user) => (
+            {filteredSiswa
+              .slice(pageNumber * usersPerPage, (pageNumber + 1) * usersPerPage)
+              .map((user) => (
                 <tr
                   key={user.id}
                   onClick={() => handleSiswaClick(user.id)}
@@ -118,19 +121,32 @@ const Jurnal = () => {
                     {user.nisn}
                   </td>
                   <td className="py-2 px-4 border-r text-center">
+                    {user.kelas}
+                  </td>
+                  <td className="py-2 px-4 border-r text-center">
                     {user.name}
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="2" className="text-center py-4">
-                  No students available
-                </td>
-              </tr>
-            )}
+              ))}
           </tbody>
         </table>
+        <ReactPaginate
+          previousLabel={"Sebelumnya"}
+          nextLabel={"Berikutnya"}
+          pageCount={pageCount}
+          onPageChange={changePage}
+          containerClassName={"pagination flex gap-2 mt-4"}
+          previousLinkClassName={
+            "pagination__link px-4 py-2 border border-gray-300 rounded-md text-gray-600 hover:text-gray-800 hover:border-gray-400 bg-gray-100"
+          }
+          nextLinkClassName={
+            "pagination__link px-4 py-2 border border-gray-300 rounded-md text-gray-600 hover:text-gray-800 hover:border-gray-400 bg-gray-100"
+          }
+          disabledClassName={"pagination__link--disabled"}
+          activeClassName={
+            "pagination__link--active bg-gray-500 text-white border-blue-500"
+          }
+        />
 
         {selectedUserId && (
           <div className="bg-black bg-opacity-50 fixed top-0 left-0 w-full h-full flex justify-center items-center">

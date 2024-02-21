@@ -1,13 +1,57 @@
-import React, { useState } from "react";
+// Import useEffect from react
+import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
+import Api from "../Api";
 
-const FormTambah = ({ onClose, onSubmit, formData, onInputChange }) => {
-  document.title = "AdminDashboard";
-
+const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
   const [submitting, setSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [daftarKelas, setDaftarKelas] = useState([]);
 
+  useEffect(() => {
+    // Fetch daftar kelas from API when component mounts
+    const fetchDaftarKelas = async () => {
+      try {
+        const response = await Api.getDaftarKelas();
+        setDaftarKelas(response.data);
+      } catch (error) {
+        console.error("Error fetching daftar kelas:", error);
+      }
+    };
+
+    fetchDaftarKelas();
+  }, []);
+
+  const onInputChange = (e) => {
+    const { name, value } = e.target;
+    let roleId = null;
+
+    switch (value) {
+      case "admin":
+        roleId = 1;
+        break;
+      case "kaprog":
+        roleId = 2;
+        break;
+      case "pembimbing":
+        roleId = 3;
+        break;
+      case "siswa":
+        roleId = 4;
+        break;
+      default:
+        break;
+    }
+
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+      role_id: roleId, // Menyimpan nilai role_id berdasarkan role yang dipilih
+    }));
+  };
+
+  // Handle form submit
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
@@ -21,10 +65,15 @@ const FormTambah = ({ onClose, onSubmit, formData, onInputChange }) => {
       setSuccessMessage("Akun berhasil ditambahkan.");
 
       // Reset form data
-      onInputChange({ target: { name: "role", value: "" } });
-      onInputChange({ target: { name: "name", value: "" } });
-      onInputChange({ target: { name: "email", value: "" } });
-      onInputChange({ target: { name: "password", value: "" } });
+      setFormData((prevData) => ({
+        ...prevData,
+        role: "",
+        name: "",
+        email: "",
+        password: "",
+        kelas: "",
+        nisn: "",
+      }));
 
       // Tampilkan notifikasi SweetAlert2 berhasil
       Swal.fire({
@@ -50,6 +99,164 @@ const FormTambah = ({ onClose, onSubmit, formData, onInputChange }) => {
       });
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const renderFormBasedOnRole = () => {
+    switch (formData.role) {
+      case "admin":
+        return (
+          <>
+            <div className="mb-4">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-600"
+              >
+                Name
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={onInputChange}
+                className="mt-1 p-2 w-full border rounded-md"
+                required
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-600"
+              >
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={onInputChange}
+                className="mt-1 p-2 w-full border rounded-md"
+                required
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-600"
+              >
+                Password
+              </label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={onInputChange}
+                className="mt-1 p-2 w-full border rounded-md"
+                required
+              />
+            </div>
+          </>
+        );
+      case "siswa":
+        return (
+          <>
+            <div className="mb-4">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-600"
+              >
+                Name
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={onInputChange}
+                className="mt-1 p-2 w-full border rounded-md"
+                required
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="nisn"
+                className="block text-sm font-medium text-gray-600"
+              >
+                NISN
+              </label>
+              <input
+                type="text"
+                id="nisn"
+                name="nisn"
+                value={formData.nisn}
+                onChange={onInputChange}
+                className="mt-1 p-2 w-full border rounded-md"
+                required
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-600"
+              >
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={onInputChange}
+                className="mt-1 p-2 w-full border rounded-md"
+                required
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-600"
+              >
+                Password
+              </label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={onInputChange}
+                className="mt-1 p-2 w-full border rounded-md"
+                required
+              />
+            </div>
+            <label className="block text-sm font-semibold mt-4 mb-2">
+              Kelas:
+            </label>
+            <select
+              className="w-full p-2 border rounded"
+              value={formData.kelas}
+              onChange={(e) => onInputChange(e)}
+              name="kelas"
+            >
+              <option key="default" value="">
+                Pilih Kelas
+              </option>
+              {daftarKelas.map((kelas, kelasIndex) => (
+                <option key={kelasIndex} value={kelas}>
+                  {kelas}
+                </option>
+              ))}
+            </select>
+          </>
+        );
+      case "pembimbing":
+        return <>{/* Form pembimbing */}</>;
+      case "kaprog":
+        return <>{/* Form kaprog */}</>;
+      default:
+        return null;
     }
   };
 
@@ -100,61 +307,9 @@ const FormTambah = ({ onClose, onSubmit, formData, onInputChange }) => {
             <option value="kaprog">Kaprog</option>
             <option value="pembimbing">Pembimbing</option>
             <option value="siswa">Siswa</option>
-
-            {/* Tambahkan opsi role lainnya sesuai kebutuhan */}
           </select>
         </div>
-        <div className="mb-4">
-          <label
-            htmlFor="name"
-            className="block text-sm font-medium text-gray-600"
-          >
-            Name
-          </label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={onInputChange}
-            className="mt-1 p-2 w-full border rounded-md"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label
-            htmlFor="email"
-            className="block text-sm font-medium text-gray-600"
-          >
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={onInputChange}
-            className="mt-1 p-2 w-full border rounded-md"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label
-            htmlFor="password"
-            className="block text-sm font-medium text-gray-600"
-          >
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={onInputChange}
-            className="mt-1 p-2 w-full border rounded-md"
-            required
-          />
-        </div>
+        {renderFormBasedOnRole()}
         <div className="mt-4">
           <button
             type="submit"

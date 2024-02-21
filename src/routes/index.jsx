@@ -13,12 +13,13 @@ const Login = lazy(() => import("../views/Auth/Login.jsx"));
 //pages admin
 import Crud from "../pages/Crud.jsx";
 import Jurnal from "../pages/Jurnal.jsx";
-import Inbox from "../pages/Inbox.jsx";
+import Perusahaan from "../pages/Perusahaan.jsx";
 import Edit from "../pages/Edit.jsx";
 import PengajuanPkl from "../pages/PengajuanPkl.jsx";
 import ControlAbsen from "../pages/ControlAbsen.jsx";
 import DataPengajuan from "../pages/DataPengajuan.jsx";
 import DataSppd from "../pages/DataSppd.jsx";
+import InfoPembimbing from "../pages/InfoPembimbing.jsx";
 
 
 //pages siswa
@@ -26,7 +27,6 @@ import JurnalSiswa from "../siswapages/JurnalSiswa.jsx";
 import Info from "../siswapages/Info.jsx";
 import FormPengajuan from "../siswapages/FormPengajuan.jsx";
 import Absensi from "../siswapages/Absensi.jsx";
-
 
 
 
@@ -61,12 +61,13 @@ export default function RoutesIndex() {
       //pages admin
       <Route path="/Crud" element={<Crud />} />
       <Route path="/Jurnal" element={<Jurnal />} />
-      <Route path="/Inbox" element={<Inbox />} />
+      <Route path="/Perusahaan" element={<Perusahaan />} />
       <Route path="/Edit" element={<Edit />} />
       <Route path="/ControlAbsen" element={<ControlAbsen />} />
       <Route path="/PengajuanPkl" element={<PengajuanPkl />} />
       <Route path="/DataPengajuan" element={<DataPengajuan />} />
       <Route path="/DataSppd" element={<DataSppd />} />
+      <Route path="/InfoPembimbing" element={<InfoPembimbing/>} />
   
 
 

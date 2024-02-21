@@ -6,11 +6,12 @@ import Cookies from "js-cookie";
 import { MdDashboard } from "react-icons/md";
 import { FaBook } from "react-icons/fa";
 import { TiUserAdd } from "react-icons/ti";
-import { MdMail } from "react-icons/md";
+import { BiSolidBusiness } from "react-icons/bi";
 import { SiMinutemailer } from "react-icons/si";
 import { FaAddressBook } from "react-icons/fa";
 import { FaMagnifyingGlassChart } from "react-icons/fa6";
 import { FaMailBulk } from "react-icons/fa";
+import { FaChalkboardTeacher } from "react-icons/fa";
 
 const Sidebar = () => {
   const [open, setOpen] = useState(true);
@@ -25,15 +26,9 @@ const Sidebar = () => {
       path: "/AdminDashboard",
     },
     {
-      title: "Tambah User",
+      title: "Manajemen Pengguna",
       icon: <TiUserAdd style={{ fontSize: "24px" }} />,
       path: "/Crud",
-    },
-    {
-      title: "Jurnal Siswa",
-      icon: <FaBook style={{ fontSize: "24px" }} />,
-      gap: true,
-      path: "/Jurnal",
     },
     {
       title: "Pengajuan Pkl",
@@ -41,9 +36,19 @@ const Sidebar = () => {
       path: "/PengajuanPkl",
     },
     {
-      title: "Inbox",
-      icon: <MdMail style={{ fontSize: "24px" }} />,
-      path: "/Inbox",
+      title: "Data Pengajuan",
+      icon: <FaMagnifyingGlassChart style={{ fontSize: "20px" }} />,
+      path: "/DataPengajuan",
+    },
+    {
+      title: "Perusahaan Rekomendasi",
+      icon: <BiSolidBusiness style={{ fontSize: "24px" }} />,
+      path: "/Perusahaan",
+    },
+    {
+      title: "Jurnal Siswa",
+      icon: <FaBook style={{ fontSize: "24px" }} />,
+      path: "/Jurnal",
     },
     {
       title: "Absensi Siswa",
@@ -51,12 +56,15 @@ const Sidebar = () => {
       path: "/ControlAbsen",
     },
     {
-      title: "Data Pengajuan",
-      icon: <FaMagnifyingGlassChart style={{ fontSize: "20px" }} />,
-      gap: true,
-      path: "/DataPengajuan",
+      title: "Pembimbing",
+      icon: <FaChalkboardTeacher className="size-5"/>,
+      path: "/InfoPembimbing",
     },
-    { title: "Data Sppd", icon:<FaMailBulk className="size-5"/>, path: "/DataSppd" },
+    {
+      title: "Data Sppd",
+      icon: <FaMailBulk className="size-5" />,
+      path: "/DataSppd",
+    },
   ];
 
   const handleNavigate = (path) => {
@@ -93,7 +101,7 @@ const Sidebar = () => {
             </div>
           </div>
         </div>
-        <ul className="pt-6">
+        <ul className="pt-6 ">
           {Menus.map((Menu, index) => (
             <li
               key={index}

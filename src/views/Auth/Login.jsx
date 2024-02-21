@@ -77,7 +77,7 @@ export default function Login() {
           navigate("/SiswaDashboard");
           break;
         default:
-          console.error("Role not recognized:", userRole);
+          console.error("Role ga ada:", userRole);
           navigate("/default-dashboard");
       }
     } catch (error) {

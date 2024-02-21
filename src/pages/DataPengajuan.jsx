@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
-import Api from "../Api";
+import axios from "axios";
 import Sidebar from "../components/Sidebar";
-import PdfViewer from "./PdfViewer";
-import axios from 'axios'; // Import axios
+
 
 const DataPengajuan = () => {
   const [dataPengajuan, setDataPengajuan] = useState([]);
   const [selectedPengajuan, setSelectedPengajuan] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState("");
-  const [siswaDetails, setSiswaDetails] = useState([]);
 
   const handleCloseDetail = () => {
     setSelectedPengajuan(null);
@@ -17,49 +15,90 @@ const DataPengajuan = () => {
   };
 
   useEffect(() => {
-    // Ambil data pengajuan dari API saat komponen dimuat
-    Api.getAllPengajuan()
+    axios
+      .get(`http://localhost:8000/api/admin/pengajuan/all`)
       .then((response) => {
-        setDataPengajuan(response.data.data);
+        setDataPengajuan(response.data.data); // Perubahan di sini
       })
       .catch((error) => {
         console.error("Error fetching pengajuan data:", error);
       });
   }, []);
 
-  const handleStatusUpdate = async () => {
+
+const handleStatusUpdate = async () => {
     try {
-      const token = localStorage.getItem('token');
+      if (!selectedPengajuan) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "No selected pengajuan.",
+        });
+        return;
+      }
+      
+      const token = localStorage.getItem("token");
       const config = {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       };
 
-      await axios.put(`http://localhost:8000/api/admin/update-status/${selectedPengajuan.id}`, { status: selectedStatus }, config);
-      // Tampilkan notifikasi berhasil
-      Swal.fire({
-        icon: "success",
-        title: "Status Updated Successfully!",
-      });
-      // Update status langsung pada data pengajuan
-      const updatedDataPengajuan = dataPengajuan.map(pengajuan => {
-        if (pengajuan.id === selectedPengajuan.id) {
+      const selectedId = selectedPengajuan[0].id; // Ambil ID dari akun yang dipilih
+
+      await axios.put(
+        `http://localhost:8000/api/admin/update-status/${selectedId}`,
+        { status: selectedStatus },
+        config
+      );
+
+      const updatedDataPengajuan = dataPengajuan.map((pengajuan) => {
+        if (pengajuan.id === selectedId) {
           return {
             ...pengajuan,
-            status: selectedStatus
+            status: selectedStatus,
           };
         }
         return pengajuan;
       });
       setDataPengajuan(updatedDataPengajuan);
+
+      Swal.fire({
+        icon: "success",
+        title: "Status Updated Successfully!",
+      });
     } catch (error) {
       console.error("Error updating status:", error);
-      // Tampilkan notifikasi kesalahan
       Swal.fire({
         icon: "error",
         title: "Error",
         text: "Failed to update status. Please try again.",
+      });
+    }
+  };
+
+  const handleDetailClick = async (pengajuan) => {
+    try {
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const response = await axios.get(
+        `http://localhost:8000/api/admin/detail-pengajuan/${pengajuan.group_id}`,
+        config
+      );
+      const detailPengajuan = response.data;
+
+      setSelectedPengajuan(detailPengajuan);
+    } catch (error) {
+      console.error("Error fetching detail pengajuan:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Failed to fetch detail pengajuan. Please try again.",
       });
     }
   };
@@ -80,19 +119,22 @@ const DataPengajuan = () => {
 
   const pdfViewer = async (fileName, fileType) => {
     try {
-      const token = localStorage.getItem('token'); // Mengambil token dari local storage
+      const token = localStorage.getItem("token"); // Mengambil token dari local storage
       if (!token) {
         throw new Error("Token is empty or undefined");
       }
 
       const config = {
         headers: {
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        responseType: 'blob' // Menetapkan tipe respons menjadi blob
+        responseType: "blob", // Menetapkan tipe respons menjadi blob
       };
 
-      const response = await axios.get(`http://localhost:8000/storage/${fileName}`, config); // Menggunakan token dalam permintaan
+      const response = await axios.get(
+        `http://localhost:8000/storage/${fileName}`,
+        config
+      ); // Menggunakan token dalam permintaan
       console.log("Response:", response); // Tambahkan log untuk respons
 
       const pdfBlob = response.data; // Langsung gunakan data respons sebagai blob
@@ -101,7 +143,10 @@ const DataPengajuan = () => {
       const pdfData = URL.createObjectURL(pdfBlob);
       console.log("PDF Data URL:", pdfData); // Tambahkan log untuk URL objek
       // Tampilkan PDF di jendela baru
-      window.open(pdfData, '_blank');
+      const newWindow = window.open(pdfData, "_blank");
+      if (newWindow) {
+        newWindow.document.title = fileName; // Set title jendela baru menjadi nama file PDF
+      }
     } catch (error) {
       console.error(`Error fetching ${fileType} PDF:`, error);
       // Tampilkan pesan error jika gagal mengambil PDF
@@ -113,36 +158,24 @@ const DataPengajuan = () => {
     }
   };
 
-  const handleDetailClick = async (pengajuan) => {
-    setSelectedPengajuan(pengajuan);
-    setSelectedStatus(pengajuan.status);
-    
-    // Ambil detail siswa terkait dengan pengajuan ini
-    const response = await Api.getSiswaDetails(pengajuan.id); // Ganti dengan endpoint yang sesuai untuk mendapatkan detail siswa
-    setSiswaDetails(response.data);
-  };
-
-
   return (
-    <div className="flex min-h-screen bg-gray-200">
+    <div className="flex h-screen bg-gray-200">
       <Sidebar />
-
       <div className="flex-1 p-8">
         <h2 className="text-3xl font-semibold mb-6 text-gray-800">
           Data Pengajuan PKL
         </h2>
-
-        <table className="min-w-full divide-y divide-gray-300 border border-gray-500 rounded-md overflow-hidden">
+        <table className="bg-white table-auto w-full shadow-md rounded-md overflow-hidden border border-gray-300">
           <thead className="bg-gray-100">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Nama Akun Siswa
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Email Perusahaan
+                Nisn
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Alamat Perusahaan
+                Kelas
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Detail
@@ -152,9 +185,15 @@ const DataPengajuan = () => {
           <tbody className="bg-white divide-y divide-gray-300">
             {dataPengajuan.map((pengajuan) => (
               <tr key={pengajuan.id}>
-                <td className="px-6 py-4 whitespace-nowrap">{pengajuan.nama}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{pengajuan.email}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{pengajuan.alamat}</td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {pengajuan.nama}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {pengajuan.nisn}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {pengajuan.kelas}
+                </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <button
                     onClick={() => handleDetailClick(pengajuan)}
@@ -167,92 +206,93 @@ const DataPengajuan = () => {
             ))}
           </tbody>
         </table>
-
-        {/* Tampilan Pop-up Detail */}
         {selectedPengajuan && (
           <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">
             <div className="bg-white p-8 rounded-md shadow-lg max-w-2xl w-full overflow-auto">
-              <h2 className="text-2xl font-semibold mb-4 text-gray-800">
-                Detail Pengajuan - {selectedPengajuan.nama}
-              </h2>
+              {/* <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+                Detail Pengajuan - {selectedPengajuan[0]}
+              </h2> */}
               <ul>
-                {siswaDetails.map((siswa, index) => (
-                  <li key={index}>
+                {selectedPengajuan.map((siswa) => (
+                  <li key={siswa.id}>
                     <h3 className="text-xl font-semibold mb-2">
-                      Detail Siswa - {siswa.nama}
+                      Detail Pengajuan - {siswa.nama}
                     </h3>
                     <ul>
                       <li>
                         <p>
-                          <span className="font-semibold">NISN:</span> {siswa.nisn}
+                          <span className="font-semibold">NISN:</span>{" "}
+                          {siswa.nisn}
                         </p>
                       </li>
-                      {/* Sisipkan informasi lainnya di sini */}
+                      <li>
+                        <p>
+                          <span className="font-semibold">Kelas:</span>{" "}
+                          {siswa.kelas}
+                        </p>
+                      </li>
+
+                      <li>
+                        <p>
+                          <span className="font-semibold">Status:</span>{" "}
+                          <StatusDropdown
+                            selectedStatus={selectedStatus}
+                            onStatusChange={setSelectedStatus}
+                          />
+                        </p>
+                      </li>
+
+                      <li>
+                        <p>
+                          <span className="font-semibold">CV:</span>{" "}
+                          <button
+                            onClick={() => openPdfViewer(siswa.file_cv, "CV")}
+                            className="text-blue-500 hover:underline focus:outline-none"
+                          >
+                            Lihat CV
+                          </button>
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          <span className="font-semibold">Portofolio:</span>{" "}
+                          <button
+                            onClick={() =>
+                              openPdfViewer(siswa.file_portofolio, "Portofolio")
+                            }
+                            className="text-blue-500 hover:underline focus:outline-none"
+                          >
+                            Lihat Portofolio
+                          </button>
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          <span className="font-semibold">
+                            Nama Perusahaan:
+                          </span>{" "}
+                          {siswa.nama_perusahaan}
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          <span className="font-semibold">
+                            Email Perusahaan:
+                          </span>{" "}
+                          {siswa.email_perusahaan}
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          <span className="font-semibold">
+                            Alamat Perusahaan:
+                          </span>{" "}
+                          {siswa.alamat_perusahaan}
+                        </p>
+                      </li>
                     </ul>
                   </li>
                 ))}
-                <li>
-                  <p>
-                    <span className="font-semibold">Status:</span>{" "}
-                    <StatusDropdown
-                      selectedStatus={selectedStatus}
-                      onStatusChange={setSelectedStatus}
-                    />
-                  </p>
-                </li>
-                <li>
-                  <p>
-                    <span className="font-semibold">Alamat:</span>{" "}
-                    {selectedPengajuan.alamat}
-                  </p>
-                </li>
-                <li>
-                  <p>
-                    <span className="font-semibold">CV:</span>{" "}
-                    <button
-                      onClick={() =>
-                        openPdfViewer(selectedPengajuan.file_cv, "CV")
-                      }
-                      className="text-blue-500 hover:underline focus:outline-none"
-                    >
-                      Lihat CV
-                    </button>
-                  </p>
-                </li>
-                <li>
-                  <p>
-                    <span className="font-semibold">Portofolio:</span>{" "}
-                    <button
-                      onClick={() =>
-                        openPdfViewer(
-                          selectedPengajuan.file_portofolio,
-                          "Portofolio"
-                        )
-                      }
-                      className="text-blue-500 hover:underline focus:outline-none"
-                    >
-                      Lihat Portofolio
-                    </button>
-                  </p>
-                </li>
-                <li>
-                  <p>
-                    <span className="font-semibold">NISN:</span>{" "}
-                    {selectedPengajuan.nisn}
-                  </p>
-                </li>
-                <li>
-                  <p>
-                    <span className="font-semibold">Bis:</span>{" "}
-                    {selectedPengajuan.bis}
-                  </p>
-                </li>
-                <li>
-                  <p>
-                    <span className="font-semibold">Link:</span>{" "}
-                    {selectedPengajuan.link}
-                  </p>
-                </li>
               </ul>
               <button
                 onClick={handleStatusUpdate}
@@ -266,15 +306,6 @@ const DataPengajuan = () => {
               >
                 Tutup
               </button>
-              {/* Tombol untuk generate PDF */}
-              <button
-                onClick={() =>
-                  openPdfViewer(selectedPengajuan, "Detail Pengajuan")
-                }
-                className="text-blue-500 hover:underline focus:outline-none mt-4 ml-4"
-              >
-                Generate PDF
-              </button>
             </div>
           </div>
         )}
@@ -282,7 +313,6 @@ const DataPengajuan = () => {
     </div>
   );
 };
-
 // Komponen Dropdown untuk Status
 const StatusDropdown = ({ selectedStatus, onStatusChange }) => {
   const statusOptions = ["Diperiksa", "Diproses", "Diterima", "Ditolak"];
@@ -291,12 +321,13 @@ const StatusDropdown = ({ selectedStatus, onStatusChange }) => {
     <select
       value={selectedStatus}
       onChange={(e) => onStatusChange(e.target.value)}
-      className={`block w-full p-2 border rounded focus:outline-none ${selectedStatus === "Diterima"
-        ? "bg-green-200"
-        : selectedStatus === "Ditolak"
+      className={`block w-full p-2 border rounded focus:outline-none ${
+        selectedStatus === "Diterima"
+          ? "bg-green-200"
+          : selectedStatus === "Ditolak"
           ? "bg-red-200"
           : "bg-yellow-200"
-        }`}
+      }`}
     >
       {statusOptions.map((status) => (
         <option key={status} value={status}>

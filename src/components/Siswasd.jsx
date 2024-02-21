@@ -4,8 +4,9 @@ import Cookies from "js-cookie";
 //icons
 import { MdDashboard } from "react-icons/md";
 import { FaBookOpen } from "react-icons/fa";
-import { IoPersonAddSharp } from "react-icons/io5";
-import { TiUserAdd } from "react-icons/ti";
+import { LiaCalendarDaySolid } from "react-icons/lia";
+import { FaChalkboardTeacher } from "react-icons/fa";
+import { BsSendPlus } from "react-icons/bs";
 
 const Siswasd = () => {
   const [open, setOpen] = useState(true);
@@ -15,22 +16,26 @@ const Siswasd = () => {
   const Menus = [
     {
       title: "Dashboard",
-      icon: <MdDashboard style={{ fontSize: "24px" }} />,
+      icon: <MdDashboard style={{ fontSize: "20px" }} />,
       path: "/SiswaDashboard",
     },
     {
       title: "Pengajuan Pkl",
-      icon: <TiUserAdd style={{ fontSize: "24px" }} />,
+      icon: < BsSendPlus className="size-5"/>,
       path: "/FormPengajuan",
     },
     {
       title: "Jurnal",
-      icon: <FaBookOpen style={{ fontSize: "24px" }} />,
+      icon: <FaBookOpen style={{ fontSize: "20px" }} />,
       gap: true,
       path: "/JurnalSiswa",
     },
-    { title: "Guru Pembimbing", src: "Search", path: "/Info" },
-    { title: "Absensi", src: "Chat", path: "/Absensi" },
+    { title: "Guru Pembimbing", icon:<FaChalkboardTeacher className="size-5" />, path: "/Info" },
+    {
+      title: "Absensi",
+      icon: <LiaCalendarDaySolid className="size-6" />,
+      path: "/Absensi",
+    },
     { title: "Analytics", src: "Chart", path: "/Analytics" },
     { title: "Files", src: "Folder", gap: true },
     { title: "Setting", src: "Setting", path: "/Setting" },

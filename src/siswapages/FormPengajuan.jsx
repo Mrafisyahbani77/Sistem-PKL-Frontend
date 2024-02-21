@@ -6,11 +6,13 @@ import Swal from "sweetalert2";
 const FormPengajuan = ({ onClose }) => {
   const initialFormState = {
     nama: "",
+    kelas: "",
     nisn: "",
     cv: "",
     portofolio: "",
-    email: "",
-    alamat: "",
+    nama_perusahaan: "",
+    email_perusahaan: "",
+    alamat_perusahaan: "",
     file_cv: null,
     file_portofolio: null,
     daftarSiswa: [],
@@ -22,6 +24,9 @@ const FormPengajuan = ({ onClose }) => {
   const [forms, setForms] = useState([initialFormState]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [daftarKelas, setDaftarKelas] = useState([]);
+  const [daftarPerusahaan, setDaftarPerusahaan] = useState([]);
+  const [selectedPerusahaan, setSelectedPerusahaan] = useState(null);
   const formRef = useRef(null);
 
   useEffect(() => {
@@ -39,6 +44,22 @@ const FormPengajuan = ({ onClose }) => {
         console.error("Error fetching daftar siswa:", error);
       });
 
+    Api.getDaftarKelas()
+      .then((response) => {
+        setDaftarKelas(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching daftar kelas:", error);
+      });
+
+    Api.getDaftarPerusahaan()
+      .then((response) => {
+        setDaftarPerusahaan(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching daftar perusahaan:", error);
+      });
+
     document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
@@ -54,8 +75,8 @@ const FormPengajuan = ({ onClose }) => {
 
   const handleNamaChange = (e, index) => {
     const searchTerm = (e.target.value || "").toLowerCase();
-    const filteredSiswa = forms[index].daftarSiswa.filter(
-      (siswa) => siswa.name.toLowerCase().startsWith(searchTerm)
+    const filteredSiswa = forms[index].daftarSiswa.filter((siswa) =>
+      siswa.name.toLowerCase().startsWith(searchTerm)
     );
     setForms((prevForms) =>
       prevForms.map((form, idx) =>
@@ -77,6 +98,8 @@ const FormPengajuan = ({ onClose }) => {
     const selected = forms[index].daftarSiswa.find(
       (siswa) => siswa.id === selectedId
     );
+    const namaPerusahaan =
+      selected && selected.nama_perusahaan ? selected.nama_perusahaan : "";
     setForms((prevForms) =>
       prevForms.map((form, idx) =>
         idx === index
@@ -85,6 +108,7 @@ const FormPengajuan = ({ onClose }) => {
               selectedSiswa: selected,
               nama: selected.name,
               nisn: selected.nisn,
+              nama_perusahaan: namaPerusahaan,
               isFilled: true,
             }
           : form
@@ -95,11 +119,69 @@ const FormPengajuan = ({ onClose }) => {
 
   const handleInputChange = (e, fieldName, index) => {
     const value = e.target.value;
-    setForms((prevForms) =>
-      prevForms.map((form, idx) =>
-        idx === index ? { ...form, [fieldName]: value, isFilled: true } : form
-      )
-    );
+
+    if (fieldName === "nama_perusahaan") {
+      if (value === "") {
+        // Jika memilih opsi "Pilih Perusahaan", reset nilai perusahaan
+        setForms((prevForms) =>
+          prevForms.map((form, idx) =>
+            idx === index
+              ? {
+                  ...form,
+                  [fieldName]: value,
+                  email_perusahaan: "",
+                  alamat_perusahaan: "",
+                  isFilled: false,
+                }
+              : form
+          )
+        );
+        setSelectedPerusahaan(null);
+        return;
+      }
+
+      const perusahaan = daftarPerusahaan.find(
+        (perusahaan) => perusahaan.nama_perusahaan === value
+      );
+
+      if (perusahaan) {
+        setForms((prevForms) =>
+          prevForms.map((form, idx) =>
+            idx === index
+              ? {
+                  ...form,
+                  [fieldName]: value,
+                  email_perusahaan: perusahaan.email_perusahaan,
+                  alamat_perusahaan: perusahaan.alamat_perusahaan,
+                  isFilled: true,
+                }
+              : form
+          )
+        );
+        setSelectedPerusahaan(perusahaan);
+      } else {
+        setForms((prevForms) =>
+          prevForms.map((form, idx) =>
+            idx === index
+              ? {
+                  ...form,
+                  [fieldName]: value,
+                  email_perusahaan: "",
+                  alamat_perusahaan: "",
+                  isFilled: false,
+                }
+              : form
+          )
+        );
+        setSelectedPerusahaan(null);
+      }
+    } else {
+      setForms((prevForms) =>
+        prevForms.map((form, idx) =>
+          idx === index ? { ...form, [fieldName]: value, isFilled: true } : form
+        )
+      );
+    }
   };
 
   const handleFileInputChange = (e, fieldName, index) => {
@@ -111,22 +193,34 @@ const FormPengajuan = ({ onClose }) => {
     );
   };
 
+  const removeForm = (index) => {
+    if (index !== 0) {
+      setForms((prevForms) => prevForms.filter((form, idx) => idx !== index));
+    }
+  };
+
   const addForm = () => {
     setForms((prevForms) => {
       const lastForm = prevForms[prevForms.length - 1];
-      return [
-        ...prevForms,
-        {
-          ...initialFormState,
-          daftarSiswa: lastForm.daftarSiswa,
-          filteredDaftarSiswa: lastForm.filteredDaftarSiswa,
-        },
-      ];
-    });
-  };
+      const newForm = {
+        ...initialFormState,
+        daftarSiswa: lastForm.daftarSiswa,
+        filteredDaftarSiswa: lastForm.filteredDaftarSiswa,
+      };
 
-  const removeForm = (index) => {
-    setForms((prevForms) => prevForms.filter((form, idx) => idx !== index));
+      // Mengambil nilai nama_perusahaan dari form utama jika tidak null
+      if (forms[0].nama_perusahaan !== null) {
+        newForm.nama_perusahaan = forms[0].nama_perusahaan;
+        newForm.email_perusahaan = forms[0].email_perusahaan;
+        newForm.alamat_perusahaan = forms[0].alamat_perusahaan;
+      } else {
+        newForm.nama_perusahaan = "";
+        newForm.email_perusahaan = "";
+        newForm.alamat_perusahaan = "";
+      }
+
+      return [...prevForms, newForm];
+    });
   };
 
   const handleSubmit = async () => {
@@ -151,7 +245,7 @@ const FormPengajuan = ({ onClose }) => {
         });
 
         const authToken = localStorage.getItem("token");
-        formData.append("nisn", form.nisn); 
+        formData.append("nisn", form.nisn);
         const response = await Api.submitPengajuan(authToken, formData);
         console.log(response.data);
       });
@@ -186,11 +280,14 @@ const FormPengajuan = ({ onClose }) => {
                 type="text"
                 className="w-full p-2 border rounded"
                 value={
-                  form.selectedSiswa ? form.selectedSiswa.name : form.nama
+                  (form.selectedSiswa && form.selectedSiswa.name) ||
+                  form.nama ||
+                  ""
                 }
                 onChange={(e) => handleNamaChange(e, index)}
                 list={`daftarSiswa-${index}`}
               />
+
               {showDropdown && form.filteredDaftarSiswa.length > 0 && (
                 <ul className="absolute left-0 right-0 mt-1 bg-white border rounded-md shadow-md">
                   {form.filteredDaftarSiswa.map((siswa) => (
@@ -206,7 +303,27 @@ const FormPengajuan = ({ onClose }) => {
               )}
             </div>
 
-            <label className="block text-sm font-semibold mt-4 mb-2">NISN:</label>
+            <label className="block text-sm font-semibold mt-4 mb-2">
+              Kelas:
+            </label>
+            <select
+              className="w-full p-2 border rounded"
+              value={form.kelas}
+              onChange={(e) => handleInputChange(e, "kelas", index)}
+            >
+              <option key="default" value="">
+                Pilih Kelas
+              </option>
+              {daftarKelas.map((kelas, kelasIndex) => (
+                <option key={kelasIndex} value={kelas}>
+                  {kelas}
+                </option>
+              ))}
+            </select>
+
+            <label className="block text-sm font-semibold mt-4 mb-2">
+              NISN:
+            </label>
             <input
               type="text"
               className="w-full p-2 border rounded"
@@ -251,28 +368,64 @@ const FormPengajuan = ({ onClose }) => {
                 className="ml-2 p-2 border rounded"
               />
             </div>
+            {index === 0 && (
+              <>
+                <label className="block text-sm font-semibold mt-4 mb-2">
+                  Nama Perusahaan:
+                </label>
+                <select
+                  className="w-full p-2 border rounded"
+                  value={
+                    selectedPerusahaan ? selectedPerusahaan.nama_perusahaan : ""
+                  }
+                  onChange={(e) =>
+                    handleInputChange(e, "nama_perusahaan", index)
+                  }
+                >
+                  <option value="">Pilih Perusahaan</option>
+                  {daftarPerusahaan.map((perusahaan) => (
+                    <option
+                      key={perusahaan.id}
+                      value={perusahaan.nama_perusahaan}
+                    >
+                      {perusahaan.nama_perusahaan}
+                    </option>
+                  ))}
+                </select>
 
-            <label className="block text-sm font-semibold mt-4 mb-2">Email Perusahaan:</label>
-            <input
-              type="email"
-              className="w-full p-2 border rounded"
-              value={form.email}
-              onChange={(e) => handleInputChange(e, "email", index)}
-            />
+                <label className="block text-sm font-semibold mt-4 mb-2">
+                  Email Perusahaan:
+                </label>
+                <input
+                  type="email"
+                  className="w-full p-2 border rounded"
+                  value={form.email_perusahaan}
+                  onChange={(e) =>
+                    handleInputChange(e, "email_perusahaan", index)
+                  }
+                />
 
-            <label className="block text-sm font-semibold mt-4 mb-2">Alamat Perusahaan:</label>
-            <textarea
-              className="w-full p-2 border rounded"
-              value={form.alamat}
-              onChange={(e) => handleInputChange(e, "alamat", index)}
-            />
+                <label className="block text-sm font-semibold mt-4 mb-2">
+                  Alamat Perusahaan:
+                </label>
+                <textarea
+                  className="w-full p-2 border rounded"
+                  value={form.alamat_perusahaan}
+                  onChange={(e) =>
+                    handleInputChange(e, "alamat_perusahaan", index)
+                  }
+                />
+              </>
+            )}
 
-            <button
-              onClick={() => removeForm(index)}
-              className="bg-red-500 text-white py-2 px-4 rounded mr-2 hover:bg-red-600"
-            >
-              Hapus Form
-            </button>
+            {index !== 0 && (
+              <button
+                onClick={() => removeForm(index)}
+                className="bg-red-500 text-white py-2 px-4 rounded mr-2 hover:bg-red-600"
+              >
+                Hapus Form
+              </button>
+            )}
           </div>
         ))}
 
@@ -290,13 +443,7 @@ const FormPengajuan = ({ onClose }) => {
             }`}
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Sedang Mengirim..." : "Kirim Pengajuan"}
-          </button>
-          <button
-            onClick={onClose}
-            className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600"
-          >
-            Batal
+            {isSubmitting ? "Mengirim..." : "Kirim Pengajuan"}
           </button>
         </div>
       </div>

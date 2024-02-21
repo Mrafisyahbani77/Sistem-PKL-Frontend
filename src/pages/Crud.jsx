@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Swal from "sweetalert2";
-import ReactPaginate from "react-paginate";
 import Sidebar from "../components/Sidebar";
 import UserForm from "./FormTambah";
 import Edit from "./Edit";
 import { MdOutlineDeleteForever } from "react-icons/md";
 import { FaUserEdit } from "react-icons/fa";
+import Swal from "sweetalert2";
+import ReactPaginate from "react-paginate";
 
 const Crud = () => {
   document.title = "AdminDashboard";
@@ -31,211 +31,75 @@ const Crud = () => {
 
   const fetchUsers = async () => {
     try {
-        const access_token = localStorage.getItem("token");
-        if (!access_token) {
-            console.error("Token not available. Please log in.");
-            return;
+      const access_token = localStorage.getItem("token");
+      if (!access_token) {
+        console.error("Token not available. Please log in.");
+        return;
+      }
+
+      const response = await axios.get(
+        "http://127.0.0.1:8000/api/admin/users",
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+          params: {
+            searchTerm: searchTerm,
+            roleCategory: roleCategory,
+          },
         }
+      );
 
-        // Check whether role_id is available or not
-        if (formData.role_id) {
-            const response = await axios.get(
-                `http://127.0.0.1:8000/api/admin/users/byRoleId`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${access_token}`,
-                    },
-                    params: {
-                        role_id: formData.role_id,
-                    },
-                }
-            );
-
-            setUsers(response.data.users);
-        } else {
-            const response = await axios.get(
-                "http://127.0.0.1:8000/api/admin/users",
-                {
-                    headers: {
-                        Authorization: `Bearer ${access_token}`,
-                    },
-                    params: {
-                        searchTerm: searchTerm,
-                        roleCategory: roleCategory,
-                    },
-                }
-            );
-
-            setUsers(response.data.users);
-        }
+      setUsers(response.data.users);
     } catch (error) {
-        console.error("Error fetching users:", error.message);
-        setUsers([]);
+      console.error("Error fetching users:", error.message);
+      setUsers([]);
     }
-};
+  };
 
   useEffect(() => {
     fetchUsers();
   }, [searchTerm, roleCategory]);
 
   const handleInputChange = (e) => {
-    setFormData((prevData) => {
-      // Copy previous data
-      const newData = { ...prevData };
-  
-      // Update field based on input name
-      newData[e.target.name] = e.target.value;
-  
-      // Check if the input is the 'role' field and options exist
-      if (e.target.name === 'role' && e.target.options) {
-        // Get the selected option and its dataset
-        const selectedOption = e.target.options[e.target.selectedIndex];
-        const roleId = selectedOption?.dataset?.roleId;
-  
-        // Update role_id in the form data
-        newData.role_id = roleId || null;
-      }
-  
-      return newData;
-    });
-  };  
-  
-
-  const handleEdit = async (userId) => {
-    try {
-      const selectedUser = users.find((user) => user.id === userId);
-
-      if (selectedUser) {
-        const { name, email, role } = selectedUser;
-
-        if (role && role.name) {
-          setFormData({
-            id: userId,
-            name: name || "",
-            email: email || "",
-            password: "",
-            role: role.name || "",
-          });
-          setSelectedUserId(userId);
-          setShowEditForm(true);
-        } else {
-          console.error("Error: Peran pengguna tidak didefinisikan.");
-          // Handle error properly, e.g., display a message to the user
-        }
-      } else {
-        console.error("Error: Pengguna terpilih tidak ditemukan.");
-        // Handle error properly, e.g., display a message to the user
-      }
-    } catch (error) {
-      console.error("Error fetching user data for edit:", error);
-      // Handle error properly, e.g., display a message to the user
-    }
+    setFormData((prevData) => ({
+      ...prevData,
+      [e.target.name]: e.target.value,
+    }));
   };
 
-  const getRoleIdFromApi = (roleName) => {
-    // Logika untuk mendapatkan role_id dari API
-    // ...
-  
-    // Contoh implementasi sederhana, pastikan sesuai dengan API Anda
-    const roleMappings = {
-      admin: 1,
-      kaprog: 2,
-      pembimbing: 3,
-      siswa: 4,
-      // tambahkan mapping lain sesuai kebutuhan
-    };
-  
-    return roleMappings[roleName.toLowerCase()] || null;
-  };
-
-  const handleEditSubmit = async () => {
+  const handleDelete = async (id) => {
     try {
       const access_token = localStorage.getItem("token");
       if (!access_token) {
         console.error("Token not available. Please log in.");
         return;
       }
-  
-      if (formData.id) {
-        await axios.put(
-          `http://127.0.0.1:8000/api/admin/users/${formData.id}`,
-          { ...formData, role_id: getRoleIdFromApi(formData.role) },
-          {
-            headers: {
-              Authorization: `Bearer ${access_token}`,
-            },
-          }
-        );
-      } else {
-        // Dapatkan role_id dari fungsi getRoleIdFromApi(formData.role)
-        const roleId = getRoleIdFromApi(formData.role);
-  
-        await axios.post(
-          "http://127.0.0.1:8000/api/admin/users",
-          { ...formData, role_id: roleId },
-          {
-            headers: {
-              Authorization: `Bearer ${access_token}`,
-            },
-          }
-        );
-      }
-  
+
+      await axios.delete(`http://127.0.0.1:8000/api/admin/users/${id}`, {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      });
+
       fetchUsers();
-      setShowAddForm(false);
-      setShowEditForm(false);
-      setFormData({ id: null, name: "", email: "", password: "", role: "" });
+      Swal.fire("Success", "User deleted successfully", "success");
     } catch (error) {
-      console.error("Error creating/updating user:", error);
-      // Handle errors appropriately
+      console.error("Error deleting user:", error.message);
+      Swal.fire("Error", "Failed to delete user", "error");
     }
   };
-  
-  
 
-  const handleDelete = async (userId) => {
-    try {
-      const result = await Swal.fire({
-        title: "Konfirmasi",
-        text: "Apakah Anda yakin ingin menghapus pengguna ini?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Ya, hapus!",
-        cancelButtonText: "Batal",
-      });
-
-      if (result.isConfirmed) {
-        const access_token = localStorage.getItem("token");
-        if (!access_token) {
-          console.error("Token not available. Please log in.");
-          return;
-        }
-
-        await axios.delete(`http://127.0.0.1:8000/api/admin/users/${userId}`, {
-          headers: {
-            Authorization: `Bearer ${access_token}`,
-          },
-        });
-
-        fetchUsers();
-
-        Swal.fire({
-          icon: "success",
-          title: "Sukses",
-          text: "Akun berhasil dihapus.",
-        });
-      }
-    } catch (error) {
-      console.error("Error deleting user:", error);
-
-      Swal.fire({
-        icon: "error",
-        title: "Gagal",
-        text: "Gagal menghapus akun.",
-      });
-    }
+  const handleEdit = async (id) => {
+    const userToEdit = users.find((user) => user.id === id);
+    setFormData({
+      id: userToEdit.id,
+      name: userToEdit.name,
+      email: userToEdit.email,
+      password: userToEdit.password,
+      role: userToEdit.role,
+    });
+    setShowEditForm(true);
   };
 
   const handleSubmit = async () => {
@@ -246,28 +110,11 @@ const Crud = () => {
         return;
       }
 
-      let roleId;
-      switch (formData.role.toLowerCase()) {
-        case "admin":
-          roleId = 1;
-          break;
-        case "siswa":
-          roleId = 4;
-          break;
-        case "kaprog":
-          roleId = 2;
-          break;
-        case "pembimbing":
-          roleId = 3;
-          break;
-        default:
-          roleId = 5;
-      }
-
+      let response;
       if (formData.id) {
-        await axios.put(
+        response = await axios.put(
           `http://127.0.0.1:8000/api/admin/users/${formData.id}`,
-          { ...formData, role_id: roleId },
+          formData,
           {
             headers: {
               Authorization: `Bearer ${access_token}`,
@@ -275,9 +122,9 @@ const Crud = () => {
           }
         );
       } else {
-        await axios.post(
+        response = await axios.post(
           "http://127.0.0.1:8000/api/admin/users",
-          { ...formData, role_id: roleId },
+          formData,
           {
             headers: {
               Authorization: `Bearer ${access_token}`,
@@ -286,29 +133,98 @@ const Crud = () => {
         );
       }
 
-      fetchUsers();
-      setShowAddForm(false);
-      setShowEditForm(false);
-      setFormData({ id: null, name: "", email: "", password: "", role: "" });
-    } catch (error) {
-      console.error("Error creating/updating user:", error);
+      if (response.status === 200 || response.status === 201) {
+        fetchUsers();
+        setShowAddForm(false);
+        setShowEditForm(false);
+        setFormData({
+          id: null,
+          name: "",
+          email: "",
+          password: "",
+          role: "",
+        });
 
-      if (error.response) {
-        console.error("Server Response Data:", error.response.data);
-        console.error("Server Response Status:", error.response.status);
-        console.error("Server Response Headers:", error.response.headers);
-      } else if (error.request) {
-        console.error("No response received:", error.request);
+        Swal.fire("Success", "User saved successfully", "success");
       } else {
-        console.error("Error before sending request:", error.message);
+        Swal.fire("Error", "Failed to save user", "error");
+      }
+    } catch (error) {
+      console.error("Error saving user:", error.message);
+      if (error.response && error.response.data && error.response.data.errors) {
+        const errors = Object.values(error.response.data.errors).join("\n");
+        Swal.fire("Error", `Validation errors:\n${errors}`, "error");
+      } else {
+        Swal.fire("Error", "Failed to save user", "error");
       }
     }
   };
 
-  const pageCount = Math.ceil(users.length / usersPerPage);
-
-  const changePage = ({ selected }) => {
-    setPageNumber(selected);
+  const renderTable = () => {
+    switch (roleCategory) {
+      case "admin":
+        return (
+          <div className="overflow-x-auto">
+            <table className="bg-white table-auto w-full shadow-md rounded-md overflow-hidden border border-gray-300">
+              <thead className="bg-gray-200">
+                <tr className="bg-gray-200">
+                  <th className="px-4 py-2">No</th>
+                  <th className="px-4 py-2">Nama</th>
+                  <th className="px-4 py-2">Email</th>
+                  <th className="px-4 py-2">Password</th>
+                  <th className="px-4 py-2">Edit</th>
+                  <th className="px-4 py-2">Delete</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users
+                  .slice(pagesVisited, pagesVisited + usersPerPage)
+                  .map((user, index) => (
+                    <tr key={user.id}>
+                      <td className="px-4 py-2">{index + 1}</td>
+                      <td className="px-4 py-2">{user.name}</td>
+                      <td className="px-4 py-2">{user.email}</td>
+                      <td className="px-4 py-2">{user.password}</td>
+                      <td className="px-4 py-2">
+                        <FaUserEdit
+                          onClick={() => handleEdit(user.id)}
+                          className="cursor-pointer text-blue-500"
+                        />
+                      </td>
+                      <td className="px-4 py-2">
+                        <MdOutlineDeleteForever
+                          onClick={() => handleDelete(user.id)}
+                          className="cursor-pointer text-red-500"
+                        />
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+            <ReactPaginate
+              previousLabel={"Sebelumnya"}
+              nextLabel={"Berikutnya"}
+              pageCount={Math.ceil(users.length / usersPerPage)}
+              onPageChange={({ selected }) => setPageNumber(selected)}
+              containerClassName={"pagination flex gap-2 mt-4 justify-center"}
+              previousLinkClassName={
+                "pagination__link px-4 py-2 border border-gray-300 rounded-md text-gray-600 hover:text-gray-800 hover:border-gray-400 bg-gray-100"
+              }
+              nextLinkClassName={
+                "pagination__link px-4 py-2 border border-gray-300 rounded-md text-gray-600 hover:text-gray-800 hover:border-gray-400 bg-gray-100"
+              }
+              disabledClassName={"pagination__link--disabled"}
+              activeClassName={
+                "pagination__link--active bg-gray-500 text-white border-blue-500"
+              }
+            />
+          </div>
+        );
+      default:
+        return (
+          <p className="text-center">Silakan pilih role untuk melihat data</p>
+        );
+    }
   };
 
   return (
@@ -328,7 +244,7 @@ const Crud = () => {
             <div className="w-1/2 mr-2">
               <input
                 type="text"
-                placeholder="Cari berdasarkan nama"
+                placeholder="Cari Akun Pengguna"
                 className="w-full p-2 border border-gray-300 rounded-md"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -340,81 +256,22 @@ const Crud = () => {
                 value={roleCategory}
                 onChange={(e) => setRoleCategory(e.target.value)}
               >
-                <option value="">Semua Role</option>
+                <option value="">Pilih Role</option>
                 <option value="admin">Admin</option>
                 <option value="siswa">Siswa</option>
-                <option value="kaprog">Kaprog</option>
                 <option value="pembimbing">Pembimbing</option>
+                <option value="kaprog">Kaprog</option>
               </select>
             </div>
           </div>
           <h2 className="text-2xl font-semibold mt-8 mb-4 text-center">
-            Daftar User
+            Daftar Akun Pengguna
           </h2>
-          <table className="bg-white table-auto w-full shadow-md rounded-md overflow-hidden border border-gray-300">
-            <thead className="bg-gray-200">
-              <tr>
-                <th className="py-2 px-4 border">ID</th>
-                <th className="py-2 px-4 border">Nama</th>
-                <th className="py-2 px-4 border">Email</th>
-                <th className="py-2 px-4 border">Role</th>
-                <th className="py-2 px-4 border">Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users
-                .slice(pagesVisited, pagesVisited + usersPerPage)
-                .map((user) => (
-                  <tr key={user.id}>
-                    <td className="py-2 px-4 border">{user.id}</td>
-                    <td className="py-2 px-4 border">{user.name}</td>
-                    <td className="py-2 px-4 border">{user.email}</td>
-                    <td className="py-2 px-4 border">
-                      {user.role && user.role.name}
-                    </td>
-                    <td className="py-2 px-2 border flex items-center">
-                      <button
-                        className="text-blue-500 hover:underline"
-                        onClick={() => handleEdit(user.id)}
-                      >
-                        <FaUserEdit className="text-lg" />
-                      </button>
-
-                      <hr className=" mx-5 h-5" />
-                      <button
-                        className={`text-red-500 hover:underline ${
-                          user.isDeleting ? "bg-red-200" : ""
-                        }`}
-                        onClick={() => handleDelete(user.id)}
-                      >
-                        <MdOutlineDeleteForever className="text-lg" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-
-          <ReactPaginate
-            previousLabel={"Previous"}
-            nextLabel={"Next"}
-            pageCount={pageCount}
-            onPageChange={changePage}
-            containerClassName={"pagination flex gap-2 mt-4"}
-            previousLinkClassName={
-              "pagination__link px-4 py-2 border border-gray-300 rounded-md text-gray-600 hover:text-gray-800 hover:border-gray-400 bg-gray-100"
-            }
-            nextLinkClassName={
-              "pagination__link px-4 py-2 border border-gray-300 rounded-md text-gray-600 hover:text-gray-800 hover:border-gray-400 bg-gray-100"
-            }
-            disabledClassName={"pagination__link--disabled"}
-            activeClassName={
-              "pagination__link--active bg-blue-500 text-white border-blue-500"
-            }
-          />
+          {renderTable()}
         </div>
       </div>
 
+      {/* Form tambah user */}
       {showAddForm && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-8 max-w-2xl mx-auto rounded-md">
@@ -431,12 +288,20 @@ const Crud = () => {
               }}
               onSubmit={handleSubmit}
               formData={formData}
-              onInputChange={handleInputChange}
+              onInputChange={(e) => {
+                setFormData((prevData) => ({
+                  ...prevData,
+                  [e.target.name]: e.target.value,
+                }));
+              }}
+              roleCategory={roleCategory}
+              setFormData={setFormData} // Tambahkan properti setFormData di sini
             />
           </div>
         </div>
       )}
 
+      {/* Form edit user */}
       {showEditForm && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-8 max-w-2xl mx-auto rounded-md">
@@ -451,9 +316,10 @@ const Crud = () => {
                   role: "",
                 });
               }}
-              onSubmit={handleEditSubmit}
+              onSubmit={handleSubmit}
               formData={formData}
               onInputChange={handleInputChange}
+              roleCategory={roleCategory}
             />
           </div>
         </div>

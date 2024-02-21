@@ -11,7 +11,6 @@ const Api = axios.create({
 
 Api.interceptors.request.use(
   (config) => {
-    // Tambahkan Authorization Bearer (token JWT) jika tersedia
     const token = Cookies.get("token");
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
@@ -25,7 +24,6 @@ Api.interceptors.request.use(
 
 Api.interceptors.response.use(
   (response) => {
-    // return response
     return response;
   },
   (error) => {
@@ -42,7 +40,6 @@ Api.interceptors.response.use(
   }
 );
 
-// Tambahkan fungsi getDaftarAkun ke dalam objek Api
 Api.getDaftarAkun = (token) => {
   return Api.get("/api/siswa/dashboard", {
     headers: {
@@ -51,9 +48,24 @@ Api.getDaftarAkun = (token) => {
   });
 };
 
-// Perbarui definisi getDaftarSiswa
 Api.getDaftarSiswa = (token) => {
-  return Api.get('api/siswa/daftar-siswa', {
+  return Api.get("/api/siswa/daftar-siswa", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+Api.getDaftarKelas = (token) => {
+  return Api.get("/api/siswa/daftar-kelas", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+Api.getDaftarPerusahaan = (token) => {
+  return Api.get(`/api/siswa/daftar-perusahaan`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -63,26 +75,25 @@ Api.getDaftarSiswa = (token) => {
 Api.submitPengajuan = (token, formData) => {
   return Api.post("/api/siswa/pengajuan-pkl", formData, {
     headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'multipart/form-data',
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
     },
   });
 };
 
-Api.getAllPengajuan = (token, formData) => {
-  return Api.get("/api/admin/pengajuan/all", formData, {
+Api.getAllPengajuan = (token) => {
+  return Api.get("/api/admin/pengajuan/all", {
     headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'multipart/form-data',
+      Authorization: `Bearer ${token}`,
     },
   });
 };
 
 Api.updatePengajuanStatus = (token, id, formData) => {
-  return axios.put(`/api/admin/update-status/${id}`, formData, {
+  return Api.put(`/api/admin/update-status/${id}`, formData, {
     headers: {
       Authorization: `Bearer ${token}`,
-      'Content-Type': 'multipart/form-data',
+      "Content-Type": "multipart/form-data",
     },
   });
 };

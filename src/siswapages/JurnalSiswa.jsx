@@ -3,9 +3,10 @@ import Swal from "sweetalert2";
 import Api from "../Api";
 import { format } from "date-fns";
 import Siswasd from "../components/Siswasd";
+import ReactPaginate from "react-paginate";
 
 //icon
-import {LuBook} from "react-icons/lu"
+import { LuBook } from "react-icons/lu";
 
 const JurnalSiswa = () => {
   const [kegiatan, setKegiatan] = useState("");
@@ -15,7 +16,7 @@ const JurnalSiswa = () => {
   const [journals, setJournals] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
   const [postsPerPage] = useState(5);
 
   const toggleForm = () => {
@@ -130,24 +131,23 @@ const JurnalSiswa = () => {
       case "belum":
         return "text-red-500";
       case "proses":
-        return "text-white bg-blue-500 rounded-full";
+        return "text-white bg-blue-500";
       case "selesai":
-        return "text-white bg-green-500 rounded-full";
+        return "text-white bg-green-500 ";
       default:
         return "";
     }
   };
 
-  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfLastPost = (currentPage + 1) * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
   const currentJournals = journals.slice(indexOfFirstPost, indexOfLastPost);
 
-  const pageNumbers = [];
-  for (let i = 1; i <= Math.ceil(journals.length / postsPerPage); i++) {
-    pageNumbers.push(i);
-  }
+  const pageCount = Math.ceil(journals.length / postsPerPage);
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const changePage = ({ selected }) => {
+    setCurrentPage(selected);
+  };
 
   return (
     <div className="flex bg-gray-100 min-h-screen">
@@ -250,7 +250,10 @@ const JurnalSiswa = () => {
 
         <div className="overflow-x-auto">
           <br></br>
-          <table className="min-w-full bg-white shadow-md rounded-md overflow-hidden border border-gray-300">
+          <table
+            className="min-w-full bg-white shadow-md rounded-md overflow-hidden border border-gray-300"
+            style={{ tableLayout: "fixed", borderCollapse: "collapse" }}
+          >
             <thead className="bg-gray-200">
               <tr>
                 <th className="py-2 px-4 border-r">Kegiatan</th>
@@ -265,22 +268,25 @@ const JurnalSiswa = () => {
                 <tr key={journal.id} className="hover:bg-gray-100">
                   <td
                     className="py-2 px-4 border-r"
-                    style={{ overflowWrap: "break-word" }}
+                    style={{ wordBreak: "break-word", padding: "8px" }}
                   >
                     {journal.kegiatan}
                   </td>
                   <td
-                    className={`py-2 px-4 border-r text-center ${getStatusColor(
+                    className={`border-r border-l text-center px-4 py-2 rounded-full ${getStatusColor(
                       journal.status
                     )}`}
+                    style={{ padding: "8px", display: "table-cell" }}
                   >
                     {journal.status}
                   </td>
-                  <td className="py-2 px-4 border-r">{journal.waktu}</td>
-                  <td className="py-2 px-4 border-r">
+                  <td className="py-2 px-4 border-r" style={{ padding: "8px" }}>
+                    {journal.waktu}
+                  </td>
+                  <td className="py-2 px-4 border-r" style={{ padding: "8px" }}>
                     {formatTanggal(journal.tanggal)}
                   </td>
-                  <td className="py-2 px-4">
+                  <td className="py-2 px-4" style={{ padding: "8px" }}>
                     <button
                       onClick={() => handleEdit(journal.id)}
                       className="bg-blue-500 text-white py-1 px-2 rounded-md hover:bg-blue-600 mr-2"
@@ -299,23 +305,24 @@ const JurnalSiswa = () => {
             </tbody>
           </table>
         </div>
-        <div className="flex justify-center mt-4">
-          <ul className="flex items-center">
-            {pageNumbers.map((number) => (
-              <li key={number}>
-                <button
-                  onClick={() => paginate(number)}
-                  className={`${
-                    currentPage === number
-                      ? "bg-blue-500 text-white"
-                      : "text-blue-500"
-                  } py-2 px-4 mx-1 rounded-md hover:bg-blue-500 hover:text-white`}
-                >
-                  {number}
-                </button>
-              </li>
-            ))}
-          </ul>
+        <div className="justify-center mt-4">
+          <ReactPaginate
+            previousLabel={"Sebelumnya"}
+            nextLabel={"Berikutnya"}
+            pageCount={pageCount}
+            onPageChange={changePage}
+            containerClassName={"pagination flex gap-2 mt-4"}
+            previousLinkClassName={
+              "pagination__link px-4 py-2 border border-gray-300 rounded-md text-gray-600 hover:text-gray-800 hover:border-gray-400 bg-gray-100"
+            }
+            nextLinkClassName={
+              "pagination__link px-4 py-2 border border-gray-300 rounded-md text-gray-600 hover:text-gray-800 hover:border-gray-400 bg-gray-100"
+            }
+            disabledClassName={"pagination__link--disabled"}
+            activeClassName={
+              "pagination__link--active bg-gray-500 text-white border-blue-500"
+            }
+          />
         </div>
       </div>
     </div>
