@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import { faEnvelope, faLock } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast"; // Import toast and Toaster
 import genz from "../../assets/genz.svg";
 
 export default function Login() {
@@ -14,7 +14,6 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const [errors, setErrors] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleRememberMeChange = () => {
@@ -45,6 +44,15 @@ export default function Login() {
 
       const { token, user, permissions, roles } = response.data;
 
+      if (!roles || roles.length === 0) {
+        toast.error("Akun tidak memiliki role yang valid", {
+          position: "top-center",
+          duration: 4000,
+        });
+        setLoading(false);
+        return;
+      }
+
       // Save token to cookies
       Cookies.set("token", token);
       Cookies.set("user", JSON.stringify(user));
@@ -54,9 +62,7 @@ export default function Login() {
       // Save token to localStorage
       localStorage.setItem("token", token);
 
-      // console.log("Permissions:", permissions);
-
-      toast.success("Login Successfully!", {
+      toast.success("Login berhasil!", {
         position: "top-center",
         duration: 4000,
       });
@@ -77,16 +83,28 @@ export default function Login() {
           navigate("/SiswaDashboard");
           break;
         default:
-          console.error("Role ga ada:", userRole);
-          navigate("/default-dashboard");
+          console.error("Role tidak valid:", userRole);
+          navigate("/");
       }
     } catch (error) {
       if (error.response) {
-        setErrors(error.response.data.message);
+        // Display error message using toast
+        toast.error("Email atau password salah!", {
+          position: "top-center",
+          duration: 4000,
+        });
       } else if (error.request) {
-        setErrors("Network error. Please try again later.");
+        // Display network error message
+        toast.error("Seperti nya ada kesalahan Jaringan", {
+          position: "top-center",
+          duration: 4000,
+        });
       } else {
-        setErrors("An unexpected error occurred");
+        // Display generic error message
+        toast.error("An unexpected error occurred", {
+          position: "top-center",
+          duration: 4000,
+        });
       }
     } finally {
       setLoading(false);
@@ -95,6 +113,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12">
+      <Toaster /> {/* Add Toaster component here */}
       <div className="relative py-3 sm:max-w-xl sm:mx-auto">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-300 to-blue-600 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl"></div>
         <div className="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20">
@@ -109,9 +128,7 @@ export default function Login() {
                 />
               </div>
               <div>
-                <h1 className="text-2xl font-semibold">
-                  Sistem Pengajuan Pkl
-                </h1>
+                <h1 className="text-2xl font-semibold">Sistem Pengajuan Pkl</h1>
                 <div>
                   <label
                     htmlFor="email"

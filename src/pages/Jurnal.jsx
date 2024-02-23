@@ -89,9 +89,9 @@ const Jurnal = () => {
             className="p-2 border rounded-md"
           />
         </div>
-        <div className="flex justify-between items-center mb-4">
+        {/* <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold">Daftar Siswa</h3>
-        </div>
+        </div> */}
         <table className="bg-white table-auto w-full shadow-md rounded-md overflow-hidden border border-gray-300">
           <thead className="bg-gray-200">
             <tr className="bg-gray-200">

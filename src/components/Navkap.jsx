@@ -14,9 +14,10 @@ const Navkap = () => {
       Cookies.remove("user");
       Cookies.remove("token");
       Cookies.remove("permissions");
+      Cookies.remove("role");
       localStorage.removeItem("token");
 
-      toast.success("Logout Successfully!", {
+      toast.success("Logout Berhasil!", {
         position: "top-right",
         duration: 4000,
       });

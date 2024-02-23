@@ -114,7 +114,7 @@ export default function InfoPembimbing() {
                   {pembimbing.name}
                 </td>
                 <td className="border border-gray-300 px-3 py-2">
-                  {pembimbing.nomorTelpon}
+                  {pembimbing.nomer_telpon}
                 </td>
                 <td className="border border-gray-300 px-3 py-2">
                   {pembimbing.email}

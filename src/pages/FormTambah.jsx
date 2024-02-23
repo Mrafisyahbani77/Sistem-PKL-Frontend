@@ -1,4 +1,3 @@
-// Import useEffect from react
 import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import Api from "../Api";
@@ -10,7 +9,6 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
   const [daftarKelas, setDaftarKelas] = useState([]);
 
   useEffect(() => {
-    // Fetch daftar kelas from API when component mounts
     const fetchDaftarKelas = async () => {
       try {
         const response = await Api.getDaftarKelas();
@@ -23,11 +21,10 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
     fetchDaftarKelas();
   }, []);
 
-  const onInputChange = (e) => {
-    const { name, value } = e.target;
+  useEffect(() => {
     let roleId = null;
 
-    switch (value) {
+    switch (formData.role) {
       case "admin":
         roleId = 1;
         break;
@@ -46,12 +43,19 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
 
     setFormData((prevData) => ({
       ...prevData,
+      role_id: roleId,
+    }));
+  }, [formData.role]);
+
+  const onInputChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prevData) => ({
+      ...prevData,
       [name]: value,
-      role_id: roleId, // Menyimpan nilai role_id berdasarkan role yang dipilih
     }));
   };
 
-  // Handle form submit
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
@@ -61,35 +65,38 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
         throw new Error("Role tidak boleh kosong.");
       }
 
-      await onSubmit();
-      setSuccessMessage("Akun berhasil ditambahkan.");
+      const response = await onSubmit();
 
-      // Reset form data
-      setFormData((prevData) => ({
-        ...prevData,
-        role: "",
-        name: "",
-        email: "",
-        password: "",
-        kelas: "",
-        nisn: "",
-      }));
+      if (response.status === 200) {
+        setSuccessMessage("Akun berhasil ditambahkan.");
 
-      // Tampilkan notifikasi SweetAlert2 berhasil
-      Swal.fire({
-        icon: "success",
-        title: "Sukses",
-        text: "Akun berhasil ditambahkan.",
-      });
+        Swal.fire({
+          icon: "success",
+          title: "Sukses",
+          text: "Akun berhasil ditambahkan.",
+        });
 
-      onClose();
+        setFormData((prevData) => ({
+          ...prevData,
+          role: "",
+          name: "",
+          email: "",
+          password: "",
+          kelas: "",
+          nisn: "",
+          nomer_telpon: "",
+        }));
+
+        onClose();
+      } else {
+        throw new Error("Gagal menambahkan akun.");
+      }
     } catch (error) {
       setErrorMessage(
         error.message ||
           "Gagal menambahkan akun. Pastikan data yang dimasukkan valid."
       );
 
-      // Tampilkan notifikasi SweetAlert2 gagal
       Swal.fire({
         icon: "error",
         title: "Gagal",
@@ -118,7 +125,7 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 type="text"
                 id="name"
                 name="name"
-                value={formData.name}
+                value={formData.name || ""}
                 onChange={onInputChange}
                 className="mt-1 p-2 w-full border rounded-md"
                 required
@@ -135,7 +142,7 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 type="email"
                 id="email"
                 name="email"
-                value={formData.email}
+                value={formData.email || ""}
                 onChange={onInputChange}
                 className="mt-1 p-2 w-full border rounded-md"
                 required
@@ -152,7 +159,7 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 type="password"
                 id="password"
                 name="password"
-                value={formData.password}
+                value={formData.password || ""}
                 onChange={onInputChange}
                 className="mt-1 p-2 w-full border rounded-md"
                 required
@@ -174,7 +181,7 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 type="text"
                 id="name"
                 name="name"
-                value={formData.name}
+                value={formData.name || ""}
                 onChange={onInputChange}
                 className="mt-1 p-2 w-full border rounded-md"
                 required
@@ -188,15 +195,37 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 NISN
               </label>
               <input
-                type="text"
+                type="number"
                 id="nisn"
                 name="nisn"
-                value={formData.nisn}
+                value={formData.nisn || ""}
                 onChange={onInputChange}
                 className="mt-1 p-2 w-full border rounded-md"
                 required
               />
             </div>
+            <label className="block text-sm font-semibold mt-4 mb-2">
+              Kelas:
+            </label>
+            <select
+              className="w-full p-2 border rounded"
+              value={formData.kelas || ""}
+              onChange={(e) =>
+                onInputChange({
+                  target: { name: "kelas", value: e.target.value },
+                })
+              }
+              name="kelas"
+            >
+              <option key="default" value="">
+                Pilih Kelas
+              </option>
+              {daftarKelas.map((kelas, kelasIndex) => (
+                <option key={kelasIndex} value={kelas}>
+                  {kelas}
+                </option>
+              ))}
+            </select>
             <div className="mb-4">
               <label
                 htmlFor="email"
@@ -208,7 +237,7 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 type="email"
                 id="email"
                 name="email"
-                value={formData.email}
+                value={formData.email || ""}
                 onChange={onInputChange}
                 className="mt-1 p-2 w-full border rounded-md"
                 required
@@ -225,36 +254,178 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 type="password"
                 id="password"
                 name="password"
-                value={formData.password}
+                value={formData.password || ""}
                 onChange={onInputChange}
                 className="mt-1 p-2 w-full border rounded-md"
                 required
               />
             </div>
-            <label className="block text-sm font-semibold mt-4 mb-2">
-              Kelas:
-            </label>
-            <select
-              className="w-full p-2 border rounded"
-              value={formData.kelas}
-              onChange={(e) => onInputChange(e)}
-              name="kelas"
-            >
-              <option key="default" value="">
-                Pilih Kelas
-              </option>
-              {daftarKelas.map((kelas, kelasIndex) => (
-                <option key={kelasIndex} value={kelas}>
-                  {kelas}
-                </option>
-              ))}
-            </select>
           </>
         );
       case "pembimbing":
-        return <>{/* Form pembimbing */}</>;
+        return (
+          <>
+            <div className="mb-4">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-600"
+              >
+                Name
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name || ""}
+                onChange={onInputChange}
+                className="mt-1 p-2 w-full border rounded-md"
+                required
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="nip"
+                className="block text-sm font-medium text-gray-600"
+              >
+                NIP
+              </label>
+              <input
+                type="text"
+                id="nip"
+                name="nip"
+                value={formData.nip || ""}
+                onChange={onInputChange}
+                className="mt-1 p-2 w-full border rounded-md"
+                required
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-600"
+              >
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email || ""}
+                onChange={onInputChange}
+                className="mt-1 p-2 w-full border rounded-md"
+                required
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-600"
+              >
+                Password
+              </label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password || ""}
+                onChange={onInputChange}
+                className="mt-1 p-2 w-full border rounded-md"
+                required
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="nomer_telpon"
+                className="block text-sm font-medium text-gray-600"
+              >
+                Nomor Telepon
+              </label>
+              <input
+                type="number"
+                id="nomer_telpon"
+                name="nomer_telpon"
+                pattern="[0-9]{10,14}"
+                value={formData.nomer_telpon || ""}
+                onChange={onInputChange}
+                className="mt-1 p-2 w-full border rounded-md"
+                required
+              />
+            </div>
+          </>
+        );
       case "kaprog":
-        return <>{/* Form kaprog */}</>;
+        return (
+          <>
+            <div className="mb-4">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-600"
+              >
+                Name
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name || ""}
+                onChange={onInputChange}
+                className="mt-1 p-2 w-full border rounded-md"
+                required
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="nip"
+                className="block text-sm font-medium text-gray-600"
+              >
+                NIP
+              </label>
+              <input
+                type="text"
+                id="nip"
+                name="nip"
+                value={formData.nip || ""}
+                onChange={onInputChange}
+                className="mt-1 p-2 w-full border rounded-md"
+                required
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-600"
+              >
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email || ""}
+                onChange={onInputChange}
+                className="mt-1 p-2 w-full border rounded-md"
+                required
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-600"
+              >
+                Password
+              </label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password || ""}
+                onChange={onInputChange}
+                className="mt-1 p-2 w-full border rounded-md"
+                required
+              />
+            </div>
+          </>
+        );
       default:
         return null;
     }
@@ -297,7 +468,7 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
           <select
             id="role"
             name="role"
-            value={formData.role}
+            value={formData.role || ""}
             onChange={onInputChange}
             className="mt-1 p-2 w-full border rounded-md"
             required

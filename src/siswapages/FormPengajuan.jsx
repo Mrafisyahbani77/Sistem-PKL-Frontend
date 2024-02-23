@@ -5,7 +5,7 @@ import Swal from "sweetalert2";
 
 const FormPengajuan = ({ onClose }) => {
   const initialFormState = {
-    nama: "",
+    user_id: "",
     kelas: "",
     nisn: "",
     cv: "",
@@ -106,8 +106,9 @@ const FormPengajuan = ({ onClose }) => {
           ? {
               ...form,
               selectedSiswa: selected,
-              nama: selected.name,
+              user_id: selected.id, // Menggunakan ID sebagai nilai
               nisn: selected.nisn,
+              kelas: selected.kelas,
               nama_perusahaan: namaPerusahaan,
               isFilled: true,
             }
@@ -248,6 +249,13 @@ const FormPengajuan = ({ onClose }) => {
         formData.append("nisn", form.nisn);
         const response = await Api.submitPengajuan(authToken, formData);
         console.log(response.data);
+        if (response.data.error) {
+          Swal.fire({
+            icon: "error",
+            title: "Gagal Mengirim Pengajuan",
+            text: response.data.error,
+          });
+        }
       });
 
       await Promise.all(promises);
@@ -281,8 +289,7 @@ const FormPengajuan = ({ onClose }) => {
                 className="w-full p-2 border rounded"
                 value={
                   (form.selectedSiswa && form.selectedSiswa.name) ||
-                  form.nama ||
-                  ""
+                  (form.user_id ? form.user_id : "")
                 }
                 onChange={(e) => handleNamaChange(e, index)}
                 list={`daftarSiswa-${index}`}
@@ -296,7 +303,7 @@ const FormPengajuan = ({ onClose }) => {
                       className="cursor-pointer p-2 hover:bg-gray-100"
                       onClick={() => handleSiswaSelect(siswa.id, index)}
                     >
-                      {siswa.name}
+                      {siswa.name} - {siswa.kelas}
                     </li>
                   ))}
                 </ul>
@@ -392,7 +399,17 @@ const FormPengajuan = ({ onClose }) => {
                     </option>
                   ))}
                 </select>
-
+                <label className="block text-sm font-semibold mt-4 mb-2">
+                  Nama Perusahaan(jika punya ):
+                </label>
+                <input
+                  type="email"
+                  className="w-full p-2 border rounded"
+                  value={form.nama_perusahaan}
+                  onChange={(e) =>
+                    handleInputChange(e, "nama_perusahaan", index)
+                  }
+                />
                 <label className="block text-sm font-semibold mt-4 mb-2">
                   Email Perusahaan:
                 </label>
@@ -429,23 +446,19 @@ const FormPengajuan = ({ onClose }) => {
           </div>
         ))}
 
-        <div className="mt-6">
-          <button
-            onClick={addForm}
-            className="bg-blue-500 text-white py-2 px-4 rounded mr-2 hover:bg-blue-600"
-          >
-            Tambah Form
-          </button>
-          <button
-            onClick={handleSubmit}
-            className={`bg-green-500 text-white py-2 px-4 rounded mr-2 hover:bg-green-600 ${
-              isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Mengirim..." : "Kirim Pengajuan"}
-          </button>
-        </div>
+        <button
+          onClick={addForm}
+          className="bg-blue-500 text-white py-2 px-4 rounded mr-2 hover:bg-blue-600"
+        >
+          Tambah Form
+        </button>
+        <button
+          onClick={handleSubmit}
+          disabled={isSubmitting}
+          className="bg-green-500 text-white py-2 px-4 rounded mr-2 hover:bg-green-600"
+        >
+          {isSubmitting ? "Mengirim..." : "Kirim Pengajuan"}
+        </button>
       </div>
     </div>
   );

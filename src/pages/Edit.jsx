@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
-const Edit = ({ formData, onInputChange, onSubmit, onClose }) => {
+const Edit = ({ formData, onInputChange, onSubmit, onClose, roleCategory }) => {
   const [submitting, setSubmitting] = useState(false);
 
   const MySwal = withReactContent(Swal);
@@ -18,7 +18,7 @@ const Edit = ({ formData, onInputChange, onSubmit, onClose }) => {
       }
 
       // Perform form submission with role and role_id
-      await onSubmit(formData.role, formData.role_id);
+      await onSubmit();
 
       // Handle success
       MySwal.fire({
@@ -41,68 +41,143 @@ const Edit = ({ formData, onInputChange, onSubmit, onClose }) => {
     }
   };
 
+  const renderTable = () => {
+    switch (roleCategory) {
+      case "admin":
+        return (
+          <>
+            <div>
+              <label htmlFor="name">Nama</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name || ''}
+                onChange={onInputChange}
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="email">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email || ''}
+                onChange={onInputChange}
+                required
+              />
+            </div>
+            {/* Hide password field for admin */}
+            <div style={{ display: 'none' }}>
+              <label htmlFor="password">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password || ''}
+                onChange={onInputChange}
+                required
+              />
+            </div>
+          </>
+        );
+      default:
+        return (
+          <>
+            <div>
+              <label htmlFor="name">Nama</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name || ''}
+                onChange={onInputChange}
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="email">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email || ''}
+                onChange={onInputChange}
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="password">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password || ''}
+                onChange={onInputChange}
+                required
+              />
+            </div>
+            {roleCategory !== "siswa" && (
+              <div>
+                <label htmlFor="nip">NIP</label>
+                <input
+                  type="text"
+                  id="nip"
+                  name="nip"
+                  value={formData.nip || ''}
+                  onChange={onInputChange}
+                  required
+                />
+              </div>
+            )}
+            {roleCategory === "siswa" && (
+              <>
+                <div>
+                  <label htmlFor="nisn">NISN</label>
+                  <input
+                    type="text"
+                    id="nisn"
+                    name="nisn"
+                    value={formData.nisn || ''}
+                    onChange={onInputChange}
+                    required
+                  />
+                </div>
+                <div>
+                  <label htmlFor="kelas">Kelas</label>
+                  <input
+                    type="text"
+                    id="kelas"
+                    name="kelas"
+                    value={formData.kelas || ''}
+                    onChange={onInputChange}
+                    required
+                  />
+                </div>
+              </>
+            )}
+            {roleCategory === "pembimbing" && (
+              <div>
+                <label htmlFor="nomor_telepon">Nomor Telepon</label>
+                <input
+                  type="text"
+                  id="nomor_telepon"
+                  name="nomor_telepon"
+                  value={formData.nomor_telepon || ''}
+                  onChange={onInputChange}
+                  required
+                />
+              </div>
+            )}
+          </>
+        );
+    }
+  };
+
   return (
     <form className="space-y-4" onSubmit={handleFormSubmit}>
-      <div>
-        <label
-          htmlFor="name"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Nama
-        </label>
-        <input
-          type="text"
-          id="name"
-          name="name"
-          value={formData.name}
-          onChange={onInputChange}
-          className="mt-1 p-2 border rounded-md w-full"
-          required
-        />
-      </div>
-
-      <div>
-        <label
-          htmlFor="email"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Email
-        </label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          value={formData.email}
-          onChange={onInputChange}
-          className="mt-1 p-2 border rounded-md w-full"
-          required
-        />
-      </div>
-
-      <div>
-        <label
-          htmlFor="role"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Peran
-        </label>
-        {/* Ubah input role menjadi dropdown */}
-        <select
-          id="role"
-          name="role"
-          value={formData.role}
-          onChange={onInputChange}
-          className="mt-1 p-2 border rounded-md w-full"
-          required
-        >
-          <option value="">Pilih peran...</option>
-          <option value="admin" role_id={1}>Admin</option>
-          <option value="kaprog" role_id={2}>Kaprog</option>
-          <option value="pembimbing" role_id={3}>Pembimbing</option>
-          <option value="siswa" role_id={4}>Siswa</option>
-        </select>
-      </div>
-
+      {renderTable()}
       <div className="flex justify-end">
         <button
           type="button"
