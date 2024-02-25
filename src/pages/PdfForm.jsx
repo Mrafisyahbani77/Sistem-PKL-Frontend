@@ -1,23 +1,18 @@
-import React, { useState, useEffect } from "react";
-import Swal from "sweetalert2";
-import Api from "../Api"; // Import Api from your Api.js file
+import React, { useState } from 'react';
+import axios from 'axios';
+import Swal from 'sweetalert2'; // Import SweetAlert
 
-const PdfForm = ({ handleClose, selectedGroupId }) => {
-    const [formData, setFormData] = useState({
-      nomor_surat: "",
-      tahun_ajar: "",
-      bulan_tahun: "",
-      lama_pelaksanaan: "",
-      kontak: "",
-      group_id: selectedGroupId, // Auto-fill group_id
-    });
+const PdfForm = ({ selectedGroupId }) => {
+  const [formData, setFormData] = useState({
+    nomor_surat: '',
+    tahun_ajar: '',
+    bulan_tahun: '',
+    lama_pelaksanaan: '',
+    kontak: '',
+    group_id: selectedGroupId,
+  });
 
-    useEffect(() => {
-        setFormData((prevFormData) => ({
-          ...prevFormData,
-          group_id: selectedGroupId,
-        }));
-      }, [selectedGroupId]);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -27,117 +22,114 @@ const PdfForm = ({ handleClose, selectedGroupId }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const access_token = localStorage.getItem('token');
+
+    if (!access_token) {
+      console.error('Token not available. Please log in.');
+      return;
+    }
+
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("Token is empty or undefined");
-      }
+      setLoading(true);
 
-      // Debugging: Log data before sending
-      console.log("FormData:", formData);
+      const headers = {
+        Authorization: `Bearer ${access_token}`,
+      };
 
-      // Generate PDF
-      const response = await Api.generatePDF(token, formData);
+      // Menambahkan group_id ke formData sebelum mengirim ke server
+      const dataToSend = { ...formData, group_id: selectedGroupId };
 
-      // Debugging: Log response
-      console.log("PDF Response:", response);
+      const response = await axios.post('http://localhost:8000/api/admin/generate-pdf', dataToSend, { headers, responseType: 'blob' });
 
-      // Download the generated PDF
-      const downloadUrl = window.URL.createObjectURL(new Blob([response.data]));
-      const downloadLink = document.createElement("a");
-      downloadLink.href = downloadUrl;
-      downloadLink.setAttribute("download", "surat_pengajuan_pkl.pdf");
+      const blobUrl = URL.createObjectURL(response.data);
+
+      const downloadLink = document.createElement('a');
+      downloadLink.href = blobUrl;
+      downloadLink.download = 'Pengajuan-pkl-siswa.pdf';
       document.body.appendChild(downloadLink);
       downloadLink.click();
-      document.body.removeChild(downloadLink);
 
-      // Optionally, you can show a success message
       Swal.fire({
-        icon: "success",
-        title: "Success",
-        text: "PDF generated successfully.",
+        icon: 'success',
+        title: 'PDF Berhasil Dibuat',
       });
 
-      // Close the form
-      handleClose();
+      setFormData({
+        nomor_surat: '',
+        tahun_ajar: '',
+        bulan_tahun: '',
+        lama_pelaksanaan: '',
+        kontak: '',
+        group_id: selectedGroupId,
+      });
     } catch (error) {
-      console.error("Error:", error);
+      console.error('Error creating PDF:', error);
       Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Failed to generate PDF. Please try again.",
+        icon: 'error',
+        title: 'Gagal Membuat PDF',
+        text: 'Silakan coba lagi.',
       });
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="bg-gray-100 p-4 rounded-lg">
       <form onSubmit={handleSubmit}>
-        <label className="block mb-2">
+        <label>
           Nomor Surat:
           <input
             type="text"
             name="nomor_surat"
             value={formData.nomor_surat}
             onChange={handleChange}
-            className="border-gray-300 border p-1 ml-2"
+            className="block w-full mt-1 p-2 border rounded"
           />
         </label>
-        <label className="block mb-2">
+        <label>
           Tahun Ajar:
           <input
             type="text"
             name="tahun_ajar"
             value={formData.tahun_ajar}
             onChange={handleChange}
-            className="border-gray-300 border p-1 ml-2"
+            className="block w-full mt-1 p-2 border rounded"
           />
         </label>
-        <label className="block mb-2">
+        <label>
           Bulan Tahun:
           <input
             type="text"
             name="bulan_tahun"
             value={formData.bulan_tahun}
             onChange={handleChange}
-            className="border-gray-300 border p-1 ml-2"
+            className="block w-full mt-1 p-2 border rounded"
           />
         </label>
-        <label className="block mb-2">
+        <label>
           Lama Pelaksanaan:
           <input
             type="text"
             name="lama_pelaksanaan"
             value={formData.lama_pelaksanaan}
             onChange={handleChange}
-            className="border-gray-300 border p-1 ml-2"
+            className="block w-full mt-1 p-2 border rounded"
           />
         </label>
-        <label className="block mb-2">
+        <label>
           Kontak:
           <input
             type="text"
             name="kontak"
             value={formData.kontak}
             onChange={handleChange}
-            className="border-gray-300 border p-1 ml-2"
+            className="block w-full mt-1 p-2 border rounded"
           />
         </label>
-        <div className="flex justify-between">
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          >
-            Generate PDF
-          </button>
-          <button
-            type="button"
-            onClick={handleClose}
-            className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-          >
-            Close
-          </button>
-        </div>
+        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded" disabled={loading}>
+          {loading ? 'Generating...' : 'Generate PDF'}
+        </button>
       </form>
     </div>
   );
