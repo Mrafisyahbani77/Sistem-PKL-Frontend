@@ -72,27 +72,17 @@ const Perusahaan = () => {
   return (
     <div className="flex h-screen">
       <Sidebar />
-      <div className="flex flex-col mx-auto">
+      <div className="lg:flex-1 mx-auto p-6">
         <h2 className="text-2xl font-bold mb-4">Daftar Perusahaan</h2>
-        {!showAddForm && (
-          <button
-            className="text-xs font-bold text-white bg-blue-500 py-1 px-2 rounded-md mb-4"
-            onClick={() => setShowAddForm(true)}
-          >
-            Tambah Perusahaan
-          </button>
-        )}
+        <button
+          className="text-xs font-bold text-white bg-blue-500 py-1 px-2 rounded-md mb-4"
+          onClick={() => setShowAddForm(true)}
+        >
+          Tambah Perusahaan
+        </button>
         {showAddForm && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white p-8 max-w-2xl mx-auto rounded-md relative">
-              <button
-                className="text-lg font-bold text-white bg-red-500 py-1 px-2 rounded-md mb-4"
-                onClick={() => setShowAddForm(false)}
-              >
-                Tutup
-              </button>
-              <TambahPerusahaan onTambahPerusahaan={handleTambahPerusahaan} />
-            </div>
+          <div className="fixed h-full bg-gray-300 flex items-center justify-center">
+            <TambahPerusahaan onTambahPerusahaan={handleTambahPerusahaan} onCancel={() => setShowAddForm(false)} />
           </div>
         )}
         <table className="bg-white table-auto w-full shadow-md rounded-md overflow-hidden border border-gray-300">
@@ -129,10 +119,10 @@ const Perusahaan = () => {
                     />
                   ) : (
                     <>
-                      <button onClick={() => handleEdit(perusahaan.id)}>
+                      <button className="text-xs mr-2" onClick={() => handleEdit(perusahaan.id)}>
                         Edit
                       </button>
-                      <button onClick={() => handleDelete(perusahaan.id)}>
+                      <button className="text-xs" onClick={() => handleDelete(perusahaan.id)}>
                         Hapus
                       </button>
                     </>

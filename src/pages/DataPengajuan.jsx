@@ -2,12 +2,25 @@ import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import axios from "axios";
 import Sidebar from "../components/Sidebar";
-
+import ReactPaginate from "react-paginate";
+import PdfForm from "./PdfForm";
 
 const DataPengajuan = () => {
   const [dataPengajuan, setDataPengajuan] = useState([]);
   const [selectedPengajuan, setSelectedPengajuan] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [pageNumber, setPageNumber] = useState(0);
+  const [showPdfForm, setShowPdfForm] = useState(false);
+  const [pdfFormData, setPdfFormData] = useState(null); // State untuk menyimpan data formulir tambahan
+
+  const itemsPerPage = 5;
+  const pagesVisited = pageNumber * itemsPerPage;
+
+  const pageCount = Math.ceil(dataPengajuan.length / itemsPerPage);
+
+  const changePage = ({ selected }) => {
+    setPageNumber(selected);
+  };
 
   const handleCloseDetail = () => {
     setSelectedPengajuan(null);
@@ -18,15 +31,14 @@ const DataPengajuan = () => {
     axios
       .get(`http://localhost:8000/api/admin/pengajuan/all`)
       .then((response) => {
-        setDataPengajuan(response.data.data); // Perubahan di sini
+        setDataPengajuan(response.data.data);
       })
       .catch((error) => {
         console.error("Error fetching pengajuan data:", error);
       });
   }, []);
 
-
-const handleStatusUpdate = async () => {
+  const handleStatusUpdate = async () => {
     try {
       if (!selectedPengajuan) {
         Swal.fire({
@@ -36,7 +48,7 @@ const handleStatusUpdate = async () => {
         });
         return;
       }
-      
+
       const token = localStorage.getItem("token");
       const config = {
         headers: {
@@ -44,24 +56,30 @@ const handleStatusUpdate = async () => {
         },
       };
 
-      const selectedId = selectedPengajuan[0].id; // Ambil ID dari akun yang dipilih
+      await Promise.all(
+        selectedPengajuan.map(async (pengajuan) => {
+          try {
+            await axios.put(
+              `http://localhost:8000/api/admin/update-status/${pengajuan.id}`,
+              { status: selectedStatus },
+              config
+            );
 
-      await axios.put(
-        `http://localhost:8000/api/admin/update-status/${selectedId}`,
-        { status: selectedStatus },
-        config
+            // Update the status in the local data
+            const updatedDataPengajuan = dataPengajuan.map((p) =>
+              p.id === pengajuan.id ? { ...p, status: selectedStatus } : p
+            );
+            setDataPengajuan(updatedDataPengajuan);
+          } catch (error) {
+            console.error("Error updating status:", error);
+            Swal.fire({
+              icon: "error",
+              title: "Error",
+              text: "Failed to update status for some pengajuan. Please try again.",
+            });
+          }
+        })
       );
-
-      const updatedDataPengajuan = dataPengajuan.map((pengajuan) => {
-        if (pengajuan.id === selectedId) {
-          return {
-            ...pengajuan,
-            status: selectedStatus,
-          };
-        }
-        return pengajuan;
-      });
-      setDataPengajuan(updatedDataPengajuan);
 
       Swal.fire({
         icon: "success",
@@ -93,6 +111,8 @@ const handleStatusUpdate = async () => {
       const detailPengajuan = response.data;
 
       setSelectedPengajuan(detailPengajuan);
+
+
     } catch (error) {
       console.error("Error fetching detail pengajuan:", error);
       Swal.fire({
@@ -103,23 +123,9 @@ const handleStatusUpdate = async () => {
     }
   };
 
-  const openPdfViewer = (fileName, fileType) => {
-    if (!fileName) {
-      // Tampilkan pesan kesalahan jika nama file kosong atau tidak terdefinisi
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: `${fileType} file name is empty or undefined`,
-      });
-      return;
-    }
-    // Panggil fungsi pdfViewer dengan nama file dan tipe file
-    pdfViewer(fileName, fileType);
-  };
-
-  const pdfViewer = async (fileName, fileType) => {
+  const handleGeneratePDF = async () => {
     try {
-      const token = localStorage.getItem("token"); // Mengambil token dari local storage
+      const token = localStorage.getItem("token");
       if (!token) {
         throw new Error("Token is empty or undefined");
       }
@@ -128,28 +134,58 @@ const handleStatusUpdate = async () => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        responseType: "blob", // Menetapkan tipe respons menjadi blob
+      };
+
+      setShowPdfForm(true);
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Failed to generate PDF. Please try again.",
+      });
+    }
+  };
+
+  const openPdfViewer = (fileName, fileType) => {
+    if (!fileName) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: `${fileType} file name is empty or undefined`,
+      });
+      return;
+    }
+    pdfViewer(fileName, fileType);
+  };
+
+  const pdfViewer = async (fileName, fileType) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("Token is empty or undefined");
+      }
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        responseType: "blob",
       };
 
       const response = await axios.get(
         `http://localhost:8000/storage/${fileName}`,
         config
-      ); // Menggunakan token dalam permintaan
-      console.log("Response:", response); // Tambahkan log untuk respons
+      );
 
-      const pdfBlob = response.data; // Langsung gunakan data respons sebagai blob
-      console.log("PDF Blob:", pdfBlob); // Tambahkan log untuk objek blob
-
+      const pdfBlob = response.data;
       const pdfData = URL.createObjectURL(pdfBlob);
-      console.log("PDF Data URL:", pdfData); // Tambahkan log untuk URL objek
-      // Tampilkan PDF di jendela baru
       const newWindow = window.open(pdfData, "_blank");
       if (newWindow) {
-        newWindow.document.title = fileName; // Set title jendela baru menjadi nama file PDF
+        newWindow.document.title = fileName;
       }
     } catch (error) {
       console.error(`Error fetching ${fileType} PDF:`, error);
-      // Tampilkan pesan error jika gagal mengambil PDF
       Swal.fire({
         icon: "error",
         title: "Error",
@@ -169,10 +205,13 @@ const handleStatusUpdate = async () => {
           <thead className="bg-gray-100">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                No
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Nama Akun Siswa
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Nisn
+                NISN
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Kelas
@@ -183,40 +222,65 @@ const handleStatusUpdate = async () => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-300">
-            {dataPengajuan.map((pengajuan) => (
-              <tr key={pengajuan.id}>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {pengajuan.nama}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {pengajuan.nisn}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {pengajuan.kelas}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <button
-                    onClick={() => handleDetailClick(pengajuan)}
-                    className="text-blue-500 hover:underline focus:outline-none"
-                  >
-                    Detail
-                  </button>
+            {dataPengajuan.length > 0 ? (
+              dataPengajuan
+                .slice(pagesVisited, pagesVisited + itemsPerPage)
+                .map((pengajuan, index) => (
+                  <tr key={index}>
+                    <td className="px-6 py-4 whitespace-nowrap">{index + 1}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {pengajuan.name}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {pengajuan.nisn}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {pengajuan.kelas}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <button
+                        onClick={() => handleDetailClick(pengajuan)}
+                        className="text-blue-500 hover:underline focus:outline-none"
+                      >
+                        Detail
+                      </button>
+                    </td>
+                  </tr>
+                ))
+            ) : (
+              <tr>
+                <td colSpan="5" className="px-6 py-4 text-center">
+                  No data available
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
+        <ReactPaginate
+          previousLabel={"Sebelumnya"}
+          nextLabel={"Berikutnya"}
+          pageCount={pageCount}
+          onPageChange={changePage}
+          containerClassName={"pagination flex gap-2 mt-4"}
+          previousLinkClassName={
+            "pagination__link px-4 py-2 border border-gray-300 rounded-md text-gray-600 hover:text-gray-800 hover:border-gray-400 bg-gray-100"
+          }
+          nextLinkClassName={
+            "pagination__link px-4 py-2 border border-gray-300 rounded-md text-gray-600 hover:text-gray-800 hover:border-gray-400 bg-gray-100"
+          }
+          disabledClassName={"pagination__link--disabled"}
+          activeClassName={
+            "pagination__link--active bg-gray-500 text-white border-blue-500"
+          }
+        />
         {selectedPengajuan && (
           <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">
             <div className="bg-white p-8 rounded-md shadow-lg max-w-2xl w-full overflow-auto">
-              {/* <h2 className="text-2xl font-semibold mb-4 text-gray-800">
-                Detail Pengajuan - {selectedPengajuan[0]}
-              </h2> */}
               <ul>
                 {selectedPengajuan.map((siswa) => (
                   <li key={siswa.id}>
                     <h3 className="text-xl font-semibold mb-2">
-                      Detail Pengajuan - {siswa.nama}
+                      Detail Pengajuan - {siswa.name}
                     </h3>
                     <ul>
                       <li>
@@ -231,7 +295,6 @@ const handleStatusUpdate = async () => {
                           {siswa.kelas}
                         </p>
                       </li>
-
                       <li>
                         <p>
                           <span className="font-semibold">Status:</span>{" "}
@@ -241,7 +304,6 @@ const handleStatusUpdate = async () => {
                           />
                         </p>
                       </li>
-
                       <li>
                         <p>
                           <span className="font-semibold">CV:</span>{" "}
@@ -295,6 +357,12 @@ const handleStatusUpdate = async () => {
                 ))}
               </ul>
               <button
+                onClick={handleGeneratePDF}
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              >
+                Generate PDF
+              </button>
+              <button
                 onClick={handleStatusUpdate}
                 className="text-blue-500 hover:underline focus:outline-none mt-4"
               >
@@ -309,11 +377,12 @@ const handleStatusUpdate = async () => {
             </div>
           </div>
         )}
+        {showPdfForm && <PdfForm handleClose={() => setShowPdfForm(false)} />}
       </div>
     </div>
   );
 };
-// Komponen Dropdown untuk Status
+
 const StatusDropdown = ({ selectedStatus, onStatusChange }) => {
   const statusOptions = ["Diperiksa", "Diproses", "Diterima", "Ditolak"];
 
@@ -321,13 +390,7 @@ const StatusDropdown = ({ selectedStatus, onStatusChange }) => {
     <select
       value={selectedStatus}
       onChange={(e) => onStatusChange(e.target.value)}
-      className={`block w-full p-2 border rounded focus:outline-none ${
-        selectedStatus === "Diterima"
-          ? "bg-green-200"
-          : selectedStatus === "Ditolak"
-          ? "bg-red-200"
-          : "bg-yellow-200"
-      }`}
+      className="border border-gray-300 rounded-md px-2 py-1 focus:outline-none"
     >
       {statusOptions.map((status) => (
         <option key={status} value={status}>

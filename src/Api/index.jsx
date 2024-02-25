@@ -98,4 +98,17 @@ Api.updatePengajuanStatus = (token, id, formData) => {
   });
 };
 
+
+Api.generatePDF = (token, formData) => {
+  console.log(formData); // Tambahkan ini untuk melihat data yang dikirim
+  return Api.post("/api/admin/generate-pdf", formData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
+
+
 export default Api;

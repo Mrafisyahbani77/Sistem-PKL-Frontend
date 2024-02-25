@@ -152,6 +152,7 @@ const FormPengajuan = ({ onClose }) => {
               ? {
                   ...form,
                   [fieldName]: value,
+                  nama_perusahaan: perusahaan.nama_perusahaan,
                   email_perusahaan: perusahaan.email_perusahaan,
                   alamat_perusahaan: perusahaan.alamat_perusahaan,
                   isFilled: true,
@@ -167,9 +168,10 @@ const FormPengajuan = ({ onClose }) => {
               ? {
                   ...form,
                   [fieldName]: value,
-                  email_perusahaan: "",
-                  alamat_perusahaan: "",
-                  isFilled: false,
+                  nama_perusahaan: value, // Memasukkan nilai nama perusahaan manual
+                  email_perusahaan: "", // Reset email perusahaan
+                  alamat_perusahaan: "", // Reset alamat perusahaan
+                  isFilled: true,
                 }
               : form
           )
@@ -207,23 +209,16 @@ const FormPengajuan = ({ onClose }) => {
         ...initialFormState,
         daftarSiswa: lastForm.daftarSiswa,
         filteredDaftarSiswa: lastForm.filteredDaftarSiswa,
+        nama_perusahaan: lastForm.nama_perusahaan !== null ? lastForm.nama_perusahaan : "", // Memastikan nilai "Nama Perusahaan" diisi dari form sebelumnya jika tidak null
+        email_perusahaan: lastForm.email_perusahaan !== null ? lastForm.email_perusahaan : "", // Memastikan nilai "Email Perusahaan" diisi dari form sebelumnya jika tidak null
+        alamat_perusahaan: lastForm.alamat_perusahaan !== null ? lastForm.alamat_perusahaan : "", // Memastikan nilai "Alamat Perusahaan" diisi dari form sebelumnya jika tidak null
       };
-
-      // Mengambil nilai nama_perusahaan dari form utama jika tidak null
-      if (forms[0].nama_perusahaan !== null) {
-        newForm.nama_perusahaan = forms[0].nama_perusahaan;
-        newForm.email_perusahaan = forms[0].email_perusahaan;
-        newForm.alamat_perusahaan = forms[0].alamat_perusahaan;
-      } else {
-        newForm.nama_perusahaan = "";
-        newForm.email_perusahaan = "";
-        newForm.alamat_perusahaan = "";
-      }
-
+  
       return [...prevForms, newForm];
     });
   };
-
+  
+  
   const handleSubmit = async () => {
     try {
       const allFormsFilled = forms.every((form) => form.isFilled);

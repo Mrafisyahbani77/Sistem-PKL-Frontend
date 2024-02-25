@@ -86,13 +86,14 @@ const ControlAbsen = () => {
     .map((siswa, index) => (
       <tr
         key={index}
-        className={`cursor-pointer py-2 px-4 border-b  ${
+        className={`cursor-pointer py-2 text-center px-4 border-b  ${
           selectedSiswa && selectedSiswa.nisn === siswa.nisn
             ? "bg-gray-100"
             : ""
         }`}
         onClick={() => handleSiswaClick(siswa)}
       >
+        <td className="py-2 px-4 border-r">{index + 1 + pagesVisited}</td>
         <td className="py-2 px-4 border-r">{siswa.nisn}</td>
         <td className="py-2 px-4 border-r">{siswa.kelas}</td>
         <td className="py-2 px-4 border-r">{siswa.name}</td>
@@ -123,6 +124,7 @@ const ControlAbsen = () => {
         <table className="bg-white table-auto w-full shadow-md rounded-md overflow-hidden border border-gray-300">
           <thead className="bg-gray-200">
             <tr className="bg-gray-200">
+              <th className="py-2 px-4 border-r">No</th>
               <th className="py-2 px-4 border-r">Nisn</th>
               <th className="py-2 px-4 border-r">Kelas</th>
               <th className="py-2 px-4 border-r">Nama Siswa</th>

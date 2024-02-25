@@ -30,7 +30,9 @@ const Jurnal = () => {
       try {
         if (selectedUserId !== null) {
           const { data } = await Api.get(
-            `/api/admin/jurnal-siswa/${selectedUserId}?page=${pageNumber + 1}&perPage=${usersPerPage}`
+            `/api/admin/jurnal-siswa/${selectedUserId}?page=${
+              pageNumber + 1
+            }&perPage=${usersPerPage}`
           );
           setJurnals(data.user_jurnal.jurnal);
         }
@@ -61,14 +63,20 @@ const Jurnal = () => {
   const changePage = ({ selected }) => {
     setPageNumber(selected);
   };
+  
+  const sortedSiswa = [...siswa].sort((a, b) => {
+    const kelasA = parseInt(a.kelas.split(" ")[1]);
+    const kelasB = parseInt(b.kelas.split(" ")[1]);
+    return kelasA - kelasB;
+  });
 
-  const filteredSiswa = siswa.filter(
+  const filteredSiswa = sortedSiswa.filter(
     (user) =>
       (user.name && user.name.toLowerCase().includes(searchTerm)) ||
       (user.nisn && user.nisn.toLowerCase().includes(searchTerm))
   );
 
-  const pageCount = Math.ceil(siswa.length / usersPerPage);
+  const pageCount = Math.ceil(filteredSiswa.length / usersPerPage);
 
   return (
     <div className="flex">
@@ -89,12 +97,12 @@ const Jurnal = () => {
             className="p-2 border rounded-md"
           />
         </div>
-        {/* <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-semibold">Daftar Siswa</h3>
-        </div> */}
         <table className="bg-white table-auto w-full shadow-md rounded-md overflow-hidden border border-gray-300">
           <thead className="bg-gray-200">
             <tr className="bg-gray-200">
+              <th className="py-2 px-4 border-r">
+                <span>No</span>
+              </th>
               <th className="py-2 px-4 border-r">
                 <span>NISN</span>
               </th>
@@ -109,7 +117,7 @@ const Jurnal = () => {
           <tbody>
             {filteredSiswa
               .slice(pageNumber * usersPerPage, (pageNumber + 1) * usersPerPage)
-              .map((user) => (
+              .map((user, index) => (
                 <tr
                   key={user.id}
                   onClick={() => handleSiswaClick(user.id)}
@@ -117,6 +125,9 @@ const Jurnal = () => {
                     selectedUserId === user.id ? "bg-gray-200" : ""
                   }`}
                 >
+                  <td className="py-2 px-4 border-r text-center">
+                    {index + 1}
+                  </td>
                   <td className="py-2 px-4 border-r text-center">
                     {user.nisn}
                   </td>
