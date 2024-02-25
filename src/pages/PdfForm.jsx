@@ -1,15 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import Api from "../Api"; // Import Api from your Api.js file
 
-const PdfForm = ({ handleClose }) => {
-  const [formData, setFormData] = useState({
-    nomorSurat: "",
-    tahunAjar: "",
-    bulanTahun: "",
-    pelaksanaan: "",
-    kontak: "",
-  });
+const PdfForm = ({ handleClose, selectedGroupId }) => {
+    const [formData, setFormData] = useState({
+      nomor_surat: "",
+      tahun_ajar: "",
+      bulan_tahun: "",
+      lama_pelaksanaan: "",
+      kontak: "",
+      group_id: selectedGroupId, // Auto-fill group_id
+    });
+
+    useEffect(() => {
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          group_id: selectedGroupId,
+        }));
+      }, [selectedGroupId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -69,8 +77,8 @@ const PdfForm = ({ handleClose }) => {
           Nomor Surat:
           <input
             type="text"
-            name="nomorSurat"
-            value={formData.nomorSurat}
+            name="nomor_surat"
+            value={formData.nomor_surat}
             onChange={handleChange}
             className="border-gray-300 border p-1 ml-2"
           />
@@ -79,8 +87,8 @@ const PdfForm = ({ handleClose }) => {
           Tahun Ajar:
           <input
             type="text"
-            name="tahunAjar"
-            value={formData.tahunAjar}
+            name="tahun_ajar"
+            value={formData.tahun_ajar}
             onChange={handleChange}
             className="border-gray-300 border p-1 ml-2"
           />
@@ -89,8 +97,8 @@ const PdfForm = ({ handleClose }) => {
           Bulan Tahun:
           <input
             type="text"
-            name="bulanTahun"
-            value={formData.bulanTahun}
+            name="bulan_tahun"
+            value={formData.bulan_tahun}
             onChange={handleChange}
             className="border-gray-300 border p-1 ml-2"
           />
@@ -99,8 +107,8 @@ const PdfForm = ({ handleClose }) => {
           Lama Pelaksanaan:
           <input
             type="text"
-            name="pelaksanaan"
-            value={formData.pelaksanaan}
+            name="lama_pelaksanaan"
+            value={formData.lama_pelaksanaan}
             onChange={handleChange}
             className="border-gray-300 border p-1 ml-2"
           />

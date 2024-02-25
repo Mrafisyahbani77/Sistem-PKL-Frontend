@@ -12,6 +12,7 @@ const DataPengajuan = () => {
   const [pageNumber, setPageNumber] = useState(0);
   const [showPdfForm, setShowPdfForm] = useState(false);
   const [pdfFormData, setPdfFormData] = useState(null); // State untuk menyimpan data formulir tambahan
+  const [selectedGroupId, setSelectedGroupId] = useState(null); // State untuk menyimpan group_id terpilih
 
   const itemsPerPage = 5;
   const pagesVisited = pageNumber * itemsPerPage;
@@ -111,8 +112,7 @@ const DataPengajuan = () => {
       const detailPengajuan = response.data;
 
       setSelectedPengajuan(detailPengajuan);
-
-
+      setSelectedGroupId(pengajuan.group_id); // Set selectedGroupId
     } catch (error) {
       console.error("Error fetching detail pengajuan:", error);
       Swal.fire({
@@ -129,14 +129,15 @@ const DataPengajuan = () => {
       if (!token) {
         throw new Error("Token is empty or undefined");
       }
-
+  
       const config = {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       };
-
+  
       setShowPdfForm(true);
+      setPdfFormData({ group_id: selectedGroupId }); // Set pdfFormData with group_id
     } catch (error) {
       console.error("Error generating PDF:", error);
       Swal.fire({
@@ -377,7 +378,12 @@ const DataPengajuan = () => {
             </div>
           </div>
         )}
-        {showPdfForm && <PdfForm handleClose={() => setShowPdfForm(false)} />}
+        {showPdfForm && (
+          <PdfForm
+            handleClose={() => setShowPdfForm(false)}
+            selectedGroupId={selectedGroupId} // Pass selectedGroupId to PdfForm
+          />
+        )}
       </div>
     </div>
   );
