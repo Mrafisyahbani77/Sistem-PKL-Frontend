@@ -10,6 +10,9 @@ const Loader = lazy(() => import("../components/Loader.jsx"));
 //import view Login
 const Login = lazy(() => import("../views/Auth/Login.jsx"));
 
+//forbidden
+import Forbidden from "../routes/Forbidden.jsx"
+
 //pages admin
 import Crud from "../pages/Crud.jsx";
 import Jurnal from "../pages/Jurnal.jsx";
@@ -76,6 +79,13 @@ export default function RoutesIndex() {
       <Route path="/Info" element={<Info />} />
       <Route path="/FormPengajuan" element={<FormPengajuan />} />
       <Route path="/Absensi" element={<Absensi />} />
+
+
+     //forbidden
+
+     <Route path="/Forbidden" element={<Forbidden />} />
+
     </Routes>
+
   );
 }

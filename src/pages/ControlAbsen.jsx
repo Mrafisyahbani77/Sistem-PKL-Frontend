@@ -86,11 +86,11 @@ const ControlAbsen = () => {
     .map((siswa, index) => (
       <tr
         key={index}
-        className={`cursor-pointer py-2 text-center px-4 border-b  ${
+        className={`cursor-pointer py-2 px-4 border-b transition-colors duration-300  ${
           selectedSiswa && selectedSiswa.nisn === siswa.nisn
             ? "bg-gray-100"
             : ""
-        }`}
+        } hover:bg-gray-400`}
         onClick={() => handleSiswaClick(siswa)}
       >
         <td className="py-2 px-4 border-r">{index + 1 + pagesVisited}</td>

@@ -13,6 +13,7 @@ const DataPengajuan = () => {
   const [showPdfForm, setShowPdfForm] = useState(false);
   const [pdfFormData, setPdfFormData] = useState(null); // State untuk menyimpan data formulir tambahan
   const [selectedGroupId, setSelectedGroupId] = useState(null); // State untuk menyimpan group_id terpilih
+  
 
   const itemsPerPage = 5;
   const pagesVisited = pageNumber * itemsPerPage;
@@ -129,13 +130,13 @@ const DataPengajuan = () => {
       if (!token) {
         throw new Error("Token is empty or undefined");
       }
-  
+
       const config = {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       };
-  
+
       setShowPdfForm(true);
       setPdfFormData({ group_id: selectedGroupId }); // Set pdfFormData with group_id
     } catch (error) {
@@ -275,7 +276,7 @@ const DataPengajuan = () => {
           }
         />
         {selectedPengajuan && (
-          <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">
+          <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex overflow-y-scroll items-center justify-center">
             <div className="bg-white p-8 rounded-md shadow-lg max-w-2xl w-full overflow-auto">
               <ul>
                 {selectedPengajuan.map((siswa) => (
@@ -381,7 +382,7 @@ const DataPengajuan = () => {
         {showPdfForm && (
           <PdfForm
             handleClose={() => setShowPdfForm(false)}
-            selectedGroupId={selectedGroupId} // Pass selectedGroupId to PdfForm
+            selectedGroupId={selectedGroupId}
           />
         )}
       </div>

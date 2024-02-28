@@ -22,6 +22,7 @@ Api.interceptors.request.use(
   }
 );
 
+
 Api.interceptors.response.use(
   (response) => {
     return response;
@@ -33,7 +34,7 @@ Api.interceptors.response.use(
       Cookies.remove("permissions");
       window.location = "/";
     } else if (403 === error.response.status) {
-      window.location = "/forbidden";
+      window.location = "/Forbidden";
     } else {
       return Promise.reject(error);
     }
@@ -58,6 +59,14 @@ Api.getDaftarSiswa = (token) => {
 
 Api.getDaftarKelas = (token) => {
   return Api.get("/api/siswa/daftar-kelas", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+Api.getDaftarKelas = (token) => {
+  return Api.get("/api/siswa/daftar-kelas-2", {
     headers: {
       Authorization: `Bearer ${token}`,
     },

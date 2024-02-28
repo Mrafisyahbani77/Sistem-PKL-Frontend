@@ -63,7 +63,7 @@ const Jurnal = () => {
   const changePage = ({ selected }) => {
     setPageNumber(selected);
   };
-  
+
   const sortedSiswa = [...siswa].sort((a, b) => {
     const kelasA = parseInt(a.kelas.split(" ")[1]);
     const kelasB = parseInt(b.kelas.split(" ")[1]);
@@ -121,9 +121,9 @@ const Jurnal = () => {
                 <tr
                   key={user.id}
                   onClick={() => handleSiswaClick(user.id)}
-                  className={`cursor-pointer py-2 px-4 border-b ${
+                  className={`cursor-pointer py-2 px-4 border-b transition-colors duration-300 ${
                     selectedUserId === user.id ? "bg-gray-200" : ""
-                  }`}
+                  } hover:bg-gray-400`}
                 >
                   <td className="py-2 px-4 border-r text-center">
                     {index + 1}

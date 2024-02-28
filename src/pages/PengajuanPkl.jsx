@@ -67,12 +67,12 @@ const PengajuanPkl = () => {
         attachment: null,
       });
     } catch (error) {
-      console.error('Error sending email:', error);
+      console.error('Error mengirim email:', error);
 
       Swal.fire({
         icon: 'error',
         title: 'Gagal Mengirim email',
-        text: 'Please try again later.',
+        text: 'Tolong coba lagi.',
       });
     } finally {
       setLoading(false);
@@ -82,7 +82,7 @@ const PengajuanPkl = () => {
   return (
     <div className='flex h-screen'>
       <Sidebar />
-      <form onSubmit={handleSubmit} className="max-w-md mx-auto mt-8">
+      <form onSubmit={handleSubmit} className="max-w-md mx-auto mt-8 p-4 border rounded shadow-lg">
         <label className="block mb-2">
           To:
           <input
@@ -90,7 +90,7 @@ const PengajuanPkl = () => {
             name="to"
             value={emailData.to}
             onChange={handleChange}
-            className="block w-full mt-1 p-2 border rounded"
+            className="block w-full mt-1 p-2 border focus:outline-none focus:ring focus:border-blue-300 rounded"
           />
         </label>
         <label className="block mb-2">
@@ -100,7 +100,7 @@ const PengajuanPkl = () => {
             name="subject"
             value={emailData.subject}
             onChange={handleChange}
-            className="block w-full mt-1 p-2 border rounded"
+            className="block w-full mt-1 p-2 border focus:outline-none focus:ring focus:border-blue-300 rounded"
           />
         </label>
         <label className="block mb-2">
@@ -109,7 +109,7 @@ const PengajuanPkl = () => {
             name="message"
             value={emailData.message}
             onChange={handleChange}
-            className="block w-full mt-1 p-2 border rounded"
+            className="block w-full mt-1 p-2 border focus:outline-none focus:ring focus:border-blue-300 rounded"
           />
         </label>
         <label className="block mb-2">
@@ -118,7 +118,7 @@ const PengajuanPkl = () => {
             type="file"
             name="attachment"
             onChange={handleChange}
-            className="block w-full mt-1 p-2 border rounded"
+            className="block w-full mt-1 p-2 border focus:outline-none focus:ring focus:border-blue-300 rounded"
           />
         </label>
         <button type="submit" className="mt-4 bg-blue-500 text-white px-4 py-2 rounded" disabled={loading}>
@@ -130,3 +130,4 @@ const PengajuanPkl = () => {
 };
 
 export default PengajuanPkl;
+

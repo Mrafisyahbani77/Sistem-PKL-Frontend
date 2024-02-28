@@ -10,7 +10,7 @@ const SiswaDashboard = () => {
   useEffect(() => {
     const fetchPendingApplications = async () => {
       try {
-        const response = await Api.get("http://localhost:8000/api/siswa/status");
+        const response = await Api.get("http://127.0.0.1:8000/api/siswa/status");
         setPendingApplications(response.data);
       } catch (error) {
         console.error("Gagal mengambil data pengajuan PKL:", error);
@@ -20,9 +20,8 @@ const SiswaDashboard = () => {
     fetchPendingApplications();
   }, []);
 
-  // Mengupdate waktu mundur saat status berubah menjadi "Diterima"
   useEffect(() => {
-    const eventSource = new EventSource("http://localhost:8000/api/siswa/waktu");
+    const eventSource = new EventSource("http://127.0.0.1:8000/api/siswa/statusWithCountdown");
     eventSource.onmessage = (event) => {
       const eventData = JSON.parse(event.data);
       if (eventData.status === "Diterima") {
@@ -30,7 +29,7 @@ const SiswaDashboard = () => {
         setPendingApplications((prevApplications) => {
           return prevApplications.map((application) => {
             if (application.id === eventData.id) {
-              application.duration = eventData.duration;
+              application.countdown = eventData.countdown;
             }
             return application;
           });
@@ -56,8 +55,8 @@ const SiswaDashboard = () => {
                 <li key={application.id} className="mb-4">
                   <p className="font-bold mb-1">{application.studentName}</p>
                   <p className="font-semibold">Status: {application.status}</p>
-                  {application.duration && (
-                    <p>Waktu PKL: {application.duration}</p>
+                  {application.countdown && (
+                    <p>Waktu PKL: {application.countdown}</p> // Menggunakan countdown
                   )}
                 </li>
               ))}

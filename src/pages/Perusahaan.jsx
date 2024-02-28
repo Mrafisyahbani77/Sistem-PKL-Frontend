@@ -9,15 +9,17 @@ const Perusahaan = () => {
   const [perusahaanList, setPerusahaanList] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingPerusahaanId, setEditingPerusahaanId] = useState(null);
+  const [pageNumber, setPageNumber] = useState(0);
+  const usersPerPage = 6;
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [pageNumber]);
 
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/admin/perusahaan"
+        `http://127.0.0.1:8000/api/admin/perusahaan?page=${pageNumber + 1}&perPage=${usersPerPage}`
       );
       setPerusahaanList(response.data.perusahaan);
     } catch (error) {
@@ -82,12 +84,16 @@ const Perusahaan = () => {
         </button>
         {showAddForm && (
           <div className="fixed h-full bg-gray-300 flex items-center justify-center">
-            <TambahPerusahaan onTambahPerusahaan={handleTambahPerusahaan} onCancel={() => setShowAddForm(false)} />
+            <TambahPerusahaan
+              onTambahPerusahaan={handleTambahPerusahaan}
+              onCancel={() => setShowAddForm(false)}
+            />
           </div>
         )}
         <table className="bg-white table-auto w-full shadow-md rounded-md overflow-hidden border border-gray-300">
           <thead className="bg-gray-200">
-            <tr className="bg-gray-200">
+            <tr>
+              <th className="py-2 px-4 border-r">No</th>
               <th className="py-2 px-4 border-r">Nama Perusahaan</th>
               <th className="py-2 px-4 border-r">Email Perusahaan</th>
               <th className="py-2 px-4 border-r">Alamat Perusahaan</th>
@@ -95,9 +101,12 @@ const Perusahaan = () => {
               <th className="py-2 px-4 border-r">Aksi</th>
             </tr>
           </thead>
-          <tbody className="py-2 px-4 border-b">
-            {perusahaanList.map((perusahaan) => (
+          <tbody>
+            {perusahaanList.map((perusahaan, index) => (
               <tr key={perusahaan.id}>
+                <td className="py-2 px-4 border-r text-center">
+                  {pageNumber * usersPerPage + index + 1}
+                </td>
                 <td className="py-2 px-4 border-r text-center">
                   {perusahaan.nama_perusahaan}
                 </td>
@@ -119,10 +128,16 @@ const Perusahaan = () => {
                     />
                   ) : (
                     <>
-                      <button className="text-xs mr-2" onClick={() => handleEdit(perusahaan.id)}>
+                      <button
+                        className="text-xs mr-2"
+                        onClick={() => handleEdit(perusahaan.id)}
+                      >
                         Edit
                       </button>
-                      <button className="text-xs" onClick={() => handleDelete(perusahaan.id)}>
+                      <button
+                        className="text-xs"
+                        onClick={() => handleDelete(perusahaan.id)}
+                      >
                         Hapus
                       </button>
                     </>
