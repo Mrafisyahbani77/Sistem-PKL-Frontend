@@ -101,7 +101,7 @@ export default function Login() {
         });
       } else {
         // Display generic error message
-        toast.error("An unexpected error occurred", {
+        toast.error("Server sedang error", {
           position: "top-center",
           duration: 4000,
         });

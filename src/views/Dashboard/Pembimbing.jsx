@@ -10,7 +10,7 @@ export default function Pembimbing() {
     const fetchData = async () => {
       try {
         // Panggil API untuk mendapatkan daftar siswa yang dibimbing oleh pembimbing
-        const response = await Api.get("/api/pembimbing/siswa");
+        const response = await Api.get("api/pembimbing/dashboard"); // Ubah URL menjadi sesuai dengan endpoint Laravel
         setSiswaDibimbing(response.data);
       } catch (error) {
         console.error("Error fetching data:", error);

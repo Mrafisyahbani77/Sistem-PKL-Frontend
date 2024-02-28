@@ -86,7 +86,7 @@ const ControlAbsen = () => {
     .map((siswa, index) => (
       <tr
         key={index}
-        className={`cursor-pointer py-2 px-4 border-b transition-colors duration-300  ${
+        className={`cursor-pointer py-2 px-4 border-b transition-colors text-center duration-300  ${
           selectedSiswa && selectedSiswa.nisn === siswa.nisn
             ? "bg-gray-100"
             : ""

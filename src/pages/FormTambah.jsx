@@ -11,7 +11,7 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
   useEffect(() => {
     const fetchDaftarKelas = async () => {
       try {
-        const response = await Api.getDaftarKelas();
+        const response = await Api.getDaftarKelas2();
         setDaftarKelas(response.data);
       } catch (error) {
         console.error("Error fetching daftar kelas:", error);
@@ -84,6 +84,9 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
           password: "",
           kelas: "",
           nisn: "",
+          nip: "",
+          jabatan: "",
+          pangkat: "",
           nomer_telpon: "",
         }));
 
@@ -294,6 +297,40 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 id="nip"
                 name="nip"
                 value={formData.nip || ""}
+                onChange={onInputChange}
+                className="mt-1 p-2 w-full border rounded-md"
+                required
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="nip"
+                className="block text-sm font-medium text-gray-600"
+              >
+                Jabatan
+              </label>
+              <input
+                type="text"
+                id="jabatan"
+                name="jabatan"
+                value={formData.jabatan || ""}
+                onChange={onInputChange}
+                className="mt-1 p-2 w-full border rounded-md"
+                required
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="nip"
+                className="block text-sm font-medium text-gray-600"
+              >
+                Pangkat
+              </label>
+              <input
+                type="text"
+                id="pangkat"
+                name="pangkat"
+                value={formData.pangkat || ""}
                 onChange={onInputChange}
                 className="mt-1 p-2 w-full border rounded-md"
                 required

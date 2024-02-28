@@ -24,20 +24,20 @@ const Sidepem = () => {
       path: "/PembimbingDashboard",
     },
     {
-      title: "",
+      title: "Surat Sppd",
       icon: <TiUserAdd style={{ fontSize: "24px" }} />,
-      path: "",
+      path: "/Sppd",
     },
     {
-      title: "",
+      title: "Absensi siswa",
       icon: <FaBook style={{ fontSize: "24px" }} />,
       gap: true,
-      path: "",
+      path: "/Absenpem",
     },
     {
-      title: "",
+      title: "Jurnal siswa",
       icon: <SiMinutemailer style={{ fontSize: "24px" }} />,
-      path: "",
+      path: "/Jurpem",
     },
     {
       title: "",

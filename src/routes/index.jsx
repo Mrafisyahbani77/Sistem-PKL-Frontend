@@ -32,6 +32,11 @@ import FormPengajuan from "../siswapages/FormPengajuan.jsx";
 import Absensi from "../siswapages/Absensi.jsx";
 
 
+//pembimbing
+import Sppd from "../pempages/Sppd.jsx"
+import Absenpem from "../pempages/Absenpem.jsx"
+import Jurpem from "../pempages/Jurpem.jsx"
+
 
 //import view dashboard
 const SiswaDashboard = lazy(() =>
@@ -79,8 +84,13 @@ export default function RoutesIndex() {
       <Route path="/Info" element={<Info />} />
       <Route path="/FormPengajuan" element={<FormPengajuan />} />
       <Route path="/Absensi" element={<Absensi />} />
+    
 
-
+     //pembimbing
+     <Route path="/Sppd" element={<Sppd />} />
+     <Route path="/Absenpem" element={<Absenpem />} />
+     <Route path="/Jurpem" element={<Jurpem />} />
+      
      //forbidden
 
      <Route path="/Forbidden" element={<Forbidden />} />

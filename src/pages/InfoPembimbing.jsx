@@ -21,7 +21,7 @@ axios.interceptors.request.use(
 
 const fetchPembimbingData = () => {
   return axios
-    .get("http://127.0.0.1:8000/api/admin/daftar-pembimbing")
+    .get("http://127.0.0.1:8000/api/admin/daftar")
     .then((response) => {
       return response.data;
     })
@@ -31,12 +31,12 @@ const fetchPembimbingData = () => {
     });
 };
 
-const assignPembimbingToSiswa = (siswaId, pembimbingId) => {
+const assignPembimbingToGroup = (pembimbingId, groupId) => {
   return axios
-    .post(
-      `http://127.0.0.1:8000/api/siswa/${siswaId}/assignPembimbing/${pembimbingId}`,
-      { siswaId, pembimbingId }
-    )
+    .post(`http://127.0.0.1:8000/api/admin/assign`, {
+      pembimbing_id: pembimbingId,
+      group_id: groupId,
+    })
     .then((response) => {
       // Handle response jika diperlukan
     })
@@ -49,11 +49,12 @@ const assignPembimbingToSiswa = (siswaId, pembimbingId) => {
 export default function InfoPembimbing() {
   const [pembimbing, setPembimbing] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedSiswaId, setSelectedSiswaId] = useState("");
+  const [selectedPembimbingId, setSelectedPembimbingId] = useState("");
+  const [groupData, setGroupData] = useState(null);
 
   useEffect(() => {
     fetchPembimbingData()
-      .then((data) => setPembimbing(data)) // Mengubah setPembimbing([...data]) menjadi setPembimbing(data)
+      .then((data) => setPembimbing(data))
       .catch((error) => console.error(error));
   }, []);
 
@@ -61,29 +62,42 @@ export default function InfoPembimbing() {
     setSearchTerm(e.target.value);
   };
 
-  const handleSelectSiswa = (siswaId) => {
-    setSelectedSiswaId(siswaId);
+  const handleSelectPembimbing = (pembimbingId) => {
+    setSelectedPembimbingId(pembimbingId);
   };
 
   const assignPembimbing = (pembimbingId) => {
-    assignPembimbingToSiswa(selectedSiswaId, pembimbingId)
-      .then(() => {
-        setPembimbing((prevPembimbing) =>
-          prevPembimbing.map((p) =>
-            p.id === pembimbingId ? { ...p, sudahMembimbingDuaSiswa: true } : p
-          )
-        );
-      })
-      .catch((error) => console.error(error));
+    handleSelectPembimbing(pembimbingId);
+    fetchGroupData();
   };
 
-  // Pastikan variabel `pembimbing` memiliki properti `nip`, `name`, `nomorTelpon`, `email`, dan `id`
+  const fetchGroupData = () => {
+    axios
+      .get("http://127.0.0.1:8000/api/admin/daftar-pengajuan")
+      .then((response) => {
+        setGroupData(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const assignToGroup = (groupId) => {
+    assignPembimbingToGroup(selectedPembimbingId, groupId)
+      .then(() => {
+        alert("Pembimbing berhasil ditugaskan ke kelompok siswa");
+      })
+      .catch((error) => {
+        alert("Gagal menugaskan pembimbing: " + error.message);
+      });
+  };
+
   const filteredPembimbing = pembimbing.filter((p) =>
     p.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
-    <div className="flex ">
+    <div className="flex">
       <Sidebar />
       <div className="flex flex-col w-full p-5">
         <h1 className="text-xl font-bold mb-3">Info Pembimbing</h1>
@@ -97,11 +111,11 @@ export default function InfoPembimbing() {
         <table className="bg-white table-auto w-full shadow-md rounded-md overflow-hidden border border-gray-300">
           <thead className="bg-gray-200">
             <tr>
-              <th className="border border-gray-300 px-3 py-2">NIP</th>
-              <th className="border border-gray-300 px-3 py-2">Nama</th>
-              <th className="border border-gray-300 px-3 py-2">Nomor Telpon</th>
-              <th className="border border-gray-300 px-3 py-2">Email</th>
-              <th className="border border-gray-300 px-3 py-2">Aksi</th>
+              <th className="border-r border-gray-300 px-3 py-2">NIP</th>
+              <th className="border-r border-gray-300 px-3 py-2">Nama</th>
+              <th className="border-r border-gray-300 px-3 py-2">Nomor Telpon</th>
+              <th className="border-r border-gray-300 px-3 py-2">Email</th>
+              <th className="border-r border-gray-300 px-3 py-2">Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -131,6 +145,40 @@ export default function InfoPembimbing() {
                   >
                     {pembimbing.sudahMembimbingDuaSiswa ? "Assigned" : "Assign"}
                   </button>
+                  {selectedPembimbingId === pembimbing.id &&
+                    groupData &&
+                    groupData.length > 0 && (
+                      <div className="absolute top-0 left-0 h-full w-full flex justify-center items-center bg-gray-800 bg-opacity-50 z-10">
+                        
+                        <div className="bg-white p-5 rounded-md shadow-md">
+                          {groupData.map((group) => (
+                            <div key={group.group_id}>
+                              <p>
+                                Group ID: {group.group_id} -{" "}
+                                {group.nama_perusahaan}
+                              </p>
+                              <h4 className="text-lg font-bold mt-3">
+                                Daftar-Siswa:
+                              </h4>
+                              <ul>
+                                {group.siswa &&
+                                  group.siswa.map((siswa) => (
+                                    <li key={siswa.id}>
+                                      {siswa.name} - Kelas: {siswa.kelas}
+                                    </li>
+                                  ))}
+                              </ul>
+                              <button
+                                onClick={() => assignToGroup(group.group_id)}
+                                className="bg-blue-500 text-white px-3 py-1 rounded-md mt-3"
+                              >
+                                Assign
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                 </td>
               </tr>
             ))}

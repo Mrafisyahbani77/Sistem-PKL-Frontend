@@ -275,6 +275,7 @@ const DataPengajuan = () => {
             "pagination__link--active bg-gray-500 text-white border-blue-500"
           }
         />
+        <div className="w-[90%] max-h-full">
         {selectedPengajuan && (
           <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex overflow-y-scroll items-center justify-center">
             <div className="bg-white p-8 rounded-md shadow-lg max-w-2xl w-full overflow-auto">
@@ -386,6 +387,7 @@ const DataPengajuan = () => {
           />
         )}
       </div>
+    </div>
     </div>
   );
 };

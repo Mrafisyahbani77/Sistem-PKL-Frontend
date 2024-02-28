@@ -23,6 +23,7 @@ Api.interceptors.request.use(
 );
 
 
+
 Api.interceptors.response.use(
   (response) => {
     return response;
@@ -57,8 +58,8 @@ Api.getDaftarSiswa = (token) => {
   });
 };
 
-Api.getDaftarKelas = (token) => {
-  return Api.get("/api/siswa/daftar-kelas", {
+Api.getDaftarKelas2 = (token) => {
+  return Api.get("/api/admin/daftar-kelas", {
     headers: {
       Authorization: `Bearer ${token}`,
     },

@@ -311,6 +311,8 @@ const Crud = () => {
                   <th className="px-4 py-2 border-r">No</th>
                   <th className="px-4 py-2 border-r">Nama</th>
                   <th className="px-4 py-2 border-r">Nip</th>
+                  <th className="px-4 py-2 border-r">Jabatan</th>
+                  <th className="px-4 py-2 border-r">Pangkat</th>
                   <th className="px-4 py-2 border-r">Nomor Telepon</th>
                   <th className="px-4 py-2 border-r">Email</th>
                   <th className="px-4 py-2 border-r">Password</th>
@@ -326,6 +328,8 @@ const Crud = () => {
                       <td className="px-4 py-2">{index + 1}</td>
                       <td className="px-4 py-2">{user.name}</td>
                       <td className="px-4 py-2">{user.nip}</td>
+                      <td className="px-4 py-2">{user.jabatan}</td>
+                      <td className="px-4 py-2">{user.pangkat}</td>
                       <td className="px-4 py-2">{user.nomer_telpon}</td>
                       <td className="px-4 py-2">{user.email}</td>
                       <td className="px-4 py-2">{user.password}</td>
