@@ -39,23 +39,6 @@ const Sidepem = () => {
       icon: <SiMinutemailer style={{ fontSize: "24px" }} />,
       path: "/Jurpem",
     },
-    {
-      title: "",
-      icon: <MdMail style={{ fontSize: "24px" }} />,
-      path: "",
-    },
-    {
-      title: "",
-      icon: <FaAddressBook style={{ fontSize: "24px" }} />,
-      path: "",
-    },
-    {
-      title: "",
-      icon: <FaMagnifyingGlassChart style={{ fontSize: "20px" }} />,
-      gap: true,
-      path: "",
-    },
-    { title: "", src: "Setting", path: "" },
   ];
 
   const handleNavigate = (path) => {

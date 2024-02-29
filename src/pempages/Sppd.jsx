@@ -39,6 +39,7 @@ export default function Sppd() {
               Status
             </label>
             <select name="status" value={formData.status} onChange={handleChange} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+              <option value="">Pilih status</option>
               <option value="Monitoring">Monitoring</option>
               <option value="Penjemputan">Penjemputan</option>
               <option value="Pengantaran">Pengantaran</option>

@@ -36,9 +36,6 @@ const Siswasd = () => {
       icon: <LiaCalendarDaySolid className="size-6" />,
       path: "/Absensi",
     },
-    { title: "Analytics", src: "Chart", path: "/Analytics" },
-    { title: "Files", src: "Folder", gap: true },
-    { title: "Setting", src: "Setting", path: "/Setting" },
   ];
 
   const handleNavigate = (path) => {

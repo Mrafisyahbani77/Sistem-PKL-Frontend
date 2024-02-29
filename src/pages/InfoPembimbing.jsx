@@ -31,10 +31,10 @@ const fetchPembimbingData = () => {
     });
 };
 
-const assignPembimbingToGroup = (pembimbingId, groupId) => {
+const assignPembimbingToGroup = (userId, groupId) => {
   return axios
     .post(`http://127.0.0.1:8000/api/admin/assign`, {
-      pembimbing_id: pembimbingId,
+      user_id: userId,
       group_id: groupId,
     })
     .then((response) => {
@@ -49,7 +49,7 @@ const assignPembimbingToGroup = (pembimbingId, groupId) => {
 export default function InfoPembimbing() {
   const [pembimbing, setPembimbing] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedPembimbingId, setSelectedPembimbingId] = useState("");
+  const [selectedPembimbingId, setSelectedPembimbingId] = useState(null);
   const [groupData, setGroupData] = useState(null);
 
   useEffect(() => {
@@ -62,30 +62,46 @@ export default function InfoPembimbing() {
     setSearchTerm(e.target.value);
   };
 
-  const handleSelectPembimbing = (pembimbingId) => {
-    setSelectedPembimbingId(pembimbingId);
-  };
-
   const assignPembimbing = (pembimbingId) => {
-    handleSelectPembimbing(pembimbingId);
-    fetchGroupData();
-  };
-
-  const fetchGroupData = () => {
+    setSelectedPembimbingId(pembimbingId);
+    // Ambil userId dari pembimbingId yang dipilih
+    const selectedPembimbing = pembimbing.find((p) => p.id === pembimbingId);
+    if (!selectedPembimbing) {
+      alert("Pembimbing tidak ditemukan");
+      return;
+    }
+    const { user_id } = selectedPembimbing;
+    
+    // Fetch data group untuk pembimbing_id yang dipilih
     axios
-      .get("http://127.0.0.1:8000/api/admin/daftar-pengajuan")
+      .get(`http://127.0.0.1:8000/api/admin/daftar-pengajuan`)
       .then((response) => {
-        setGroupData(response.data);
+        const groupData = response.data;
+        if (groupData.length > 0) {
+          // Set data group untuk ditampilkan
+          setGroupData(groupData);
+        } else {
+          // Jika tidak ada data group, beri alert bahwa tidak ada grup yang tersedia
+          alert("Tidak ada grup yang tersedia untuk pembimbing ini");
+        }
       })
       .catch((error) => {
         console.error(error);
+        alert("Gagal mengambil data grup: " + error.message);
       });
   };
 
   const assignToGroup = (groupId) => {
+    if (!selectedPembimbingId) {
+      alert("Pilih pembimbing terlebih dahulu");
+      return;
+    }
+
     assignPembimbingToGroup(selectedPembimbingId, groupId)
       .then(() => {
         alert("Pembimbing berhasil ditugaskan ke kelompok siswa");
+        fetchPembimbingData(); // Mengambil data pembimbing terbaru setelah pengassignan
+        setGroupData(null); // Mengatur kembali groupData menjadi null setelah berhasil assign
       })
       .catch((error) => {
         alert("Gagal menugaskan pembimbing: " + error.message);
@@ -113,7 +129,9 @@ export default function InfoPembimbing() {
             <tr>
               <th className="border-r border-gray-300 px-3 py-2">NIP</th>
               <th className="border-r border-gray-300 px-3 py-2">Nama</th>
-              <th className="border-r border-gray-300 px-3 py-2">Nomor Telpon</th>
+              <th className="border-r border-gray-300 px-3 py-2">
+                Nomor Telpon
+              </th>
               <th className="border-r border-gray-300 px-3 py-2">Email</th>
               <th className="border-r border-gray-300 px-3 py-2">Aksi</th>
             </tr>
@@ -134,56 +152,86 @@ export default function InfoPembimbing() {
                   {pembimbing.email}
                 </td>
                 <td className="border border-gray-300 px-3 py-2">
-                  <button
-                    onClick={() => assignPembimbing(pembimbing.id)}
-                    disabled={pembimbing.sudahMembimbingDuaSiswa}
-                    className={`bg-blue-500 text-white px-2 py-1 rounded-md ${
-                      pembimbing.sudahMembimbingDuaSiswa
-                        ? "opacity-50 cursor-not-allowed"
-                        : ""
-                    }`}
-                  >
-                    {pembimbing.sudahMembimbingDuaSiswa ? "Assigned" : "Assign"}
-                  </button>
                   {selectedPembimbingId === pembimbing.id &&
-                    groupData &&
-                    groupData.length > 0 && (
-                      <div className="absolute top-0 left-0 h-full w-full flex justify-center items-center bg-gray-800 bg-opacity-50 z-10">
-                        
-                        <div className="bg-white p-5 rounded-md shadow-md">
-                          {groupData.map((group) => (
-                            <div key={group.group_id}>
-                              <p>
-                                Group ID: {group.group_id} -{" "}
-                                {group.nama_perusahaan}
-                              </p>
-                              <h4 className="text-lg font-bold mt-3">
-                                Daftar-Siswa:
-                              </h4>
-                              <ul>
-                                {group.siswa &&
-                                  group.siswa.map((siswa) => (
-                                    <li key={siswa.id}>
-                                      {siswa.name} - Kelas: {siswa.kelas}
-                                    </li>
-                                  ))}
-                              </ul>
-                              <button
-                                onClick={() => assignToGroup(group.group_id)}
-                                className="bg-blue-500 text-white px-3 py-1 rounded-md mt-3"
-                              >
-                                Assign
-                              </button>
-                            </div>
-                          ))}
-                        </div>
+                  groupData &&
+                  groupData.length > 0 ? (
+                    <div className="absolute top-0 left-0 h-full w-full flex justify-center items-center bg-gray-800 bg-opacity-50 z-10">
+                      <div className="bg-white p-5 rounded-md shadow-md">
+                        {groupData.map((group) => (
+                          <div key={group.group_id}>
+                            <p>
+                              Group ID: {group.group_id} -{" "}
+                              {group.nama_perusahaan}
+                            </p>
+                            <h4 className="text-lg font-bold mt-3">
+                              Daftar-Siswa:
+                            </h4>
+                            <ul>
+                              {group.siswa &&
+                                group.siswa.map((siswa) => (
+                                  <li key={siswa.id}>
+                                    {siswa.name} - Kelas: {siswa.kelas}
+                                  </li>
+                                ))}
+                            </ul>
+                            <button
+                              onClick={() => assignToGroup(group.group_id)}
+                              className="bg-blue-500 text-white px-3 py-1 rounded-md mt-3"
+                            >
+                              Assign
+                            </button>
+                          </div>
+                        ))}
                       </div>
-                    )}
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => assignPembimbing(pembimbing.id)}
+                      disabled={pembimbing.sudahMembimbingDuaSiswa}
+                      className={`bg-blue-500 text-white px-2 py-1 rounded-md ${
+                        pembimbing.sudahMembimbingDuaSiswa
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
+                      }`}
+                    >
+                      {pembimbing.sudahMembimbingDuaSiswa
+                        ? "Assigned"
+                        : "Assign"}
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+        {selectedPembimbingId && groupData && groupData.length > 0 && (
+          <div className="absolute top-0 left-0 h-full w-full flex justify-center items-center bg-gray-800 bg-opacity-50 z-10">
+            <div className="bg-white p-5 rounded-md shadow-md">
+              {groupData.map((group) => (
+                <div key={group.group_id}>
+                  <p>
+                    Group ID: {group.group_id} - {group.nama_perusahaan}
+                  </p>
+                  <h4 className="text-lg font-bold mt-3">Daftar-Siswa:</h4>
+                  <ul>
+                    {group.siswa &&
+                      group.siswa.map((siswa) => (
+                        <li key={siswa.id}>
+                          {siswa.name} - Kelas: {siswa.kelas}
+                        </li>
+                      ))}
+                  </ul>
+                  <button
+                    onClick={() => assignToGroup(group.group_id)}
+                    className="bg-blue-500 text-white px-3 py-1 rounded-md mt-3"
+                  >
+                    Assign
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

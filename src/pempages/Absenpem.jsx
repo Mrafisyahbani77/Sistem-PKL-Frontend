@@ -9,7 +9,7 @@ export default function Absenpem() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/api/pembimbing/data-absen");
+        const response = await axios.get("/api/pembimbing/absen-siswa");
         setAbsensi(response.data.absensi);
       } catch (error) {
         console.error(error);
@@ -22,39 +22,56 @@ export default function Absenpem() {
     setSelectedAbsen(absen);
   };
 
+  const handleLocationClick = (latitude, longitude) => {
+    window.open(
+      `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`
+    );
+  };
+
   return (
-    <div className="h-screen flex">
+    <div className="bg-gray-100 flex">
       <Sidepem />
-      <h1 className="text-2xl text-center font-bold mb-4">Data Absensi</h1>
-      <table className="min-w-full border-collapse border border-gray-300">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="border border-gray-300 px-4 py-2">Nama</th>
-            <th className="border border-gray-300 px-4 py-2">Tanggal</th>
-            <th className="border border-gray-300 px-4 py-2">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {absensi &&
-            absensi.map((item) => (
-              <tr
-                key={item.id}
-                onClick={() => handleDetailClick(item)}
-                className="cursor-pointer hover:bg-gray-50"
-              >
-                <td className="border border-gray-300 px-4 py-2">
-                  {item.nama}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {item.tanggal}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {item.status}
-                </td>
-              </tr>
-            ))}
-        </tbody>
-      </table>
+      <div className="h-screen flex-1">
+        <h1 className="text-2xl text-center font-bold mb-4">Data Absensi</h1>
+        <table className="bg-white table-auto w-full shadow-md rounded-md overflow-hidden border-r border-gray-300">
+          <thead className="bg-gray-200">
+            <tr className="bg-gray-200">
+              <th className="border  px-4 py-2">Nama</th>
+              <th className="border  px-4 py-2">Kelas</th>
+              <th className="border  px-4 py-2">NISN</th>
+              <th className="border  px-4 py-2">Detail</th>
+            </tr>
+          </thead>
+          <tbody>
+            {absensi &&
+              absensi.map((item) => (
+                <tr
+                  key={item.id}
+                  onClick={() => handleDetailClick(item)}
+                  className="cursor-pointer hover:bg-gray-50"
+                >
+                  <td className="border  px-4 py-2">{item.nama}</td>
+                  <td className="border  px-4 py-2">{item.kelas}</td>
+                  <td className="border  px-4 py-2">{item.nisn}</td>
+                  <td className="border  px-4 py-2">
+                    <button onClick={() => handleDetailClick(item)}>
+                      Detail
+                    </button>
+                  </td>
+                  <td className="border  px-4 py-2">
+                    <button
+                      onClick={() =>
+                        handleLocationClick(item.latitude, item.longitude)
+                      }
+                    >
+                      Lihat Lokasi
+                    </button>
+                  </td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
+      </div>
       {selectedAbsen && (
         <div className="mt-4 border border-gray-300 p-4">
           <h2 className="text-lg font-bold">Detail Absensi</h2>
@@ -65,9 +82,20 @@ export default function Absenpem() {
             <strong>Tanggal:</strong> {selectedAbsen.tanggal}
           </p>
           <p>
-            <strong>Status:</strong> {selectedAbsen.status}
+            <strong>Waktu:</strong> {selectedAbsen.waktu}
+          </p>
+          <p>
+            <strong>Lokasi:</strong> {selectedAbsen.lokasi}
           </p>
           {/* Tambahkan detail lainnya sesuai kebutuhan */}
+          {selectedAbsen.foto && (
+            <img
+              src={selectedAbsen.foto}
+              alt="Foto Absen"
+              className="mt-2"
+              style={{ maxWidth: "200px" }}
+            />
+          )}
         </div>
       )}
     </div>
