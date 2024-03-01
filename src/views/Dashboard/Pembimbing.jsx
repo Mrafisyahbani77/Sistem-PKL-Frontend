@@ -10,7 +10,7 @@ export default function Pembimbing() {
     const fetchData = async () => {
       try {
         // Panggil API untuk mendapatkan daftar siswa yang dibimbing oleh pembimbing
-        const response = await Api.get("api/pembimbing/dashboard"); // Ubah URL menjadi sesuai dengan endpoint Laravel
+        const response = await Api.get("http://127.0.0.1:8000/api/pembimbing/dashboard");
         setSiswaDibimbing(response.data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -37,7 +37,7 @@ export default function Pembimbing() {
               {siswaDibimbing.map((siswa) => (
                 <div key={siswa.id} className="bg-white rounded-lg shadow-md overflow-hidden">
                   <div className="p-4">
-                    <p className="text-lg font-semibold mb-2">{siswa.nama}</p>
+                    <p className="text-lg font-semibold mb-2">{siswa.name}</p>
                     <p className="text-sm text-gray-600 mb-1">NISN: {siswa.nisn}</p>
                   </div>
                 </div>

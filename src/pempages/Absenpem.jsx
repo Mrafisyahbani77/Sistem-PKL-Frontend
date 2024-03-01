@@ -8,13 +8,25 @@ export default function Absenpem() {
 
   useEffect(() => {
     const fetchData = async () => {
+      const token = localStorage.getItem('token');
+  
+      if (!token) {
+          alert('Token not found. Please login again.');
+          return;
+      }
+
       try {
-        const response = await axios.get("/api/pembimbing/absen-siswa");
+        const response = await axios.get("http://127.0.0.1:8000/api/pembimbing/absen-siswa", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         setAbsensi(response.data.absensi);
       } catch (error) {
         console.error(error);
       }
     };
+    
     fetchData();
   }, []);
 

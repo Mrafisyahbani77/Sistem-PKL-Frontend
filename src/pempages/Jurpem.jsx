@@ -9,7 +9,7 @@ export default function Jurpem() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/api/pembimbing/data-jurnal");
+        const response = await axios.get("http://127.0.0.1:8000/api/pembimbing/data-jurnal");
         setJurnals(response.data.Jurnak);
       } catch (error) {
         console.error(error);
