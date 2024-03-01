@@ -81,7 +81,8 @@ export default function DataSppd() {
             </div>
           </div>
         )}
-        {showGenerateForm && <GenerateSppd />} {/* Tampilkan form generate PDF jika showGenerateForm bernilai true */}
+     {showGenerateForm && <GenerateSppd userId={selectedPembimbing.user_id} />} {/* Tampilkan form generate PDF jika showGenerateForm bernilai true */}
+
       </div>
     </div>
   );

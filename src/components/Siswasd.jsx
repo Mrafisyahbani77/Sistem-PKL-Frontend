@@ -21,7 +21,7 @@ const Siswasd = () => {
     },
     {
       title: "Pengajuan Pkl",
-      icon: < BsSendPlus className="size-5"/>,
+      icon: <BsSendPlus className="size-5" />,
       path: "/FormPengajuan",
     },
     {
@@ -30,11 +30,15 @@ const Siswasd = () => {
       gap: true,
       path: "/JurnalSiswa",
     },
-    { title: "Guru Pembimbing", icon:<FaChalkboardTeacher className="size-5" />, path: "/Info" },
     {
       title: "Absensi",
       icon: <LiaCalendarDaySolid className="size-6" />,
       path: "/Absensi",
+    },
+    {
+      title: "Guru Pembimbing",
+      icon: <FaChalkboardTeacher className="size-5" />,
+      path: "/Info",
     },
   ];
 

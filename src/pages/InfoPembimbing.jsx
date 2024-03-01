@@ -51,19 +51,32 @@ export default function InfoPembimbing() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPembimbingId, setSelectedPembimbingId] = useState(null);
   const [groupData, setGroupData] = useState(null);
+  const [filteredPembimbing, setFilteredPembimbing] = useState([]); // Add filteredPembimbing state
+  const [selectedPembimbingUserId, setSelectedPembimbingUserId] =
+    useState(null);
 
   useEffect(() => {
     fetchPembimbingData()
-      .then((data) => setPembimbing(data))
+      .then((data) => {
+        setPembimbing(data);
+        setFilteredPembimbing(data); // Initialize filteredPembimbing with all pembimbing data
+      })
       .catch((error) => console.error(error));
   }, []);
+
+  useEffect(() => {
+    const filtered = pembimbing.filter((p) =>
+      p.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredPembimbing(filtered);
+  }, [searchTerm, pembimbing]);
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
   };
 
   const assignPembimbing = (pembimbingId) => {
-    setSelectedPembimbingId(pembimbingId);
+    setSelectedPembimbingId(pembimbingId); // Set selectedPembimbingId here
     // Ambil userId dari pembimbingId yang dipilih
     const selectedPembimbing = pembimbing.find((p) => p.id === pembimbingId);
     if (!selectedPembimbing) {
@@ -71,10 +84,13 @@ export default function InfoPembimbing() {
       return;
     }
     const { user_id } = selectedPembimbing;
-    
+    setSelectedPembimbingUserId(user_id); // Set selectedPembimbingUserId here
+  
     // Fetch data group untuk pembimbing_id yang dipilih
     axios
-      .get(`http://127.0.0.1:8000/api/admin/daftar-pengajuan`)
+      .get(`http://127.0.0.1:8000/api/admin/daftar-pengajuan`, {
+        params: { user_id }, // Kirim user_id sebagai parameter query
+      })
       .then((response) => {
         const groupData = response.data;
         if (groupData.length > 0) {
@@ -90,6 +106,7 @@ export default function InfoPembimbing() {
         alert("Gagal mengambil data grup: " + error.message);
       });
   };
+  
 
   const assignToGroup = (groupId) => {
     if (!selectedPembimbingId) {
@@ -97,7 +114,11 @@ export default function InfoPembimbing() {
       return;
     }
 
-    assignPembimbingToGroup(selectedPembimbingId, groupId)
+    // Menyimpan user_id dari pembimbing yang dipilih
+    const selectedPembimbing = pembimbing.find((p) => p.id === selectedPembimbingId);
+    const userId = selectedPembimbing.user_id;
+
+    assignPembimbingToGroup(userId, groupId)
       .then(() => {
         alert("Pembimbing berhasil ditugaskan ke kelompok siswa");
         fetchPembimbingData(); // Mengambil data pembimbing terbaru setelah pengassignan
@@ -106,11 +127,8 @@ export default function InfoPembimbing() {
       .catch((error) => {
         alert("Gagal menugaskan pembimbing: " + error.message);
       });
-  };
+};
 
-  const filteredPembimbing = pembimbing.filter((p) =>
-    p.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   return (
     <div className="flex">
@@ -186,7 +204,7 @@ export default function InfoPembimbing() {
                     </div>
                   ) : (
                     <button
-                      onClick={() => assignPembimbing(pembimbing.id)}
+                      onClick={() => assignPembimbing(user_id)}
                       disabled={pembimbing.sudahMembimbingDuaSiswa}
                       className={`bg-blue-500 text-white px-2 py-1 rounded-md ${
                         pembimbing.sudahMembimbingDuaSiswa

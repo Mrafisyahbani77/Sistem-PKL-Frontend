@@ -256,6 +256,7 @@ const JurnalSiswa = () => {
           >
             <thead className="bg-gray-200">
               <tr>
+                <th className="py-2 px-4 border-r">No</th>
                 <th className="py-2 px-4 border-r">Kegiatan</th>
                 <th className="py-2 px-4 border-r">Status</th>
                 <th className="py-2 px-4 border-r">Waktu</th>
@@ -264,8 +265,14 @@ const JurnalSiswa = () => {
               </tr>
             </thead>
             <tbody>
-              {currentJournals.map((journal) => (
+              {currentJournals.map((journal, index) => (
                 <tr key={journal.id} className="hover:bg-gray-100">
+                  <td
+                    className="py-2 px-4 border-r"
+                    style={{ wordBreak: "break-word", padding: "8px" }}
+                  >
+                    {index + 1}
+                  </td>
                   <td
                     className="py-2 px-4 border-r"
                     style={{ wordBreak: "break-word", padding: "8px" }}

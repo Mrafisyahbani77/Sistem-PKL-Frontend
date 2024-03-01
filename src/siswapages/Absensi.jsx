@@ -2,18 +2,23 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import Siswasd from "../components/Siswasd";
+import ReactPaginate from "react-paginate";
 
 const Absensi = () => {
   const [location, setLocation] = useState(null);
   const [foto, setFoto] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [address, setAddress] = useState(null);
   const [token, setToken] = useState(null);
   const [tanggalabsen, setTanggalAbsensi] = useState("");
   const [waktuabsen, setWaktuAbsen] = useState("");
   const [absensiList, setAbsensiList] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
+  const [alreadyAbsenToday, setAlreadyAbsenToday] = useState(false);
+  const [pageNumber, setPageNumber] = useState(0);
+
+  const absensiPerPage = 5;
+  const pagesVisited = pageNumber * absensiPerPage;
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
@@ -25,16 +30,11 @@ const Absensi = () => {
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        async (position) => {
+        (position) => {
           setLocation({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
           });
-          const formattedAddress = await getFormattedAddress(
-            position.coords.latitude,
-            position.coords.longitude
-          );
-          setAddress(formattedAddress);
         },
         (error) => {
           console.error(error.message);
@@ -44,24 +44,6 @@ const Absensi = () => {
       console.error("Geolocation is not supported by this browser.");
     }
   }, []);
-
-  const getFormattedAddress = async (latitude, longitude) => {
-    try {
-      const response = await axios.get(
-        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=YOUR_GOOGLE_MAPS_API_KEY`
-      );
-
-      if (response.data.results.length > 0) {
-        const address = response.data.results[0].formatted_address;
-        return address;
-      } else {
-        return "Alamat tidak ditemukan";
-      }
-    } catch (error) {
-      console.error(error);
-      return "Gagal mendapatkan alamat";
-    }
-  };
 
   const handleFotoChange = (e) => {
     setFoto(e.target.files[0]);
@@ -74,7 +56,7 @@ const Absensi = () => {
       formData.append("longitude", location.longitude);
       formData.append("foto", foto);
       formData.append("tanggal_absen", tanggalabsen);
-      formData.append("waktu_absen", waktuabsen); // Menggunakan waktuabsen dari state
+      formData.append("waktu_absen", waktuabsen);
 
       await axios.post("http://127.0.0.1:8000/api/siswa/absen", formData, {
         headers: {
@@ -104,8 +86,16 @@ const Absensi = () => {
 
   const handleAbsen = () => {
     if (location && foto) {
-      setLoading(true);
-      uploadFoto();
+      if (alreadyAbsenToday) {
+        Swal.fire({
+          icon: "warning",
+          title: "Anda Sudah Absen Hari Ini",
+          text: "Anda telah melakukan absensi hari ini. Silakan coba lagi besok.",
+        });
+      } else {
+        setLoading(true);
+        uploadFoto();
+      }
     } else {
       setError("Lokasi atau foto belum diatur.");
     }
@@ -122,28 +112,38 @@ const Absensi = () => {
         }
       );
       setAbsensiList(response.data);
+      // Check if user has already absen today
+      const today = new Date().toISOString().split("T")[0];
+      const hasAbsenToday = response.data.some(
+        (absensi) => absensi.tanggal_absen === today
+      );
+      setAlreadyAbsenToday(hasAbsenToday);
     } catch (error) {
       console.error(error);
     }
   };
 
   useEffect(() => {
-    if (token) {
+    if (token || alreadyAbsenToday) {
       fetchAbsensiList();
     }
-  }, [token]);
+  }, [token, alreadyAbsenToday]);
+
+  const pageCount = Math.ceil(absensiList.length / absensiPerPage);
+
+  const changePage = ({ selected }) => {
+    setPageNumber(selected);
+  };
 
   return (
     <div className="flex h-screen">
       <Siswasd />
       <div className="w-3/4 p-4">
-        <h2 className="text-2xl font-bold mb-4">Absensi</h2>
-
         <button
           onClick={() => setShowPopup(!showPopup)}
           className="bg-blue-500 text-white py-2 px-4 rounded mr-2 hover:bg-blue-600"
         >
-          {showPopup ? "Tutup Form Absen" : "Buka Form Absen"}
+          {showPopup ? "Tutup Form" : "Buka Form Absen"}
         </button>
 
         {showPopup && (
@@ -171,10 +171,19 @@ const Absensi = () => {
                 className="w-full p-2 border rounded mb-2"
               />
 
-              <p>
-                Lokasi Pengguna: {location?.latitude}, {location?.longitude}
-              </p>
-              <p>Alamat: {address}</p>
+
+             <p>Lihat lokasi anda:</p>
+              <button
+                onClick={() =>
+                  window.open(
+                    `https://www.google.com/maps/search/?api=1&query=${location?.latitude},${location?.longitude}`,
+                    "_blank"
+                  )
+                }
+                className="bg-blue-500 text-white py-1 px-2 rounded-md hover:bg-blue-600"
+              >
+                Lihat Lokasi
+              </button>
 
               <label className="block text-sm font-semibold mb-2">Foto:</label>
               <input
@@ -194,22 +203,9 @@ const Absensi = () => {
                       ? "opacity-50 cursor-not-allowed"
                       : "hover:bg-green-600"
                   }`}
-                  disabled={loading}
+                  disabled={loading || alreadyAbsenToday}
                 >
                   {loading ? "Mengirim..." : "Absen"}
-                </button>
-
-                <button
-                  onClick={() => {
-                    window.open(
-                      `https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}`,
-                      "_blank"
-                    );
-                  }}
-                  className="bg-blue-500 text-white py-2 px-4 rounded mr-2 hover:bg-blue-600"
-                  disabled={!location}
-                >
-                  Lihat di Google Maps
                 </button>
 
                 <button
@@ -223,10 +219,11 @@ const Absensi = () => {
           </div>
         )}
 
-        <h3 className="text-xl font-semibold mt-8 mb-4">Daftar Absensi:</h3>
-        <table className="min-w-full bg-white shadow-md rounded-md overflow-hidden border border-gray-300">
+        <h2 className="text-2xl font-bold text-center mb-4">Absensi</h2>
+        <table className="min-w-full bg-white text-center shadow-md rounded-md overflow-hidden border border-gray-300">
           <thead className="bg-gray-200">
             <tr>
+              <th className="border border-gray-400 px-4 py-2">No.</th>
               <th className="border border-gray-400 px-4 py-2">
                 Tanggal Absen
               </th>
@@ -236,38 +233,66 @@ const Absensi = () => {
             </tr>
           </thead>
           <tbody>
-            {absensiList.map((absensi, index) => (
-              <tr key={index}>
-                <td className="border border-gray-400 px-4 py-2">
-                  {absensi.tanggal_absen}
-                </td>
-                <td className="border border-gray-400 px-4 py-2">
-                  {absensi.waktu_absen}
-                </td>
-                <td className="border border-gray-400 px-4 py-2">
-                  <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${absensi.latitude},${absensi.longitude}`}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    {absensi.latitude}, {absensi.longitude}
-                  </a>
-                </td>
-                <td className="border border-gray-400 px-4 py-2">
-                  {absensi.foto ? (
-                    <img
-                      src={`http://127.0.0.1:8000/storage/${absensi.foto}`}
-                      alt="Foto Absensi"
-                      className="w-24 h-24"
-                    />
-                  ) : (
-                    <span>Foto tidak tersedia</span>
-                  )}
-                </td>
-              </tr>
-            ))}
+            {absensiList
+              .slice(pagesVisited, pagesVisited + absensiPerPage)
+              .map((absensi, index) => (
+                <tr key={index}>
+                  <td className="border border-gray-400 px-4 py-2">
+                    {index + 1}
+                  </td>
+                  <td className="border border-gray-400 px-4 py-2">
+                    {absensi.tanggal_absen}
+                  </td>
+                  <td className="border border-gray-400 px-4 py-2">
+                    {absensi.waktu_absen}
+                  </td>
+                  <td className="border border-gray-400 px-4 py-2">
+                    <button
+                      onClick={() =>
+                        window.open(
+                          `https://www.google.com/maps/search/?api=1&query=${absensi.latitude},${absensi.longitude}`,
+                          "_blank"
+                        )
+                      }
+                      className="bg-blue-500 text-white py-1 px-2 rounded-md hover:bg-blue-600"
+                    >
+                      Lihat Lokasi
+                    </button>
+                  </td>
+
+                  <td className="border border-gray-400 px-4 py-2">
+                    {absensi.foto ? (
+                      <img
+                        src={`http://127.0.0.1:8000/storage/${absensi.foto}`}
+                        alt="Foto Absensi"
+                        className="w-24 h-24"
+                      />
+                    ) : (
+                      <span>Foto tidak tersedia</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
+
+        <ReactPaginate
+          previousLabel={"Sebelumnya"}
+          nextLabel={"Berikutnya"}
+          pageCount={Math.ceil(absensiList.length / absensiPerPage)}
+          onPageChange={({ selected }) => setPageNumber(selected)}
+          containerClassName={"pagination flex gap-2 mt-4 justify-center"}
+          previousLinkClassName={
+            "pagination__link px-4 py-2 border border-gray-300 rounded-md text-gray-600 hover:text-gray-800 hover:border-gray-400 bg-gray-100"
+          }
+          nextLinkClassName={
+            "pagination__link px-4 py-2 border border-gray-300 rounded-md text-gray-600 hover:text-gray-800 hover:border-gray-400 bg-gray-100"
+          }
+          disabledClassName={"pagination__link--disabled"}
+          activeClassName={
+            "pagination__link--active bg-gray-500 text-white border-blue-500"
+          }
+        />
       </div>
     </div>
   );

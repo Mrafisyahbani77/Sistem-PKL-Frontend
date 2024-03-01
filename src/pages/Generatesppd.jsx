@@ -6,13 +6,22 @@ export default function GenerateSppd({ userId }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
       const response = await axios.post("http://127.0.0.1:8000/api/admin/tambah-nosurat", {
         nosurat: nosurat,
-        user_id: userId, // Menambahkan user_id ke permintaan
-      });
+        user_id: userId, // Menggunakan userId dari props
+      }, { responseType: 'blob' });
+
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'surat-sppd.pdf';
+      a.click();
+      window.URL.revokeObjectURL(url);
+
       console.log("PDF generated successfully");
-      // Tambahkan logika untuk menampilkan pesan sukses atau redirect ke halaman lain
     } catch (error) {
       console.error("Error generating PDF:", error);
     }
