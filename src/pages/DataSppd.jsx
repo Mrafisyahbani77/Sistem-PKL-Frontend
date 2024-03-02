@@ -9,6 +9,7 @@ export default function DataSppd() {
   const [selectedPembimbing, setSelectedPembimbing] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [showGenerateForm, setShowGenerateForm] = useState(false); // State untuk menampilkan form generate PDF
+  const token = localStorage.getItem("token"); // Ambil token dari localStorage
 
   useEffect(() => {
     fetchData();
@@ -16,7 +17,11 @@ export default function DataSppd() {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/admin/sppd");
+      const response = await axios.get("http://127.0.0.1:8000/api/admin/sppd", {
+        headers: {
+          Authorization: `Bearer ${token}`, // Gunakan token dalam header Authorization
+        },
+      });
       const data = response.data;
       if (Array.isArray(data)) {
         setPembimbings(data);
@@ -30,14 +35,17 @@ export default function DataSppd() {
 
   const showDetail = async (id) => {
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/api/admin/detail-sppd/${id}`);
+      const response = await axios.get(`http://127.0.0.1:8000/api/admin/detail-sppd/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Gunakan token dalam header Authorization
+        },
+      });
       setSelectedPembimbing(response.data);
       setShowPopup(true);
     } catch (error) {
       console.error("Error fetching pembimbing detail:", error);
     }
   };
-  
 
   return (
     <div className="flex h-screen">
@@ -55,7 +63,7 @@ export default function DataSppd() {
           </thead>
           <tbody>
             {pembimbings.map((pembimbing, index) => (
-              <tr key={pembimbing.user_id}>
+              <tr>
                 <td className="border-r  p-2">{index + 1}</td>
                 <td className="border-r  p-2">{pembimbing.name}</td>
                 <td className="border-r  p-2">{pembimbing.nip}</td>
@@ -67,10 +75,9 @@ export default function DataSppd() {
           </tbody>
         </table>
         {showPopup && selectedPembimbing && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="fixed inset-0 flex items-center justify-center text-center bg-black bg-opacity-50">
             <div className="bg-white p-8 rounded shadow-lg">
-              <h2 className="text-lg font-bold mb-4">Detail Pembimbing</h2>
-              <p>User ID: {selectedPembimbing.user_id}</p>
+              <h2 className="text-lg font-bold mb-4">Detail Pembimbing</h2>~
               <p>Status: {selectedPembimbing.status}</p>
               <p>Tanggal: {selectedPembimbing.tanggal}</p>
               <p>Hari: {selectedPembimbing.hari}</p>
@@ -81,8 +88,7 @@ export default function DataSppd() {
             </div>
           </div>
         )}
-     {showGenerateForm && <GenerateSppd userId={selectedPembimbing.user_id} />} {/* Tampilkan form generate PDF jika showGenerateForm bernilai true */}
-
+        {showGenerateForm && <GenerateSppd userId={selectedPembimbing.user_id} />} {/* Tampilkan form generate PDF jika showGenerateForm bernilai true */}
       </div>
     </div>
   );

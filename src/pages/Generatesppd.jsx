@@ -7,11 +7,18 @@ export default function GenerateSppd({ userId }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const token = localStorage.getItem('token');
+
     try {
       const response = await axios.post("http://127.0.0.1:8000/api/admin/tambah-nosurat", {
         nosurat: nosurat,
         user_id: userId, // Menggunakan userId dari props
-      }, { responseType: 'blob' });
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        responseType: 'blob'
+      });
 
       const blob = new Blob([response.data], { type: 'application/pdf' });
       const url = window.URL.createObjectURL(blob);

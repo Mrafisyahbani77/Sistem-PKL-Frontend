@@ -8,9 +8,23 @@ export default function Jurpem() {
 
   useEffect(() => {
     const fetchData = async () => {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        alert("Token not found. Please login again.");
+        return;
+      }
+
       try {
-        const response = await axios.get("http://127.0.0.1:8000/api/pembimbing/data-jurnal");
-        setJurnals(response.data.Jurnak);
+        const response = await axios.get(
+          "http://127.0.0.1:8000/api/pembimbing/data-jurnal",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setJurnals(response.data.Jurnals);
       } catch (error) {
         console.error(error);
       }
@@ -26,7 +40,7 @@ export default function Jurpem() {
     <div className="flex h-screen">
       <Sidepem />
       <div className="flex-1">
-        <h1 className="text-2xl font-bold mb-4">Data Jurnal</h1>
+        <h1 className="text-2xl text-center font-bold mb-4">Data Jurnal</h1>
         <table className="bg-white table-auto w-full shadow-md rounded-md overflow-hidden border-r border-gray-300">
           <thead className="bg-gray-200">
             <tr className="bg-gray-200">
@@ -39,16 +53,15 @@ export default function Jurpem() {
           <tbody>
             {jurnals &&
               jurnals.map((jurnal) => (
-                <tr key={jurnal.id} onClick={() => handleDetailClick(jurnal)} className="cursor-pointer hover:bg-gray-100">
-                  <td className="border-b px-4 py-2">
-                    {jurnal.judul}
-                  </td>
-                  <td className="border-b px-4 py-2">
-                    {jurnal.tanggal}
-                  </td>
-                  <td className="border-b px-4 py-2">
-                    {jurnal.isi}
-                  </td>
+                <tr
+                  key={jurnal.id}
+                  onClick={() => handleDetailClick(jurnal)}
+                  className="cursor-pointer hover:bg-gray-100"
+                >
+                  <td className="border-b px-4 py-2">{jurnal.name}</td>
+                  <td className="border-b px-4 py-2">{jurnal.kelas}</td>
+                  <td className="border-b px-4 py-2">{jurnal.nisn}</td>
+                  <td className="border-b px-4 py-2">Detail</td> {/* Change this to display a detail button or link */}
                 </tr>
               ))}
           </tbody>
