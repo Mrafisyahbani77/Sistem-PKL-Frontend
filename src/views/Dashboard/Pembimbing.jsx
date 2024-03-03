@@ -3,6 +3,8 @@ import Laypem from "../../components/Laypem";
 import Api from "../../Api";
 
 export default function Pembimbing() {
+  document.title="PembimbingDashboard";
+
   const [siswaDibimbing, setSiswaDibimbing] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCompany, setSelectedCompany] = useState(null);
@@ -50,7 +52,7 @@ export default function Pembimbing() {
               </p>
               <button
                 onClick={handleResetClick}
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold mb-5 py-2 px-4 rounded mt-4"
               >
                 Kembali
               </button>
@@ -61,11 +63,11 @@ export default function Pembimbing() {
                     className="bg-white rounded-lg shadow-md overflow-hidden"
                   >
                     <div className="p-4">
-                      <p className="text-lg font-semibold mb-2">{siswa.nama}</p>
+                      <p className="text-lg font-semibold mb-2">Nama Siswa: {siswa.nama}</p>
                       <p className="text-lg font-semibold mb-2">
-                        {siswa.kelas}
+                        Kelas: {siswa.kelas}
                       </p>
-                      <p className="text-sm text-gray-600 mb-1">
+                      <p className="text-lg font-semibold mb-1">
                         NISN: {siswa.nisn}
                       </p>
                     </div>
