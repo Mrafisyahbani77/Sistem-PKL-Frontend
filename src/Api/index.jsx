@@ -1,5 +1,6 @@
 import axios from "axios";
 import Cookies from "js-cookie";
+import { toast } from 'react-hot-toast';
 
 const Api = axios.create({
   baseURL: "http://127.0.0.1:8000",
@@ -35,12 +36,20 @@ Api.interceptors.response.use(
       Cookies.remove("permissions");
       window.location = "/";
     } else if (403 === error.response.status) {
+      // Menampilkan pesan dengan React Hot Toast
+      toast.error("Anda tidak memiliki izin untuk mengakses halaman ini",{
+        position: "top-center",
+        duration: 4000,
+      });
+      // Atau, arahkan ke halaman tertentu
       window.location = "/Forbidden";
     } else {
       return Promise.reject(error);
     }
   }
 );
+
+
 
 Api.getDaftarAkun = (token) => {
   return Api.get("/api/siswa/dashboard", {

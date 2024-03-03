@@ -9,7 +9,7 @@ const Perusahaan = () => {
   const [perusahaanList, setPerusahaanList] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingPerusahaanId, setEditingPerusahaanId] = useState(null);
-  const [pageNumber, setPageNumber] = useState(0);
+  const [pageNumber, setPageNumber] = useState(1); // Start from page 1
   const usersPerPage = 6;
 
   useEffect(() => {
@@ -17,9 +17,20 @@ const Perusahaan = () => {
   }, [pageNumber]);
 
   const fetchData = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Token not found. Please login again.");
+      return;
+    }
     try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/admin/perusahaan?page=${pageNumber + 1}&perPage=${usersPerPage}`
+        `http://127.0.0.1:8000/api/admin/perusahaan?page=${pageNumber}&perPage=${usersPerPage}`,
+        config
       );
       setPerusahaanList(response.data.perusahaan);
     } catch (error) {
@@ -28,16 +39,28 @@ const Perusahaan = () => {
   };
 
   const handleTambahPerusahaan = async (perusahaan) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Token not found. Please login again.");
+      return;
+    }
     try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
       const response = await axios.post(
         "http://127.0.0.1:8000/api/admin/perusahaan",
-        perusahaan
+        perusahaan,
+        config
       );
       setPerusahaanList([...perusahaanList, response.data.perusahaan]);
       setShowAddForm(false);
       Swal.fire("Sukses!", "Perusahaan berhasil ditambahkan.", "success");
     } catch (error) {
       console.error("Error adding perusahaan:", error);
+      Swal.fire("Error!", "Gagal menambah perusahaan.", "error");
     }
   };
 
@@ -105,7 +128,7 @@ const Perusahaan = () => {
             {perusahaanList.map((perusahaan, index) => (
               <tr key={perusahaan.id}>
                 <td className="py-2 px-4 border-r text-center">
-                  {pageNumber * usersPerPage + index + 1}
+                  {(pageNumber - 1) * usersPerPage + index + 1}
                 </td>
                 <td className="py-2 px-4 border-r text-center">
                   {perusahaan.nama_perusahaan}

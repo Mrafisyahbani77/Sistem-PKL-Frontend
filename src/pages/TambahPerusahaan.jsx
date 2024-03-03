@@ -15,7 +15,16 @@ const TambahPerusahaan = ({ onTambahPerusahaan }) => {
             alamat_perusahaan: alamatPerusahaan,
             siswa_dibutuhkan: siswaDibutuhkan
         };
-        axios.post('http://127.0.0.1:8000/api/admin/perusahaan', newPerusahaan)
+        const token = localStorage.getItem("token");
+        if (!token) {
+            alert("Token not found. Please login again.");
+            return;
+        }
+        axios.post('http://127.0.0.1:8000/api/admin/perusahaan', newPerusahaan, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
             .then(response => {
                 console.log('Perusahaan added successfully');
                 onTambahPerusahaan(response.data.perusahaan);

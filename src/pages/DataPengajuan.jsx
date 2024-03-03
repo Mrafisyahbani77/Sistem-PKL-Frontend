@@ -13,7 +13,6 @@ const DataPengajuan = () => {
   const [showPdfForm, setShowPdfForm] = useState(false);
   const [pdfFormData, setPdfFormData] = useState(null); // State untuk menyimpan data formulir tambahan
   const [selectedGroupId, setSelectedGroupId] = useState(null); // State untuk menyimpan group_id terpilih
-  
 
   const itemsPerPage = 5;
   const pagesVisited = pageNumber * itemsPerPage;
@@ -30,8 +29,13 @@ const DataPengajuan = () => {
   };
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
     axios
-      .get(`http://localhost:8000/api/admin/pengajuan/all`)
+      .get(`http://localhost:8000/api/admin/pengajuan/all`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((response) => {
         setDataPengajuan(response.data.data);
       })
@@ -196,6 +200,7 @@ const DataPengajuan = () => {
     }
   };
 
+
   return (
     <div className="flex h-screen bg-gray-200">
       <Sidebar />
@@ -204,8 +209,8 @@ const DataPengajuan = () => {
           Data Pengajuan PKL
         </h2>
         <table className="bg-white table-auto w-full shadow-md rounded-md overflow-hidden border border-gray-300">
-          <thead className="bg-gray-100">
-            <tr>
+          <thead className="bg-gray-200">
+            <tr className="bg-gray-200">
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 No
               </th>
@@ -276,118 +281,119 @@ const DataPengajuan = () => {
           }
         />
         <div className="w-[90%] max-h-full">
-        {selectedPengajuan && (
-          <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex overflow-y-scroll items-center justify-center">
-            <div className="bg-white p-8 rounded-md shadow-lg max-w-2xl w-full overflow-auto">
-              <ul>
-                {selectedPengajuan.map((siswa) => (
-                  <li key={siswa.id}>
-                    <h3 className="text-xl font-semibold mb-2">
-                      Detail Pengajuan - {siswa.name}
-                    </h3>
-                    <ul>
-                      <li>
-                        <p>
-                          <span className="font-semibold">NISN:</span>{" "}
+          {selectedPengajuan && (
+            <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex overflow-y-scroll items-center justify-center">
+              <div className="bg-white p-8 rounded-md shadow-lg max-w-2xl w-full overflow-auto">
+                <button
+                  onClick={handleCloseDetail}
+                  className="bg-red-500 text-white py-2 px-4 rounded ml-auto mb-5 hover:bg-red-600"
+                >
+                  Tutup
+                </button>
+
+                <table className="w-full border-collapse border text-center border-gray-300">
+                  <thead>
+                    <tr>
+                      <th className="border py-2 px-4 border-gray-300">No</th>
+                      <th className="border py-2 px-4 border-gray-300">Nama</th>
+                      <th className="border py-2 px-4 border-gray-300">NISN</th>
+                      <th className="border py-2 px-4 border-gray-300">
+                        Kelas
+                      </th>
+                      <th className="border py-2 px-4 border-gray-300">
+                        Status
+                      </th>
+                      <th className="border py-2 px-4 border-gray-300">CV</th>
+                      <th className="border py-2 px-4 border-gray-300">
+                        Portofolio
+                      </th>
+                      <th className="border py-2 px-4 border-gray-300">
+                        Nama Perusahaan
+                      </th>
+                      <th className="border py-2 px-4 border-gray-300">
+                        Email Perusahaan
+                      </th>
+                      <th className="border py-2 px-4 border-gray-300">
+                        Alamat Perusahaan
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedPengajuan.map((siswa, index) => (
+                      <tr key={siswa.id}>
+                        <td className="border py-2 px-4 border-gray-300">
+                          {index + 1}
+                        </td>
+                        <td className="border py-2 px-4 border-gray-300">
+                          {siswa.name}
+                        </td>
+                        <td className="border py-2 px-4 border-gray-300">
                           {siswa.nisn}
-                        </p>
-                      </li>
-                      <li>
-                        <p>
-                          <span className="font-semibold">Kelas:</span>{" "}
+                        </td>
+                        <td className="border py-2 px-4 border-gray-300">
                           {siswa.kelas}
-                        </p>
-                      </li>
-                      <li>
-                        <p>
-                          <span className="font-semibold">Status:</span>{" "}
+                        </td>
+                        <td className="border py-2 px-4 border-gray-300">
                           <StatusDropdown
                             selectedStatus={selectedStatus}
                             onStatusChange={setSelectedStatus}
                           />
-                        </p>
-                      </li>
-                      <li>
-                        <p>
-                          <span className="font-semibold">CV:</span>{" "}
+                        </td>
+                        <td className="border py-2 px-4 border-gray-300">
                           <button
                             onClick={() => openPdfViewer(siswa.file_cv, "CV")}
-                            className="text-blue-500 hover:underline focus:outline-none"
+                            className="text-blue-500 py-2 px-4 hover:underline focus:outline-none"
                           >
                             Lihat CV
                           </button>
-                        </p>
-                      </li>
-                      <li>
-                        <p>
-                          <span className="font-semibold">Portofolio:</span>{" "}
+                        </td>
+                        <td className="border py-2 px-4 border-gray-300">
                           <button
                             onClick={() =>
                               openPdfViewer(siswa.file_portofolio, "Portofolio")
                             }
-                            className="text-blue-500 hover:underline focus:outline-none"
+                            className="text-blue-500 py-2 px-4 hover:underline focus:outline-none"
                           >
                             Lihat Portofolio
                           </button>
-                        </p>
-                      </li>
-                      <li>
-                        <p>
-                          <span className="font-semibold">
-                            Nama Perusahaan:
-                          </span>{" "}
+                        </td>
+                        <td className="border py-2 px-4 border-gray-300">
                           {siswa.nama_perusahaan}
-                        </p>
-                      </li>
-                      <li>
-                        <p>
-                          <span className="font-semibold">
-                            Email Perusahaan:
-                          </span>{" "}
+                        </td>
+                        <td className="border py-2 px-4 border-gray-300">
                           {siswa.email_perusahaan}
-                        </p>
-                      </li>
-                      <li>
-                        <p>
-                          <span className="font-semibold">
-                            Alamat Perusahaan:
-                          </span>{" "}
+                        </td>
+                        <td className="border py-2 px-4 border-gray-300">
                           {siswa.alamat_perusahaan}
-                        </p>
-                      </li>
-                    </ul>
-                  </li>
-                ))}
-              </ul>
-              <button
-                onClick={handleGeneratePDF}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              >
-                Generate PDF
-              </button>
-              <button
-                onClick={handleStatusUpdate}
-                className="text-blue-500 hover:underline focus:outline-none mt-4"
-              >
-                Update Status
-              </button>
-              <button
-                onClick={handleCloseDetail}
-                className="text-blue-500 hover:underline focus:outline-none mt-4 ml-4"
-              >
-                Tutup
-              </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                <button
+                  onClick={handleGeneratePDF}
+                  className="bg-blue-500 text-white px-4 py-2 rounded focus:outline-none mt-4 mr-2 hover:bg-blue-600"
+                >
+                  Generate PDF
+                </button>
+                <button
+                  onClick={handleStatusUpdate}
+                  className="bg-blue-500 rounded hover:bg-blue-600 focus:outline-none mt-4 text-white px-4 py-2 "
+                >
+                  Update Status
+                </button>
+              </div>
             </div>
-          </div>
-        )}
-        {showPdfForm && (
-          <PdfForm
-            handleClose={() => setShowPdfForm(false)}
-            selectedGroupId={selectedGroupId}
-          />
-        )}
+          )}
+          {showPdfForm && (
+            <PdfForm
+              handleClose={() => setShowPdfForm(false)}
+              selectedGroupId={selectedGroupId}
+            />
+          )}
+        </div>
       </div>
-    </div>
     </div>
   );
 };
