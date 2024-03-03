@@ -35,11 +35,14 @@ export default function DataSppd() {
 
   const showDetail = async (id) => {
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/api/admin/detail-sppd/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`, // Gunakan token dalam header Authorization
-        },
-      });
+      const response = await axios.get(
+        `http://127.0.0.1:8000/api/admin/detail-sppd/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Gunakan token dalam header Authorization
+          },
+        }
+      );
       setSelectedPembimbing(response.data);
       setShowPopup(true);
     } catch (error) {
@@ -52,7 +55,7 @@ export default function DataSppd() {
       <Sidebar />
       <div className="flex-grow p-8">
         <h1 className="text-2xl font-bold mb-4">Data SPPD</h1>
-        <table className="bg-white table-auto w-full shadow-md rounded-md overflow-hidden border border-gray-3000">
+        <table className="bg-white table-auto w-full text-center shadow-md rounded-md overflow-hidden border border-gray-3000">
           <thead className="bg-gray-200">
             <tr className="bg-gray-200">
               <th className="border-r  p-2">No</th>
@@ -68,27 +71,68 @@ export default function DataSppd() {
                 <td className="border-r  p-2">{pembimbing.name}</td>
                 <td className="border-r  p-2">{pembimbing.nip}</td>
                 <td className="border-r  p-2">
-                  <button onClick={() => showDetail(pembimbing.user_id)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Detail</button>
+                  <button
+                    onClick={() => showDetail(pembimbing.user_id)}
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                  >
+                    Detail
+                  </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
         {showPopup && selectedPembimbing && (
-          <div className="fixed inset-0 flex items-center justify-center text-center bg-black bg-opacity-50">
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
             <div className="bg-white p-8 rounded shadow-lg">
-              <h2 className="text-lg font-bold mb-4">Detail Pembimbing</h2>~
-              <p>Status: {selectedPembimbing.status}</p>
-              <p>Tanggal: {selectedPembimbing.tanggal}</p>
-              <p>Hari: {selectedPembimbing.hari}</p>
-              <p>Waktu: {selectedPembimbing.waktu}</p>
-              <p>Lamanya Perjalanan: {selectedPembimbing.lamanya_perjalanan}</p>
-              <button onClick={() => setShowGenerateForm(true)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Generate PDF</button>
-              <button onClick={() => setShowPopup(false)} className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mt-4 ml-4">Close</button>
+              <h2 className="text-lg font-bold mb-4">
+                Detail Pembimbing: {selectedPembimbing.name}
+              </h2>
+              <table className="table-auto w-full">
+                <tbody>
+                  <tr>
+                    <td className="font-bold">Status:</td>
+                    <td>{selectedPembimbing.status}</td>
+                  </tr>
+                  <tr>
+                    <td className="font-bold">Tanggal:</td>
+                    <td>{selectedPembimbing.tanggal}</td>
+                  </tr>
+                  <tr>
+                    <td className="font-bold">Hari:</td>
+                    <td>{selectedPembimbing.hari}</td>
+                  </tr>
+                  <tr>
+                    <td className="font-bold">Waktu:</td>
+                    <td>{selectedPembimbing.waktu}</td>
+                  </tr>
+                  <tr>
+                    <td className="font-bold">Lamanya Perjalanan:</td>
+                    <td>{selectedPembimbing.lamanya_perjalanan}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div className="mt-4">
+                <button
+                  onClick={() => setShowGenerateForm(true)}
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                >
+                  Generate PDF
+                </button>
+                <button
+                  onClick={() => setShowPopup(false)}
+                  className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded ml-4"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         )}
-        {showGenerateForm && <GenerateSppd userId={selectedPembimbing.user_id} />} {/* Tampilkan form generate PDF jika showGenerateForm bernilai true */}
+        {showGenerateForm && (
+          <GenerateSppd userId={selectedPembimbing.user_id} />
+        )}{" "}
+        {/* Tampilkan form generate PDF jika showGenerateForm bernilai true */}
       </div>
     </div>
   );

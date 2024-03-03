@@ -14,12 +14,12 @@ export default function Absenpem() {
   useEffect(() => {
     const fetchData = async () => {
       const token = localStorage.getItem("token");
-
+  
       if (!token) {
         alert("Token not found. Please login again.");
         return;
       }
-
+  
       try {
         const response = await axios.get(
           "http://127.0.0.1:8000/api/pembimbing/absen-siswa",
@@ -29,20 +29,40 @@ export default function Absenpem() {
             },
           }
         );
-        setAbsensi(response.data.data);
+        setAbsensi(response.data.siswa);
       } catch (error) {
         console.error(error);
       }
     };
-
+  
     fetchData();
   }, []);
-
-  const handleDetailClick = (absen) => {
-    setSelectedAbsen(absen);
-    setShowModal(true);
+  
+  const handleDetailClick = async (absen) => {
+    try {
+      const token = localStorage.getItem("token");
+  
+      if (!token) {
+        alert("Token not found. Please login again.");
+        return;
+      }
+  
+      const response = await axios.get(
+        `http://127.0.0.1:8000/api/pembimbing/data-absen/${absen.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      setSelectedAbsen(response.data.absensi);
+      setShowModal(true);
+    } catch (error) {
+      console.error(error);
+    }
   };
-
+  
   const handleLocationClick = (latitude, longitude) => {
     window.open(
       `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`
@@ -76,12 +96,12 @@ export default function Absenpem() {
                 .slice(pagesVisited, pagesVisited + absensiPerPage)
                 .map((item, index) => (
                   <tr
-                    key={item.user_id}
+                    key={item.id}
                     onClick={() => handleDetailClick(item)}
                     className="cursor-pointer hover:bg-gray-50"
                   >
                     <td className="border px-4 py-2">{index + 1}</td>
-                    <td className="border px-4 py-2">{item.nama}</td>
+                    <td className="border px-4 py-2">{item.name}</td>
                     <td className="border px-4 py-2">{item.kelas}</td>
                     <td className="border px-4 py-2">{item.nisn}</td>
                     <td className="border px-4 py-2">
@@ -121,7 +141,7 @@ export default function Absenpem() {
           }
         />
       </div>
-      {showModal && selectedAbsen && ( // Add selectedAbsen check here
+      {showModal && selectedAbsen && (
         <div className="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-75 z-50">
           <div className="bg-white p-4 rounded-lg">
             <div className="flex justify-between mb-4">
@@ -144,37 +164,32 @@ export default function Absenpem() {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td className="border px-4 py-2">1</td>
-                  <td className="border px-4 py-2">
-                    {selectedAbsen.tanggal_absen}
-                  </td>
-                  <td className="border px-4 py-2">
-                    {selectedAbsen.waktu_absen}
-                  </td>
-                  <td className="border px-4 py-2">
-                    <button
-                      onClick={() =>
-                        handleLocationClick(
-                          selectedAbsen.absensi.latitude,
-                          selectedAbsen.absensi.longitude
-                        )
-                      }
-                      className="text-blue-500 hover:underline"
-                    >
-                      Lihat Lokasi
-                    </button>
-                  </td>
-                  <td className="border px-4 py-2">
-                    {selectedAbsen.absensi.foto && (
-                      <img
-                        src={`http://127.0.0.1:8000/storage/${selectedAbsen.absensi.foto}`}
-                        alt="Foto Absen"
-                        className="w-16 h-16 object-cover"
-                      />
-                    )}
-                  </td>
-                </tr>
+                {selectedAbsen.map((absen, index) => (
+                  <tr key={index}>
+                    <td className="border px-4 py-2">{index + 1}</td>
+                    <td className="border px-4 py-2">{absen.tanggal_absen}</td>
+                    <td className="border px-4 py-2">{absen.waktu_absen}</td>
+                    <td className="border px-4 py-2">
+                      <button
+                        onClick={() =>
+                          handleLocationClick(absen.latitude, absen.longitude)
+                        }
+                        className="text-blue-500 hover:underline"
+                      >
+                        Lihat Lokasi
+                      </button>
+                    </td>
+                    <td className="border px-4 py-2">
+                      {absen.foto && (
+                        <img
+                          src={`http://127.0.0.1:8000/storage/${absen.foto}`}
+                          alt="Foto Absen"
+                          className="w-16 h-16 object-cover"
+                        />
+                      )}
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
