@@ -24,25 +24,20 @@ const Sidekap = () => {
       path: "/KaprogDashboard",
     },
     {
-      title: "",
+      title: "Pembimbing",
       icon: <TiUserAdd style={{ fontSize: "24px" }} />,
-      path: "",
+      path: "/LihatPembimbing",
     },
     {
-      title: "",
+      title: "Absensi Siswa",
       icon: <FaBook style={{ fontSize: "24px" }} />,
       gap: true,
-      path: "",
+      path: "/Absensikap",
     },
     {
-      title: "",
+      title: "Jurnal Siswa",
       icon: <SiMinutemailer style={{ fontSize: "24px" }} />,
-      path: "",
-    },
-    {
-      title: "",
-      icon: <MdMail style={{ fontSize: "24px" }} />,
-      path: "",
+      path: "/Jurnalkap",
     },
   ];
 
