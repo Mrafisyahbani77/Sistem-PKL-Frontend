@@ -24,7 +24,7 @@ const Sidekap = () => {
       path: "/KaprogDashboard",
     },
     {
-      title: "Pembimbing",
+      title: "Info Pembimbing",
       icon: <TiUserAdd style={{ fontSize: "24px" }} />,
       path: "/LihatPembimbing",
     },
