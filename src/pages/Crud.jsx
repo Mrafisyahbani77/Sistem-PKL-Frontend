@@ -93,17 +93,23 @@ const Crud = () => {
   const handleEdit = async (userId) => {
     try {
       const selectedUser = users.find((user) => user.id === userId);
-
+  
       if (selectedUser) {
-        const { name, email, role } = selectedUser;
-
+        const { name, email, role, password, nisn, kelas, nip, jabatan, pangkat, nomer_telpon } = selectedUser;
+  
         if (role && role.name) {
           setFormData({
             id: userId,
             name: name || "",
             email: email || "",
-            password: "",
+            password: password || "", // Set nilai password dari selectedUser
             role: role.name || "",
+            nisn: nisn || "", // Set nilai nisn dari selectedUser
+            kelas: kelas || "", // Set nilai kelas dari selectedUser
+            nip: nip || "", // Set nilai nip dari selectedUser
+            jabatan: jabatan || "", // Set nilai jabatan dari selectedUser
+            pangkat: pangkat || "", // Set nilai pangkat dari selectedUser
+            nomor_telepon: nomer_telpon || "", // Set nilai nomor_telepon dari selectedUser
           });
           setSelectedUserId(userId);
           setShowEditForm(true);
@@ -120,6 +126,7 @@ const Crud = () => {
       // Handle error properly, e.g., display a message to the user
     }
   };
+  
 
   const getRoleIdFromApi = (roleName) => {
     // Logika untuk mendapatkan role_id dari API
@@ -191,7 +198,6 @@ const Crud = () => {
                   <th className="px-4 py-2">No</th>
                   <th className="px-4 py-2">Nama</th>
                   <th className="px-4 py-2">Email</th>
-                  <th className="px-4 py-2">Password</th>
                   <th className="px-4 py-2">Edit</th>
                   <th className="px-4 py-2">Delete</th>
                 </tr>
@@ -204,7 +210,6 @@ const Crud = () => {
                       <td className="px-4 py-2">{index + 1}</td>
                       <td className="px-4 py-2">{user.name}</td>
                       <td className="px-4 py-2">{user.email}</td>
-                      <td className="px-4 py-2">{user.password}</td>
                       <td className="px-4 py-2">
                         <FaUserEdit
                           onClick={() => handleEdit(user.id)}
@@ -251,7 +256,6 @@ const Crud = () => {
                   <th className="px-4 py-2 border-r">Nisn</th>
                   <th className="px-4 py-2 border-r">Kelas</th>
                   <th className="px-4 py-2 border-r">Email</th>
-                  <th className="px-4 py-2 border-r">Password</th>
                   <th className="px-4 py-2 border-r">Edit</th>
                   <th className="px-4 py-2 border-r">Delete</th>
                 </tr>
@@ -266,7 +270,6 @@ const Crud = () => {
                       <td className="px-4 py-2">{user.nisn}</td>
                       <td className="px-4 py-2">{user.kelas}</td>
                       <td className="px-4 py-2">{user.email}</td>
-                      <td className="px-4 py-2">{user.password}</td>
                       <td className="px-4 py-2">
                         <FaUserEdit
                           onClick={() => handleEdit(user.id)}
@@ -315,7 +318,6 @@ const Crud = () => {
                   <th className="px-4 py-2 border-r">Pangkat</th>
                   <th className="px-4 py-2 border-r">Nomor Telepon</th>
                   <th className="px-4 py-2 border-r">Email</th>
-                  <th className="px-4 py-2 border-r">Password</th>
                   <th className="px-4 py-2 border-r">Edit</th>
                   <th className="px-4 py-2 border-r">Delete</th>
                 </tr>
@@ -332,7 +334,6 @@ const Crud = () => {
                       <td className="px-4 py-2">{user.pangkat}</td>
                       <td className="px-4 py-2">{user.nomer_telpon}</td>
                       <td className="px-4 py-2">{user.email}</td>
-                      <td className="px-4 py-2">{user.password}</td>
                       <td className="px-4 py-2">
                         <FaUserEdit
                           onClick={() => handleEdit(user.id)}
@@ -379,7 +380,6 @@ const Crud = () => {
                   <th className="px-4 py-2 border-r">Nama</th>
                   <th className="px-4 py-2 border-r">Nip</th>
                   <th className="px-4 py-2 border-r">Email</th>
-                  <th className="px-4 py-2 border-r">Password</th>
                   <th className="px-4 py-2 border-r">Edit</th>
                   <th className="px-4 py-2 border-r">Delete</th>
                 </tr>
@@ -393,7 +393,6 @@ const Crud = () => {
                       <td className="px-4 py-2">{user.name}</td>
                       <td className="px-4 py-2">{user.nip}</td>
                       <td className="px-4 py-2">{user.email}</td>
-                      <td className="px-4 py-2">{user.password}</td>
                       <td className="px-4 py-2">
                         <FaUserEdit
                           onClick={() => handleEdit(user.id)}

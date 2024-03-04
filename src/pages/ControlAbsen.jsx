@@ -11,8 +11,11 @@ const ControlAbsen = () => {
   const [token, setToken] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [pageNumber, setPageNumber] = useState(0);
+  const [popupPageNumber, setPopupPageNumber] = useState(0);
   const usersPerPage = 6;
+  const popupUsersPerPage = 4;
   const pagesVisited = pageNumber * usersPerPage;
+  const popupPagesVisited = popupPageNumber * popupUsersPerPage;
 
   useEffect(() => {
     // Mengambil token dari local storage
@@ -90,18 +93,29 @@ const ControlAbsen = () => {
           selectedSiswa && selectedSiswa.nisn === siswa.nisn
             ? "bg-gray-100"
             : ""
-        } hover:bg-gray-400`}
-        onClick={() => handleSiswaClick(siswa)}
+        }`}
       >
         <td className="py-2 px-4 border-r">{index + 1 + pagesVisited}</td>
         <td className="py-2 px-4 border-r">{siswa.nisn}</td>
         <td className="py-2 px-4 border-r">{siswa.kelas}</td>
         <td className="py-2 px-4 border-r">{siswa.name}</td>
+        <td className="py-2 px-4 border-r">
+          <button
+            onClick={() => handleSiswaClick(siswa)}
+            className="bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-600"
+          >
+            Detail
+          </button>
+        </td>
       </tr>
     ));
 
   const changePage = ({ selected }) => {
     setPageNumber(selected);
+  };
+
+  const changePopupPage = ({ selected }) => {
+    setPopupPageNumber(selected);
   };
 
   return (
@@ -128,6 +142,7 @@ const ControlAbsen = () => {
               <th className="py-2 px-4 border-r">Nisn</th>
               <th className="py-2 px-4 border-r">Kelas</th>
               <th className="py-2 px-4 border-r">Nama Siswa</th>
+              <th className="py-2 px-4 border-r">Aksi</th>
             </tr>
           </thead>
           <tbody>{displaySiswaList}</tbody>
@@ -165,7 +180,7 @@ const ControlAbsen = () => {
               </h3>
               <table className="min-w-full divide-y divide-gray-200 border rounded overflow-hidden mt-4">
                 <thead className="bg-gray-200">
-                  <tr className="bgv-gray-50">
+                  <tr className="bg-gray-50">
                     <th className="py-2 px-8 border-r">Tanggal</th>
                     <th className="py-2 px-4 border-r">Waktu</th>
                     <th className="py-2 px-4 border-r">Lokasi</th>
@@ -173,8 +188,9 @@ const ControlAbsen = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {absensiList.length > 0 &&
-                    absensiList.map((item, index) => (
+                  {absensiList
+                    .slice(popupPagesVisited, popupPagesVisited + popupUsersPerPage)
+                    .map((item, index) => (
                       <tr key={index} className="hover:bg-gray-50">
                         <td className="py-2 px-4 border-r text-center">
                           {item.tanggal_absen}
@@ -183,7 +199,14 @@ const ControlAbsen = () => {
                           {item.waktu_absen}
                         </td>
                         <td className="py-2 px-4 border-r text-center">
-                          {item.latitude}, {item.longitude}
+                          <a
+                            href={`https://www.google.com/maps/search/?api=1&query=${item.latitude},${item.longitude}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-500 hover:underline"
+                          >
+                            Lihat di Maps
+                          </a>
                         </td>
                         <td className="py-2 px-4 border-r text-center">
                           {item.foto ? (
@@ -196,6 +219,23 @@ const ControlAbsen = () => {
                     ))}
                 </tbody>
               </table>
+              <ReactPaginate
+                previousLabel={"Sebelumnya"}
+                nextLabel={"Berikutnya"}
+                pageCount={Math.ceil(absensiList.length / popupUsersPerPage)}
+                onPageChange={changePopupPage}
+                containerClassName={"pagination flex gap-2 mt-4"}
+                previousLinkClassName={
+                  "pagination__link px-4 py-2 border border-gray-300 rounded-md text-gray-600 hover:text-gray-800 hover:border-gray-400 bg-gray-100"
+                }
+                nextLinkClassName={
+                  "pagination__link px-4 py-2 border border-gray-300 rounded-md text-gray-600 hover:text-gray-800 hover:border-gray-400 bg-gray-100"
+                }
+                disabledClassName={"pagination__link--disabled"}
+                activeClassName={
+                  "pagination__link--active bg-gray-500 text-white border-blue-500"
+                }
+              />
             </div>
           </div>
         )}

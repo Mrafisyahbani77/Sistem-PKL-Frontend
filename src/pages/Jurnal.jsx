@@ -49,15 +49,14 @@ const Jurnal = () => {
     setSearchTerm(searchTerm);
   };
 
-  const handleSiswaClick = (userId) => {
+  const handleDetailClick = (userId) => {
     setSelectedUserId(userId);
-    setPageNumber(0); // Reset page number when selecting a new user
   };
 
   const handleCloseJurnal = () => {
     setSelectedUserId(null);
     setJurnals([]);
-    setPageNumber(0); // Reset page number when closing jurnal
+    setPageNumber(0);
   };
 
   const changePage = ({ selected }) => {
@@ -112,6 +111,9 @@ const Jurnal = () => {
               <th className="py-2 px-4 border-r">
                 <span>Nama Siswa</span>
               </th>
+              <th className="py-2 px-4 border-r">
+                <span>Detail</span>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -120,7 +122,6 @@ const Jurnal = () => {
               .map((user, index) => (
                 <tr
                   key={user.id}
-                  onClick={() => handleSiswaClick(user.id)}
                   className={`cursor-pointer py-2 px-4 border-b transition-colors duration-300 ${
                     selectedUserId === user.id ? "bg-gray-200" : ""
                   } hover:bg-gray-400`}
@@ -136,6 +137,14 @@ const Jurnal = () => {
                   </td>
                   <td className="py-2 px-4 border-r text-center">
                     {user.name}
+                  </td>
+                  <td className="py-2 px-4 border-r text-center">
+                    <button
+                      onClick={() => handleDetailClick(user.id)}
+                      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                    >
+                      Detail
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -196,8 +205,8 @@ const Jurnal = () => {
                         <td
                           className={`py-2 px-4 border-r ${
                             jurnal.status === "selesai"
-                              ? "text-white bg-green-500 rounded-full"
-                              : "text-white bg-blue-500 rounded-full"
+                              // ? "text-white bg-green-500 rounded-full"
+                              // : "text-white bg-blue-500 rounded-full"
                           }`}
                         >
                           {jurnal.status}

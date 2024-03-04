@@ -65,39 +65,41 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
         throw new Error("Role tidak boleh kosong.");
       }
 
-      const response = await onSubmit();
+      const response = await onSubmit(formData);
+      console.log("Response from onSubmit:", response);
 
-      if (response.status === 200) {
-        setSuccessMessage("Akun berhasil ditambahkan.");
-
-        Swal.fire({
-          icon: "success",
-          title: "Sukses",
-          text: "Akun berhasil ditambahkan.",
-        });
-
-        setFormData((prevData) => ({
-          ...prevData,
-          role: "",
-          name: "",
-          email: "",
-          password: "",
-          kelas: "",
-          nisn: "",
-          nip: "",
-          jabatan: "",
-          pangkat: "",
-          nomer_telpon: "",
-        }));
-
-        onClose();
-      } else {
-        throw new Error("Gagal menambahkan akun.");
+      if (response && response.error) {
+        throw new Error(response.error); // Jika respons mengandung kesalahan, lemparkan error
       }
+
+      // Jika tidak ada kesalahan, anggap berhasil
+      setSuccessMessage("Akun berhasil ditambahkan.");
+
+      Swal.fire({
+        icon: "success",
+        title: "Sukses",
+        text: "Akun berhasil ditambahkan.",
+      });
+
+      setFormData((prevData) => ({
+        ...prevData,
+        role: "",
+        name: "",
+        email: "",
+        password: "",
+        kelas: "",
+        nisn: "",
+        nip: "",
+        jabatan: "",
+        pangkat: "",
+        nomer_telpon: "",
+      }));
+
+      onClose();
     } catch (error) {
       setErrorMessage(
         error.message ||
-          "Gagal menambahkan akun. Pastikan data yang dimasukkan valid."
+        "Gagal menambahkan akun. Pastikan data yang dimasukkan valid."
       );
 
       Swal.fire({
@@ -111,6 +113,7 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
       setSubmitting(false);
     }
   };
+
 
   const renderFormBasedOnRole = () => {
     switch (formData.role) {

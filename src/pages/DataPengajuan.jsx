@@ -384,11 +384,15 @@ const DataPengajuan = () => {
                 </table>
 
                 <button
-                  onClick={handleGeneratePDF}
+                  onClick={() => {
+                    handleCloseDetail();
+                    handleGeneratePDF();
+                  }}
                   className="bg-blue-500 text-white px-4 py-2 rounded focus:outline-none mt-4 mr-2 hover:bg-blue-600"
                 >
                   Generate PDF
                 </button>
+
                 <button
                   onClick={handleStatusUpdate}
                   className="bg-blue-500 rounded hover:bg-blue-600 focus:outline-none mt-4 text-white px-4 py-2 "

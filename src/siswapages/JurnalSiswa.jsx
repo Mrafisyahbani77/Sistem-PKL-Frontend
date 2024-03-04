@@ -128,14 +128,14 @@ const JurnalSiswa = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "belum":
-        return "text-red-500";
-      case "proses":
-        return "text-white bg-blue-500";
-      case "selesai":
-        return "text-white bg-green-500 ";
-      default:
-        return "";
+      // case "belum":
+      //   return "text-red-500";
+      // case "proses":
+      //   return "text-white bg-blue-500";
+      // case "selesai":
+      //   return "text-white bg-green-500 ";
+      // default:
+      //   return "";
     }
   };
 

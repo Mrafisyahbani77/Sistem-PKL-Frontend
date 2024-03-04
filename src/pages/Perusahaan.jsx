@@ -1,175 +1,160 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import Swal from "sweetalert2";
+import axios from "axios";
+import Sidebar from "../components/Sidebar";
 import TambahPerusahaan from "./TambahPerusahaan";
 import EditPerusahaan from "./EditPerusahaan";
-import Sidebar from "../components/Sidebar";
+import ReactPaginate from "react-paginate";
 
 const Perusahaan = () => {
   const [perusahaanList, setPerusahaanList] = useState([]);
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [editingPerusahaanId, setEditingPerusahaanId] = useState(null);
-  const [pageNumber, setPageNumber] = useState(1); // Start from page 1
-  const usersPerPage = 6;
+  const [showTambah, setShowTambah] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
+  const [editId, setEditId] = useState(null);
+  const [pageNumber, setPageNumber] = useState(0);
+  const perPage = 5; // Jumlah data per halaman
+  const pagesVisited = pageNumber * perPage;
 
   useEffect(() => {
-    fetchData();
-  }, [pageNumber]);
-
-  const fetchData = async () => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      alert("Token not found. Please login again.");
-      return;
-    }
-    try {
-      const config = {
+    axios
+      .get("http://127.0.0.1:8000/api/admin/perusahaan", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      };
-      const response = await axios.get(
-        `http://127.0.0.1:8000/api/admin/perusahaan?page=${pageNumber}&perPage=${usersPerPage}`,
-        config
-      );
-      setPerusahaanList(response.data.perusahaan);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
-  const handleTambahPerusahaan = async (perusahaan) => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("Token not found. Please login again.");
-      return;
-    }
-    try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/admin/perusahaan",
-        perusahaan,
-        config
-      );
-      setPerusahaanList([...perusahaanList, response.data.perusahaan]);
-      setShowAddForm(false);
-      Swal.fire("Sukses!", "Perusahaan berhasil ditambahkan.", "success");
-    } catch (error) {
-      console.error("Error adding perusahaan:", error);
-      Swal.fire("Error!", "Gagal menambah perusahaan.", "error");
-    }
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      await axios.delete(`http://127.0.0.1:8000/api/admin/perusahaan/${id}`);
-      setPerusahaanList(
-        perusahaanList.filter((perusahaan) => perusahaan.id !== id)
-      );
-      Swal.fire("Sukses!", "Perusahaan berhasil dihapus.", "success");
-    } catch (error) {
-      console.error("Error deleting perusahaan:", error);
-      Swal.fire("Error!", "Gagal menghapus perusahaan.", "error");
-    }
-  };
+      })
+      .then((response) => {
+        setPerusahaanList(response.data.perusahaan);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
 
   const handleEdit = (id) => {
-    setEditingPerusahaanId(id);
+    setShowEdit(true);
+    setEditId(id);
   };
 
-  const handleCancelEdit = () => {
-    setEditingPerusahaanId(null);
+  const handleDelete = (id) => {
+    const token = localStorage.getItem("token");
+    Swal.fire({
+      title: "Hapus Perusahaan",
+      text: "Anda yakin ingin menghapus perusahaan ini?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Ya, hapus!",
+      cancelButtonText: "Batal",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios
+          .delete(`http://127.0.0.1:8000/api/admin/perusahaan/${id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+          .then((response) => {
+            Swal.fire({
+              title: "Sukses",
+              text: response.data.message,
+              icon: "success",
+            });
+            setPerusahaanList(
+              perusahaanList.filter((perusahaan) => perusahaan.id !== id)
+            );
+          })
+          .catch((error) => {
+            Swal.fire({
+              title: "Error",
+              text: error.response.data.message,
+              icon: "error",
+            });
+          });
+      }
+    });
   };
 
-  const handleUpdatePerusahaan = (updatedPerusahaan) => {
-    setPerusahaanList(
-      perusahaanList.map((perusahaan) =>
-        perusahaan.id === updatedPerusahaan.id ? updatedPerusahaan : perusahaan
-      )
-    );
-    setEditingPerusahaanId(null);
+  const pageCount = Math.ceil(perusahaanList.length / perPage);
+
+  const changePage = ({ selected }) => {
+    setPageNumber(selected);
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="flex">
       <Sidebar />
-      <div className="lg:flex-1 mx-auto p-6">
-        <h2 className="text-2xl font-bold mb-4">Daftar Perusahaan</h2>
+      <div className="flex flex-col w-full ml-4">
+        <h1 className="text-2xl font-bold mb-4">Daftar Perusahaan</h1>
         <button
-          className="text-xs font-bold text-white bg-blue-500 py-1 px-2 rounded-md mb-4"
-          onClick={() => setShowAddForm(true)}
+          onClick={() => setShowTambah(true)}
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg mb-4"
         >
           Tambah Perusahaan
         </button>
-        {showAddForm && (
-          <div className="fixed h-full bg-gray-300 flex items-center justify-center">
-            <TambahPerusahaan
-              onTambahPerusahaan={handleTambahPerusahaan}
-              onCancel={() => setShowAddForm(false)}
-            />
-          </div>
-        )}
-        <table className="bg-white table-auto w-full shadow-md rounded-md overflow-hidden border border-gray-300">
-          <thead className="bg-gray-200">
+        {showTambah && <TambahPerusahaan setShowTambah={setShowTambah} />}
+        {showEdit && <EditPerusahaan id={editId} setShowEdit={setShowEdit} />}
+        <table className="table-auto w-full">
+          <thead>
             <tr>
-              <th className="py-2 px-4 border-r">No</th>
-              <th className="py-2 px-4 border-r">Nama Perusahaan</th>
-              <th className="py-2 px-4 border-r">Email Perusahaan</th>
-              <th className="py-2 px-4 border-r">Alamat Perusahaan</th>
-              <th className="py-2 px-4 border-r">Siswa Dibutuhkan</th>
-              <th className="py-2 px-4 border-r">Aksi</th>
+              <th className="px-4 py-2">Nama Perusahaan</th>
+              <th className="px-4 py-2">Email Perusahaan</th>
+              <th className="px-4 py-2">Alamat Perusahaan</th>
+              <th className="px-4 py-2">Siswa Dibutuhkan</th>
+              <th className="px-4 py-2">Aksi</th>
             </tr>
           </thead>
           <tbody>
-            {perusahaanList.map((perusahaan, index) => (
-              <tr key={perusahaan.id}>
-                <td className="py-2 px-4 border-r text-center">
-                  {(pageNumber - 1) * usersPerPage + index + 1}
-                </td>
-                <td className="py-2 px-4 border-r text-center">
-                  {perusahaan.nama_perusahaan}
-                </td>
-                <td className="py-2 px-4 border-r text-center">
-                  {perusahaan.email_perusahaan}
-                </td>
-                <td className="py-2 px-4 border-r text-center">
-                  {perusahaan.alamat_perusahaan}
-                </td>
-                <td className="py-2 px-4 border-r text-center">
-                  {perusahaan.siswa_dibutuhkan}
-                </td>
-                <td className="py-2 px-4 border-r text-center">
-                  {editingPerusahaanId === perusahaan.id ? (
-                    <EditPerusahaan
-                      perusahaan={perusahaan}
-                      onEditPerusahaan={handleUpdatePerusahaan}
-                      onCancelEdit={handleCancelEdit}
-                    />
-                  ) : (
-                    <>
-                      <button
-                        className="text-xs mr-2"
-                        onClick={() => handleEdit(perusahaan.id)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="text-xs"
-                        onClick={() => handleDelete(perusahaan.id)}
-                      >
-                        Hapus
-                      </button>
-                    </>
-                  )}
-                </td>
-              </tr>
-            ))}
+            {perusahaanList
+              .slice(pagesVisited, pagesVisited + perPage)
+              .map((perusahaan) => (
+                <tr key={perusahaan.id}>
+                  <td className="border px-4 py-2">
+                    {perusahaan.nama_perusahaan}
+                  </td>
+                  <td className="border px-4 py-2">
+                    {perusahaan.email_perusahaan}
+                  </td>
+                  <td className="border px-4 py-2">
+                    {perusahaan.alamat_perusahaan}
+                  </td>
+                  <td className="border px-4 py-2">
+                    {perusahaan.siswa_dibutuhkan}
+                  </td>
+                  <td className="border px-4 py-2">
+                    <button
+                      onClick={() => handleEdit(perusahaan.id)}
+                      className="bg-green-500 text-white px-2 py-1 rounded-md mr-2"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(perusahaan.id)}
+                      className="bg-red-500 text-white px-2 py-1 rounded-md"
+                    >
+                      Hapus
+                    </button>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
+        <ReactPaginate
+          previousLabel={"Sebelumnya"}
+          nextLabel={"Berikutnya"}
+          pageCount={pageCount}
+          onPageChange={changePage}
+          containerClassName={"pagination flex gap-2 mt-4"}
+          previousLinkClassName={
+            "pagination__link px-4 py-2 border border-gray-300 rounded-md text-gray-600 hover:text-gray-800 hover:border-gray-400 bg-gray-100"
+          }
+          nextLinkClassName={
+            "pagination__link px-4 py-2 border border-gray-300 rounded-md text-gray-600 hover:text-gray-800 hover:border-gray-400 bg-gray-100"
+          }
+          disabledClassName={"pagination__link--disabled"}
+          activeClassName={
+            "pagination__link--active bg-gray-500 text-white border-blue-500"
+          }
+        />
       </div>
     </div>
   );

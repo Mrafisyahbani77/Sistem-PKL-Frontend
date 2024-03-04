@@ -223,13 +223,13 @@ const Absensi = () => {
         <table className="min-w-full bg-white text-center shadow-md rounded-md overflow-hidden border border-gray-300">
           <thead className="bg-gray-200">
             <tr>
-              <th className="border border-gray-400 px-4 py-2">No.</th>
-              <th className="border border-gray-400 px-4 py-2">
+              <th className=" bg-gray-400 px-4 py-2">No.</th>
+              <th className=" bg-gray-400 px-4 py-2">
                 Tanggal Absen
               </th>
-              <th className="border border-gray-400 px-4 py-2">Waktu</th>
-              <th className="border border-gray-400 px-4 py-2">Lokasi</th>
-              <th className="border border-gray-400 px-4 py-2">Foto</th>
+              <th className=" bg-gray-400 px-4 py-2">Waktu</th>
+              <th className=" bg-gray-400 px-4 py-2">Lokasi</th>
+              <th className=" bg-gray-400 px-4 py-2">Foto</th>
             </tr>
           </thead>
           <tbody>

@@ -26,8 +26,8 @@ export default function Pembimbing() {
     fetchData();
   }, []);
 
-  const handleCompanyClick = (siswa) => {
-    setSelectedCompany(siswa);
+  const handleCompanyClick = (group_id) => {
+    setSelectedCompany(siswaDibimbing.find(group => group.group_id === group_id));
   };
 
   const handleResetClick = () => {
@@ -57,9 +57,9 @@ export default function Pembimbing() {
                 Kembali
               </button>
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
-                {siswaDibimbing.map((siswa) => (
+                {selectedCompany.siswa.map((siswa) => (
                   <div
-                    key={siswa.id}
+                    key={siswa.user_id}
                     className="bg-white rounded-lg shadow-md overflow-hidden"
                   >
                     <div className="p-4">
@@ -76,18 +76,18 @@ export default function Pembimbing() {
               </div>
             </div>
           ) : (
-            <div className="max-w-xs">
-              <div className="bg-white rounded-lg shadow-md overflow-hidden text-center">
-                <p className="text-lg font-semibold mb-2">
-                  Nama Perusahaan: {siswaDibimbing[0].nama_perusahaan}
-                </p>
-                <button
-                  onClick={() => handleCompanyClick(siswaDibimbing[0])}
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mx-auto"
-                >
-                  Lihat Siswa
-                </button>
-              </div>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
+              {siswaDibimbing.map((group) => (
+                <div key={group.group_id} className="bg-white rounded-lg shadow-md overflow-hidden text-center">
+                  <p className="text-lg font-semibold mb-2">Nama Perusahaan: {group.nama_perusahaan}</p>
+                  <button
+                    onClick={() => handleCompanyClick(group.group_id)}
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mx-auto"
+                  >
+                    Lihat Siswa
+                  </button>
+                </div>
+              ))}
             </div>
           )}
         </div>
