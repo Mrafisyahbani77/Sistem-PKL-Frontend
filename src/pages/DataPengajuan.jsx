@@ -9,6 +9,7 @@ const DataPengajuan = () => {
   const [dataPengajuan, setDataPengajuan] = useState([]);
   const [selectedPengajuan, setSelectedPengajuan] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedSiswaStatus, setSelectedSiswaStatus] = useState({});
   const [pageNumber, setPageNumber] = useState(0);
   const [showPdfForm, setShowPdfForm] = useState(false);
   const [pdfFormData, setPdfFormData] = useState(null); // State untuk menyimpan data formulir tambahan
@@ -46,7 +47,7 @@ const DataPengajuan = () => {
 
   const handleStatusUpdate = async () => {
     try {
-      if (!selectedPengajuan) {
+      if (Object.keys(selectedSiswaStatus).length === 0) {
         Swal.fire({
           icon: "error",
           title: "Error",
@@ -63,17 +64,17 @@ const DataPengajuan = () => {
       };
 
       await Promise.all(
-        selectedPengajuan.map(async (pengajuan) => {
+        Object.entries(selectedSiswaStatus).map(async ([siswa_id, status]) => {
           try {
             await axios.put(
-              `http://localhost:8000/api/admin/update-status/${pengajuan.id}`,
-              { status: selectedStatus },
+              `http://localhost:8000/api/admin/update-status/${siswa_id}`,
+              { status },
               config
             );
 
             // Update the status in the local data
             const updatedDataPengajuan = dataPengajuan.map((p) =>
-              p.id === pengajuan.id ? { ...p, status: selectedStatus } : p
+              p.id === siswa_id ? { ...p, status } : p
             );
             setDataPengajuan(updatedDataPengajuan);
           } catch (error) {
@@ -200,7 +201,6 @@ const DataPengajuan = () => {
     }
   };
 
-
   return (
     <div className="flex h-screen bg-gray-200">
       <Sidebar />
@@ -231,6 +231,12 @@ const DataPengajuan = () => {
           <tbody className="bg-white divide-y divide-gray-300">
             {dataPengajuan.length > 0 ? (
               dataPengajuan
+                .reduce((acc, curr) => {
+                  if (!acc.find((item) => item.group_id === curr.group_id)) {
+                    acc.push(curr);
+                  }
+                  return acc;
+                }, [])
                 .slice(pagesVisited, pagesVisited + itemsPerPage)
                 .map((pengajuan, index) => (
                   <tr key={index}>
@@ -335,10 +341,16 @@ const DataPengajuan = () => {
                         </td>
                         <td className="border py-2 px-4 border-gray-300">
                           <StatusDropdown
-                            selectedStatus={selectedStatus}
-                            onStatusChange={setSelectedStatus}
+                            selectedStatus={selectedSiswaStatus[siswa.id] || ""}
+                            onStatusChange={(status) =>
+                              setSelectedSiswaStatus((prev) => ({
+                                ...prev,
+                                [siswa.id]: status,
+                              }))
+                            }
                           />
                         </td>
+
                         <td className="border py-2 px-4 border-gray-300">
                           <button
                             onClick={() => openPdfViewer(siswa.file_cv, "CV")}
