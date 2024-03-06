@@ -87,15 +87,16 @@ const Perusahaan = () => {
         <h1 className="text-2xl font-bold mb-4">Daftar Perusahaan</h1>
         <button
           onClick={() => setShowTambah(true)}
-          className="bg-blue-500 text-white px-4 py-2 rounded-lg mb-4"
+          className="bg-blue-500 text-white px-3 py-2 rounded mb-4 text-sm"
         >
           Tambah Perusahaan
         </button>
+
         {showTambah && <TambahPerusahaan setShowTambah={setShowTambah} />}
         {showEdit && <EditPerusahaan id={editId} setShowEdit={setShowEdit} />}
-        <table className="table-auto w-full">
-          <thead>
-            <tr>
+        <table className="bg-white table-auto w-full text-center shadow-md rounded-md overflow-hidden border border-gray-300">
+          <thead className="bg-gray-200">
+            <tr className="bg-gray-200">
               <th className="px-4 py-2">Nama Perusahaan</th>
               <th className="px-4 py-2">Email Perusahaan</th>
               <th className="px-4 py-2">Alamat Perusahaan</th>

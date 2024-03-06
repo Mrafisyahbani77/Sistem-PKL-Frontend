@@ -5,11 +5,9 @@ import Cookies from "js-cookie";
 //icons
 import { MdDashboard } from "react-icons/md";
 import { FaBook } from "react-icons/fa";
-import { TiUserAdd } from "react-icons/ti";
-import { MdMail } from "react-icons/md";
+import { PiChalkboardTeacherFill } from "react-icons/pi";
 import { SiMinutemailer } from "react-icons/si";
-import { FaAddressBook } from "react-icons/fa";
-import { FaMagnifyingGlassChart } from "react-icons/fa6";
+
 
 const Sidekap = () => {
   const [open, setOpen] = useState(true);
@@ -25,7 +23,7 @@ const Sidekap = () => {
     },
     {
       title: "Info Pembimbing",
-      icon: <TiUserAdd style={{ fontSize: "24px" }} />,
+      icon: <PiChalkboardTeacherFill style={{ fontSize: "24px" }} />,
       path: "/LihatPembimbing",
     },
     {

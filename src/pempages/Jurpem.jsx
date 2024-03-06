@@ -166,8 +166,8 @@ export default function Jurpem() {
                       <td
                         className={`py-2 px-4 border-r ${
                           jurnal.status === "selesai"
-                            ? "text-white bg-green-500 rounded-full"
-                            : "text-white bg-blue-500 rounded-full"
+                            // ? "text-white bg-green-500 rounded-full"
+                            // : "text-white bg-blue-500 rounded-full"
                         }`}
                       >
                         {jurnal.status}

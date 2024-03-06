@@ -5,11 +5,8 @@ import Cookies from "js-cookie";
 //icons
 import { MdDashboard } from "react-icons/md";
 import { FaBook } from "react-icons/fa";
-import { TiUserAdd } from "react-icons/ti";
-import { MdMail } from "react-icons/md";
 import { SiMinutemailer } from "react-icons/si";
-import { FaAddressBook } from "react-icons/fa";
-import { FaMagnifyingGlassChart } from "react-icons/fa6";
+import { BiMailSend } from "react-icons/bi";
 
 const Sidepem = () => {
   const [open, setOpen] = useState(true);
@@ -25,7 +22,7 @@ const Sidepem = () => {
     },
     {
       title: "Surat Sppd",
-      icon: <TiUserAdd style={{ fontSize: "24px" }} />,
+      icon: <BiMailSend style={{ fontSize: "24px" }} />,
       path: "/Sppd",
     },
     {

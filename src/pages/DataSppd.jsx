@@ -55,7 +55,7 @@ export default function DataSppd() {
       <Sidebar />
       <div className="flex-grow p-8">
         <h1 className="text-2xl font-bold mb-4">Data SPPD</h1>
-        <table className="bg-white table-auto w-full text-center shadow-md rounded-md overflow-hidden border border-gray-3000">
+        <table className="bg-white table-auto w-full text-center shadow-md rounded-md overflow-hidden border border-gray-300">
           <thead className="bg-gray-200">
             <tr className="bg-gray-200">
               <th className="border-r  p-2">No</th>

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+// Import useEffect, useState, dan Fragment dari React
+import React, { useState, useEffect, Fragment } from "react";
 import Sidekap from "../components/Sidekap";
 import axios from "axios";
 import ReactPaginate from "react-paginate";
@@ -21,11 +22,12 @@ const Absensikap = () => {
 
   useEffect(() => {
     if (token) {
-      axios.get("http://localhost:8000/api/kaprog/absen-siswa", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      axios
+        .get("http://localhost:8000/api/kaprog/absen-siswa", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
         .then((response) => setSiswaList(response.data.siswa))
         .catch((error) => console.error(error));
     }
@@ -37,11 +39,15 @@ const Absensikap = () => {
 
   useEffect(() => {
     if (selectedSiswa && selectedSiswa.id && token) {
-      axios.get(`http://localhost:8000/api/kaprog/absen-siswa/${selectedSiswa.id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      axios
+        .get(
+          `http://localhost:8000/api/kaprog/absen-siswa/${selectedSiswa.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
         .then((response) => {
           const { absensi } = response.data;
           const updatedAbsensiList = absensi.map((item) => ({
@@ -181,12 +187,23 @@ const Absensikap = () => {
                         <td className="py-2 px-4 border-r text-center">
                           {item.waktu_absen}
                         </td>
-                        <td className="py-2 px-4 border-r text-center">
-                          {item.latitude}, {item.longitude}
+                        <td className="py-2 mx-auto px-4 border-r text-center">
+                          <a
+                            href={`https://www.google.com/maps/search/?api=1&query=${item.latitude},${item.longitude}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                          >
+                            Lihat Lokasi
+                          </a>
                         </td>
                         <td className="py-2 px-4 border-r text-center">
                           {item.foto ? (
-                            <img src={item.foto} alt="Foto Absensi" />
+                            <img
+                              src={item.foto}
+                              className="w-16 h-20 object-cover"
+                              alt="Foto Absensi"
+                            />
                           ) : (
                             <span>Foto tidak tersedia</span>
                           )}

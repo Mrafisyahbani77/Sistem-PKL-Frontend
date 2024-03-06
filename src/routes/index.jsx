@@ -41,14 +41,13 @@ import Absenpem from "../pempages/Absenpem.jsx";
 import Jurpem from "../pempages/Jurpem.jsx";
 
 //import view dashboard
-const SiswaDashboard = lazy(() =>
-  import("../views/Dashboard/SiswaDashboard.jsx")
-);
-const AdminDashboard = lazy(() =>
-  import("../views/Dashboard/AdminDashboard.jsx")
-);
-const Pembimbing = lazy(() => import("../views/Dashboard/Pembimbing.jsx"));
-const Kaprog = lazy(() => import("../views/Dashboard/Kaprog.jsx"));
+import SiswaDashboard from "../views/Dashboard/SiswaDashboard.jsx"
+
+import AdminDashboard from "../views/Dashboard/AdminDashboard.jsx"
+import Kaprog from "../views/Dashboard/Kaprog.jsx"
+import Pembimbing from "../views/Dashboard/Pembimbing.jsx"
+
+
 
 export default function RoutesIndex() {
   return (

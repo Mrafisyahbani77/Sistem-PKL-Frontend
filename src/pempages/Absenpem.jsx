@@ -14,12 +14,12 @@ export default function Absenpem() {
   useEffect(() => {
     const fetchData = async () => {
       const token = localStorage.getItem("token");
-  
+
       if (!token) {
         alert("Token not found. Please login again.");
         return;
       }
-  
+
       try {
         const response = await axios.get(
           "http://127.0.0.1:8000/api/pembimbing/absen-siswa",
@@ -34,19 +34,19 @@ export default function Absenpem() {
         console.error(error);
       }
     };
-  
+
     fetchData();
   }, []);
-  
+
   const handleDetailClick = async (absen) => {
     try {
       const token = localStorage.getItem("token");
-  
+
       if (!token) {
         alert("Token not found. Please login again.");
         return;
       }
-  
+
       const response = await axios.get(
         `http://127.0.0.1:8000/api/pembimbing/data-absen/${absen.id}`,
         {
@@ -55,14 +55,14 @@ export default function Absenpem() {
           },
         }
       );
-  
+
       setSelectedAbsen(response.data.absensi);
       setShowModal(true);
     } catch (error) {
       console.error(error);
     }
   };
-  
+
   const handleLocationClick = (latitude, longitude) => {
     window.open(
       `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`
@@ -148,7 +148,7 @@ export default function Absenpem() {
               <h2 className="text-lg font-bold">Detail Absensi</h2>
               <button
                 onClick={() => setShowModal(false)}
-                className="text-red-500 hover:text-red-700"
+                className="bg-red-500 rounded text-white font-bold py-2 px-4 hover:bg-red-700"
               >
                 Tutup
               </button>
@@ -174,7 +174,7 @@ export default function Absenpem() {
                         onClick={() =>
                           handleLocationClick(absen.latitude, absen.longitude)
                         }
-                        className="text-blue-500 hover:underline"
+                        className="bg-blue-500 text-white font-bold py-2 px-4 hover:bg-blue-600 rounded"
                       >
                         Lihat Lokasi
                       </button>
@@ -182,7 +182,7 @@ export default function Absenpem() {
                     <td className="border px-4 py-2">
                       {absen.foto && (
                         <img
-                          src={`http://127.0.0.1:8000/storage/${absen.foto}`}
+                          src={`http://127.0.0.1:8000${absen.foto}`}
                           alt="Foto Absen"
                           className="w-16 h-16 object-cover"
                         />

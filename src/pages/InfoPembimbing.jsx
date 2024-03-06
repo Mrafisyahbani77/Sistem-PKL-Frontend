@@ -77,30 +77,30 @@ const InfoPembimbing = () => {
             <div className="flex flex-col p-4">
                 <h2 className="text-xl font-bold mb-4">Daftar Pembimbing</h2>
                 {error && <p className="text-red-500">{error}</p>}
-                <table className="w-full border border-gray-200">
-                    <thead>
+                <table className="bg-white table-auto w-full shadow-md rounded-md overflow-hidden border-gray-300">
+                    <thead className='bg-gray-200'>
                         <tr className="bg-gray-100">
-                            <th className="px-4 py-2 border border-gray-200">No</th>
-                            <th className="px-4 py-2 border border-gray-200">Nama</th>
-                            <th className="px-4 py-2 border border-gray-200">Email</th>
-                            <th className="px-4 py-2 border border-gray-200">Jabatan</th>
-                            <th className="px-4 py-2 border border-gray-200">Pangkat</th>
-                            <th className="px-4 py-2 border border-gray-200">Nomer Telpon</th>
-                            <th className="px-4 py-2 border border-gray-200">Nama Perusahaan</th>
-                            <th className="px-4 py-2 border border-gray-200">Action</th>
+                            <th className="px-4 py-2 border ">No</th>
+                            <th className="px-4 py-2 border ">Nama</th>
+                            <th className="px-4 py-2 border ">Email</th>
+                            <th className="px-4 py-2 border ">Jabatan</th>
+                            <th className="px-4 py-2 border ">Pangkat</th>
+                            <th className="px-4 py-2 border ">Nomer Telpon</th>
+                            <th className="px-4 py-2 border ">Nama Perusahaan</th>
+                            <th className="px-4 py-2 border ">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         {pembimbings.map((pembimbing, index) => (
                             <tr key={pembimbing.user_id} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
-                                <td className="px-4 py-2 border border-gray-200">{index + 1}</td>
-                                <td className="px-4 py-2 border border-gray-200">{pembimbing.name}</td>
-                                <td className="px-4 py-2 border border-gray-200">{pembimbing.email}</td>
-                                <td className="px-4 py-2 border border-gray-200">{pembimbing.jabatan}</td>
-                                <td className="px-4 py-2 border border-gray-200">{pembimbing.pangkat}</td>
-                                <td className="px-4 py-2 border border-gray-200">{pembimbing.nomer_telpon}</td>
-                                <td className="px-4 py-2 border border-gray-200">{pembimbing.nama_perusahaan}</td>
-                                <td className="px-4 py-2 border border-gray-200">
+                                <td className="px-4 py-2 border ">{index + 1}</td>
+                                <td className="px-4 py-2 border ">{pembimbing.name}</td>
+                                <td className="px-4 py-2 border ">{pembimbing.email}</td>
+                                <td className="px-4 py-2 border ">{pembimbing.jabatan}</td>
+                                <td className="px-4 py-2 border ">{pembimbing.pangkat}</td>
+                                <td className="px-4 py-2 border ">{pembimbing.nomer_telpon}</td>
+                                <td className="px-4 py-2 border ">{pembimbing.nama_perusahaan}</td>
+                                <td className="px-4 py-2 border ">
                                     <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => handleDetail(pembimbing.user_id)}>Detail Assign</button>
                                 </td>
                             </tr>
