@@ -167,7 +167,7 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 name="password"
                 value={formData.password || ""}
                 onChange={onInputChange}
-                className="mt-1 p-2 w-full border rounded-md"
+                className=" mt-1 p-2 w-full border rounded-md"
                 required
               />
             </div>

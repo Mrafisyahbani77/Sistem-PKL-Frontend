@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2"; // Import SweetAlert
 
-const PdfForm = ({ selectedGroupId, closeForm }) => {
+const PdfForm = ({ selectedGroupId, closeForm}) => {
   const [formData, setFormData] = useState({
     nomor_surat: "",
     tahun_ajar: "",
@@ -13,6 +13,36 @@ const PdfForm = ({ selectedGroupId, closeForm }) => {
   });
 
   const [loading, setLoading] = useState(false);
+  const [pembimbingList, setPembimbingList] = useState([]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+
+    const fetchPembimbing = async () => {
+      try {
+        const response = await axios.get(
+          "http://127.0.0.1:8000/api/admin/K-Pembimbing",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+  
+        setPembimbingList(response.data);
+      } catch (error) {
+        console.error("Error fetching pembimbing:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Gagal Mengambil Data Pembimbing",
+          text: "Silakan coba lagi.",
+        });
+      }
+    };
+  
+    fetchPembimbing();
+  }, []);
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -82,7 +112,6 @@ const PdfForm = ({ selectedGroupId, closeForm }) => {
 
   return (
     <div className="bg-gray-100 p-4 rounded-lg">
-      
       <form onSubmit={handleSubmit}>
         <label>
           Nomor Surat:
@@ -130,13 +159,19 @@ const PdfForm = ({ selectedGroupId, closeForm }) => {
         </label>
         <label>
           Kontak:
-          <input
-            type="text"
+          <select
             name="kontak"
             value={formData.kontak}
             onChange={handleChange}
             className="block w-full mt-1 p-2 border rounded"
-          />
+          >
+            <option value="">Pilih Kontak Pembimbing</option>
+            {pembimbingList.map((pembimbing) => (
+              <option key={pembimbing.id} value={pembimbing.id}>
+               bpk {pembimbing.nama} - {pembimbing.nomer_telpon}
+              </option>
+            ))}
+          </select>
         </label>
         <button
           type="submit"
@@ -145,7 +180,6 @@ const PdfForm = ({ selectedGroupId, closeForm }) => {
         >
           {loading ? "Generating..." : "Generate PDF"}
         </button>
-        
       </form>
     </div>
   );

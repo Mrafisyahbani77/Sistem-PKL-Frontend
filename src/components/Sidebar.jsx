@@ -18,6 +18,7 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const user = JSON.parse(Cookies.get("user"));
+  
 
   const Menus = [
     {

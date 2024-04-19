@@ -55,7 +55,7 @@ const AdminDashboard = () => {
     <div>
       <Layout>
         <div className={`flex flex-col flex-1 p-8 transition-all ${!open ? "ml-20" : ""}`}>
-          <p className="text-2xl font-bold mb-4">Selamat datang di Dashboard</p>
+          <p className="text-2xl md:text-sm font-bold mb-4">Selamat datang di Dashboard</p>
           <div className="grid gap-y-10 gap-x-6 md:grid-cols-2 xl:grid-cols-4 mb-12 mt-12">
             {[
               { name: "Users", icon: <FaUser />, color: "bg-primary" },

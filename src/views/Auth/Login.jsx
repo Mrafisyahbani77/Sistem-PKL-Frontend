@@ -15,6 +15,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [buttonLoading, setButtonLoading] = useState(false); // State untuk mengontrol status animasi tombol login
 
   const handleRememberMeChange = () => {
     setRememberMe(!rememberMe);
@@ -35,6 +36,16 @@ export default function Login() {
   const login = async (e) => {
     e.preventDefault();
     setLoading(true);
+    if (!email.trim() || !password.trim()) {
+      toast.error("Email dan password harus diisi dengan lengkap!", {
+        position: "top-center",
+        duration: 4000,
+      });
+      setLoading(false);
+      return;
+    }
+
+    setButtonLoading(true); // Menghentikan animasi tombol login
 
     try {
       const response = await Api.post("/api/login", {
@@ -50,6 +61,7 @@ export default function Login() {
           duration: 4000,
         });
         setLoading(false);
+        setButtonLoading(false); // Mengembalikan animasi tombol login
         return;
       }
 
@@ -95,7 +107,7 @@ export default function Login() {
         });
       } else if (error.request) {
         // Display network error message
-        toast.error("Seperti nya ada kesalahan Jaringan", {
+        toast.error("Kesalahan Jaringan", {
           position: "top-center",
           duration: 4000,
         });
@@ -108,6 +120,7 @@ export default function Login() {
       }
     } finally {
       setLoading(false);
+      setButtonLoading(false); // Mengembalikan animasi tombol login
     }
   };
 
@@ -143,7 +156,6 @@ export default function Login() {
                       name="email"
                       type="email"
                       autoComplete="email"
-                      required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="block w-full px-4 py-3 rounded-md shadow-sm bg-gray-200 focus:outline-none focus:ring focus:border-blue-300 sm:text-sm"
@@ -165,7 +177,6 @@ export default function Login() {
                       name="password"
                       type="password"
                       autoComplete="current-password"
-                      required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       className="block w-full px-4 py-3 rounded-md shadow-sm bg-gray-200 focus:outline-none focus:ring focus:border-blue-300 sm:text-sm"
@@ -195,8 +206,8 @@ export default function Login() {
                 <div>
                   <button
                     type="submit"
-                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-indigo-500 hover:bg-indigo-700 focus:outline-none focus:ring focus:border-blue-300"
-                    disabled={loading}
+                    className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-indigo-500 hover:bg-indigo-700 focus:outline-none focus:ring focus:border-blue-300 ${buttonLoading ? "cursor-not-allowed opacity-50" : ""}`}
+                    disabled={loading || buttonLoading}
                   >
                     {loading ? "Sedang Loginnn..." : "Login"}
                   </button>
