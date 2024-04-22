@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "../components/Sidebar";
 import UserForm from "./FormTambah";
+import ImportAkun from "./ImportAkun";
 import Edit from "./Edit";
 import { MdOutlineDeleteForever } from "react-icons/md";
 import { FaUserEdit } from "react-icons/fa";
@@ -20,6 +21,7 @@ const Crud = () => {
     role: "",
   });
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showTambahForm, setShowTambahForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [pageNumber, setPageNumber] = useState(0);
@@ -93,10 +95,21 @@ const Crud = () => {
   const handleEdit = async (userId) => {
     try {
       const selectedUser = users.find((user) => user.id === userId);
-  
+
       if (selectedUser) {
-        const { name, email, role, password, nisn, kelas, nip, jabatan, pangkat, nomer_telpon } = selectedUser;
-  
+        const {
+          name,
+          email,
+          role,
+          password,
+          nisn,
+          kelas,
+          nip,
+          jabatan,
+          pangkat,
+          nomer_telpon,
+        } = selectedUser;
+
         if (role && role.name) {
           setFormData({
             id: userId,
@@ -126,7 +139,6 @@ const Crud = () => {
       // Handle error properly, e.g., display a message to the user
     }
   };
-  
 
   const getRoleIdFromApi = (roleName) => {
     // Logika untuk mendapatkan role_id dari API
@@ -449,6 +461,14 @@ const Crud = () => {
             Tambah User
           </button>
         </div>
+        <div className="p-4">
+          <button
+            className="text-sm font-bold text-white bg-blue-500 py-2 px-4 rounded-md"
+            onClick={() => setShowTambahForm(true)}
+          >
+            Import Akun
+          </button>
+        </div>
         <div className="text-center mx-auto">
           <div className="flex justify-between mb-4">
             <div className="w-1/2 mr-2">
@@ -501,6 +521,23 @@ const Crud = () => {
               onInputChange={handleInputChange}
               roleCategory={roleCategory}
               setFormData={setFormData} // Tambahkan properti setFormData di sini
+            />
+          </div>
+        </div>
+      )}
+
+      {showTambahForm && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-8 min-w-80 mx-auto rounded-md">
+            <ImportAkun
+              onClose={() => {
+                setShowTambahForm(false);
+                setFormData({});
+              }}
+              onSubmit={handleSubmit}
+              formData={formData}
+              setFormData={setFormData} // Tambahkan properti setFormData di sini
+              onInputChange={handleInputChange}
             />
           </div>
         </div>

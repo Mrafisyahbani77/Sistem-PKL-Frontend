@@ -46,7 +46,20 @@ const JurnalSiswa = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
+  
+    const today = new Date();
+    const selectedDate = new Date(tanggal);
+  
+    // Memeriksa apakah tanggal yang dipilih lebih kecil dari hari ini
+    if (selectedDate < today) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Anda hanya bisa memilih tanggal hari ini atau seterusnya!",
+      });
+      return;
+    }
+  
     try {
       const journalData = { kegiatan, status, waktu, tanggal };
       if (editingId) {
@@ -64,7 +77,7 @@ const JurnalSiswa = () => {
           text: "Jurnal berhasil disubmit!",
         });
       }
-
+  
       fetchJournals();
       toggleForm(); // Close form after submit
     } catch (error) {
@@ -79,6 +92,7 @@ const JurnalSiswa = () => {
       });
     }
   };
+  
 
   const handleEdit = async (id) => {
     try {
@@ -232,13 +246,13 @@ const JurnalSiswa = () => {
                         onClick={toggleForm}
                         className="bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600 mr-2"
                       >
-                        Back
+                        Kembali
                       </button>
                       <button
                         type="submit"
                         className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
                       >
-                        {editingId ? "Simpan Perubahan" : "Submit"}
+                        {editingId ? "Simpan Perubahan" : "Tambah"}
                       </button>
                     </div>
                   </form>
