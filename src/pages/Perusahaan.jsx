@@ -12,6 +12,7 @@ const Perusahaan = () => {
   const [showEdit, setShowEdit] = useState(false);
   const [editId, setEditId] = useState(null);
   const [pageNumber, setPageNumber] = useState(0);
+  const [loading, setLoading] = useState(true);
   const perPage = 5; // Jumlah data per halaman
   const pagesVisited = pageNumber * perPage;
 
@@ -25,9 +26,7 @@ const Perusahaan = () => {
       })
       .then((response) => {
         setPerusahaanList(response.data.perusahaan);
-      })
-      .catch((error) => {
-        console.error(error);
+        setLoading(false);
       });
   }, []);
 
@@ -87,7 +86,7 @@ const Perusahaan = () => {
         <h1 className="text-2xl font-bold mb-4">Daftar Perusahaan</h1>
         <button
           onClick={() => setShowTambah(true)}
-          className="bg-blue-500 text-white px-3 py-2 rounded mb-4 text-sm"
+          className="bg-blue-500 text-white px-3 py-2 rounded mb-4 text-sm w-40"
         >
           Tambah Perusahaan
         </button>
@@ -105,38 +104,46 @@ const Perusahaan = () => {
             </tr>
           </thead>
           <tbody>
-            {perusahaanList
-              .slice(pagesVisited, pagesVisited + perPage)
-              .map((perusahaan) => (
-                <tr key={perusahaan.id}>
-                  <td className="border px-4 py-2">
-                    {perusahaan.nama_perusahaan}
-                  </td>
-                  <td className="border px-4 py-2">
-                    {perusahaan.email_perusahaan}
-                  </td>
-                  <td className="border px-4 py-2">
-                    {perusahaan.alamat_perusahaan}
-                  </td>
-                  <td className="border px-4 py-2">
-                    {perusahaan.siswa_dibutuhkan}
-                  </td>
-                  <td className="border px-4 py-2">
-                    <button
-                      onClick={() => handleEdit(perusahaan.id)}
-                      className="bg-green-500 text-white px-2 py-1 rounded-md mr-2"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(perusahaan.id)}
-                      className="bg-red-500 text-white px-2 py-1 rounded-md"
-                    >
-                      Hapus
-                    </button>
-                  </td>
-                </tr>
-              ))}
+            {loading ? (
+              <tr>
+                <td className="text-center" colSpan="5">
+                  Loading....
+                </td>
+              </tr>
+            ) : (
+              perusahaanList
+                .slice(pagesVisited, pagesVisited + perPage)
+                .map((perusahaan) => (
+                  <tr key={perusahaan.id}>
+                    <td className="border px-4 py-2">
+                      {perusahaan.nama_perusahaan}
+                    </td>
+                    <td className="border px-4 py-2">
+                      {perusahaan.email_perusahaan}
+                    </td>
+                    <td className="border px-4 py-2">
+                      {perusahaan.alamat_perusahaan}
+                    </td>
+                    <td className="border px-4 py-2">
+                      {perusahaan.siswa_dibutuhkan}
+                    </td>
+                    <td className="border px-4 py-2">
+                      <button
+                        onClick={() => handleEdit(perusahaan.id)}
+                        className="bg-green-500 text-white px-2 py-1 rounded-md mr-2"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(perusahaan.id)}
+                        className="bg-red-500 text-white px-2 py-1 rounded-md"
+                      >
+                        Hapus
+                      </button>
+                    </td>
+                  </tr>
+                ))
+            )}
           </tbody>
         </table>
         <ReactPaginate

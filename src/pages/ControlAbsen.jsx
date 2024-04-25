@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar.jsx";
 import Api from "../Api";
 import ReactPaginate from "react-paginate";
+import Loader from "../components/Loader.jsx";
 
 const ControlAbsen = () => {
   const [siswaList, setSiswaList] = useState([]);
   const [selectedSiswa, setSelectedSiswa] = useState(null);
   const [absensiList, setAbsensiList] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [token, setToken] = useState("");
   const [showPopup, setShowPopup] = useState(false);
@@ -24,15 +26,21 @@ const ControlAbsen = () => {
   }, []);
 
   useEffect(() => {
-    // Mengambil daftar akun siswa dari API
+    setIsLoading(true); // Set isLoading ke true sebelum melakukan permintaan API
     if (token) {
       Api.get("/api/admin/absensi", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
-        .then((response) => setSiswaList(response.data))
-        .catch((error) => console.error(error));
+        .then((response) => {
+          setSiswaList(response.data);
+          setIsLoading(false); // Set isLoading kembali ke false setelah data diterima
+        })
+        .catch((error) => {
+          console.error(error);
+          setIsLoading(false); // Pastikan isLoading diset kembali ke false bahkan jika terjadi kesalahan
+        });
     }
   }, [token]);
 
@@ -84,31 +92,45 @@ const ControlAbsen = () => {
 
   const pageCount = Math.ceil(filteredSiswaList.length / usersPerPage);
 
-  const displaySiswaList = filteredSiswaList
-    .slice(pagesVisited, pagesVisited + usersPerPage)
-    .map((siswa, index) => (
-      <tr
-        key={index}
-        className={`cursor-pointer py-2 px-4 border-b transition-colors text-center duration-300  ${
-          selectedSiswa && selectedSiswa.nisn === siswa.nisn
-            ? "bg-gray-100"
-            : ""
-        }`}
-      >
-        <td className="py-2 px-4 border-r">{index + 1 + pagesVisited}</td>
-        <td className="py-2 px-4 border-r">{siswa.nisn}</td>
-        <td className="py-2 px-4 border-r">{siswa.kelas}</td>
-        <td className="py-2 px-4 border-r">{siswa.name}</td>
-        <td className="py-2 px-4 border-r">
-          <button
-            onClick={() => handleSiswaClick(siswa)}
-            className="bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-600"
-          >
-            Detail
-          </button>
-        </td>
-      </tr>
-    ));
+  const displaySiswaList = isLoading ? (
+    <tr>
+      <td colSpan="5" className="text-center">
+        Loading...
+      </td>
+    </tr>
+  ) : filteredSiswaList.length === 0 ? (
+    <tr>
+      <td colSpan="5" className="text-center py-4">
+        Tidak ada data siswa yang ditemukan.
+      </td>
+    </tr>
+  ) : (
+    filteredSiswaList
+      .slice(pagesVisited, pagesVisited + usersPerPage)
+      .map((siswa, index) => (
+        <tr
+          key={index}
+          className={`cursor-pointer py-2 px-4 border-b transition-colors text-center duration-300  ${
+            selectedSiswa && selectedSiswa.nisn === siswa.nisn
+              ? "bg-gray-100"
+              : ""
+          }`}
+        >
+          <td className="py-2 px-4 border-r">{index + 1 + pagesVisited}</td>
+          <td className="py-2 px-4 border-r">{siswa.nisn}</td>
+          <td className="py-2 px-4 border-r">{siswa.kelas}</td>
+          <td className="py-2 px-4 border-r">{siswa.name}</td>
+          <td className="py-2 px-4 border-r">
+            <button
+              onClick={() => handleSiswaClick(siswa)}
+              className="bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-600"
+            >
+              Detail
+            </button>
+          </td>
+        </tr>
+      ))
+  );
 
   const changePage = ({ selected }) => {
     setPageNumber(selected);
@@ -189,7 +211,10 @@ const ControlAbsen = () => {
                 </thead>
                 <tbody>
                   {absensiList
-                    .slice(popupPagesVisited, popupPagesVisited + popupUsersPerPage)
+                    .slice(
+                      popupPagesVisited,
+                      popupPagesVisited + popupUsersPerPage
+                    )
                     .map((item, index) => (
                       <tr key={index} className="hover:bg-gray-50">
                         <td className="py-2 px-4 border-r text-center">

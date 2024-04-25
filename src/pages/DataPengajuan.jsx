@@ -9,6 +9,7 @@ const DataPengajuan = () => {
   const [dataPengajuan, setDataPengajuan] = useState([]);
   const [selectedPengajuan, setSelectedPengajuan] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [loading, setLoading] = useState(true);
   const [selectedSiswaStatus, setSelectedSiswaStatus] = useState({});
   const [pageNumber, setPageNumber] = useState(0);
   const [showPdfForm, setShowPdfForm] = useState(false);
@@ -39,9 +40,7 @@ const DataPengajuan = () => {
       })
       .then((response) => {
         setDataPengajuan(response.data.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching pengajuan data:", error);
+        setLoading(false);
       });
   }, []);
 
@@ -229,7 +228,13 @@ const DataPengajuan = () => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-300">
-            {dataPengajuan.length > 0 ? (
+            {loading ? (
+              <tr>
+                <td colSpan="5" className="text-center">
+                  Loading...
+                </td>
+              </tr>
+            ) : dataPengajuan.length > 0 ? (
               dataPengajuan
                 .reduce((acc, curr) => {
                   if (!acc.find((item) => item.group_id === curr.group_id)) {
@@ -263,7 +268,7 @@ const DataPengajuan = () => {
             ) : (
               <tr>
                 <td colSpan="5" className="px-6 py-4 text-center">
-                  No data available
+                  Tidak ada data pengajuan PKL
                 </td>
               </tr>
             )}

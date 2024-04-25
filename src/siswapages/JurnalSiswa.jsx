@@ -47,19 +47,6 @@ const JurnalSiswa = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
   
-    const today = new Date();
-    const selectedDate = new Date(tanggal);
-  
-    // Memeriksa apakah tanggal yang dipilih lebih kecil dari hari ini
-    if (selectedDate < today) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Anda hanya bisa memilih tanggal hari ini atau seterusnya!",
-      });
-      return;
-    }
-  
     try {
       const journalData = { kegiatan, status, waktu, tanggal };
       if (editingId) {
@@ -216,30 +203,6 @@ const JurnalSiswa = () => {
                         <option value="selesai">Selesai</option>
                       </select>
                     </div>
-                    <div className="mb-4">
-                      <label className="block text-gray-700 text-sm font-bold mb-2">
-                        Waktu
-                      </label>
-                      <input
-                        type="time"
-                        value={waktu}
-                        onChange={(e) => setWaktu(e.target.value)}
-                        className="p-2 border rounded-md w-full"
-                        required
-                      />
-                    </div>
-                    <div className="mb-4">
-                      <label className="block text-gray-700 text-sm font-bold mb-2">
-                        Tanggal
-                      </label>
-                      <input
-                        type="date"
-                        value={tanggal}
-                        onChange={(e) => setTanggal(e.target.value)}
-                        className="p-2 border rounded-md w-full"
-                        required
-                      />
-                    </div>
                     <div className="text-center">
                       <button
                         type="button"
@@ -278,7 +241,7 @@ const JurnalSiswa = () => {
                 <th className="py-2 px-4">Aksi</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="text-center">
               {currentJournals.map((journal, index) => (
                 <tr key={journal.id} className="hover:bg-gray-100">
                   <td

@@ -8,6 +8,7 @@ const Jurnal = () => {
   const [siswa, setSiswa] = useState([]);
   const [jurnals, setJurnals] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [pageNumber, setPageNumber] = useState(0);
   const usersPerPage = 6;
@@ -19,6 +20,8 @@ const Jurnal = () => {
         setSiswa(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Error fetching students:", error.message);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -117,37 +120,55 @@ const Jurnal = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredSiswa
-              .slice(pageNumber * usersPerPage, (pageNumber + 1) * usersPerPage)
-              .map((user, index) => (
-                <tr
-                  key={user.id}
-                  className={`cursor-pointer py-2 px-4 border-b transition-colors duration-300 ${
-                    selectedUserId === user.id ? "bg-gray-200" : ""
-                  } hover:bg-gray-400`}
-                >
-                  <td className="py-2 px-4 border-r text-center">
-                    {index + 1}
-                  </td>
-                  <td className="py-2 px-4 border-r text-center">
-                    {user.nisn}
-                  </td>
-                  <td className="py-2 px-4 border-r text-center">
-                    {user.kelas}
-                  </td>
-                  <td className="py-2 px-4 border-r text-center">
-                    {user.name}
-                  </td>
-                  <td className="py-2 px-4 border-r text-center">
-                    <button
-                      onClick={() => handleDetailClick(user.id)}
-                      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                    >
-                      Detail
-                    </button>
-                  </td>
-                </tr>
-              ))}
+            {loading ? (
+              <tr>
+                <td colSpan="5" className="text-center">
+                  {" "}
+                  Loading...
+                </td>
+              </tr>
+            ) : filteredSiswa.length > 0 ? (
+              filteredSiswa
+                .slice(
+                  pageNumber * usersPerPage,
+                  (pageNumber + 1) * usersPerPage
+                )
+                .map((user, index) => (
+                  <tr
+                    key={user.id}
+                    className={`cursor-pointer py-2 px-4 border-b transition-colors duration-300 ${
+                      selectedUserId === user.id ? "bg-gray-200" : ""
+                    } `}
+                  >
+                    <td className="py-2 px-4 border-r text-center">
+                      {index + 1}
+                    </td>
+                    <td className="py-2 px-4 border-r text-center">
+                      {user.nisn}
+                    </td>
+                    <td className="py-2 px-4 border-r text-center">
+                      {user.kelas}
+                    </td>
+                    <td className="py-2 px-4 border-r text-center">
+                      {user.name}
+                    </td>
+                    <td className="py-2 px-4 border-r text-center">
+                      <button
+                        onClick={() => handleDetailClick(user.id)}
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                      >
+                        Detail
+                      </button>
+                    </td>
+                  </tr>
+                ))
+            ) : (
+              <tr>
+                <td colSpan="5" className="text-center">
+                  Tidak ada data jurnal siswa
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
         <ReactPaginate
@@ -205,8 +226,8 @@ const Jurnal = () => {
                         <td
                           className={`py-2 px-4 border-r ${
                             jurnal.status === "selesai"
-                              // ? "text-white bg-green-500 rounded-full"
-                              // : "text-white bg-blue-500 rounded-full"
+                            // ? "text-white bg-green-500 rounded-full"
+                            // : "text-white bg-blue-500 rounded-full"
                           }`}
                         >
                           {jurnal.status}

@@ -4,8 +4,8 @@ import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import { faEnvelope, faLock } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import toast, { Toaster } from "react-hot-toast"; // Import toast and Toaster
-import genz from "../../assets/genz.svg";
+import toast, { Toaster } from "react-hot-toast"; 
+import pengajuanpkl from "../../assets/images/pkl.png"
 
 export default function Login() {
   document.title = "Login - Sistem Pengajuan Pkl";
@@ -15,7 +15,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [buttonLoading, setButtonLoading] = useState(false); // State untuk mengontrol status animasi tombol login
+  const [buttonLoading, setButtonLoading] = useState(false);
 
   const handleRememberMeChange = () => {
     setRememberMe(!rememberMe);
@@ -30,12 +30,16 @@ export default function Login() {
   }, [token, navigate]);
 
   if (token) {
-    return null; // Supaya render tidak dilanjutkan
+    return null;
   }
 
   const login = async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const passwordPattern = /^.{8,}$/;
+
     if (!email.trim() || !password.trim()) {
       toast.error("Email dan password harus diisi dengan lengkap!", {
         position: "top-center",
@@ -45,7 +49,25 @@ export default function Login() {
       return;
     }
 
-    setButtonLoading(true); // Menghentikan animasi tombol login
+    if (!emailPattern.test(email)) {
+      toast.error("Email harus valid, dengan format user@example.com", {
+        position: "top-center",
+        duration: 4000,
+      });
+      setLoading(false);
+      return;
+    }
+
+    if (!passwordPattern.test(password)) {
+      toast.error("Password harus terdiri dari minimal 8 karakter", {
+        position: "top-center",
+        duration: 4000,
+      });
+      setLoading(false);
+      return;
+    }
+
+    setButtonLoading(true);
 
     try {
       const response = await Api.post("/api/login", {
@@ -61,17 +83,15 @@ export default function Login() {
           duration: 4000,
         });
         setLoading(false);
-        setButtonLoading(false); // Mengembalikan animasi tombol login
+        setButtonLoading(false);
         return;
       }
 
-      // Save token to cookies
       Cookies.set("token", token);
       Cookies.set("user", JSON.stringify(user));
       Cookies.set("permissions", JSON.stringify(permissions));
       Cookies.set("role", roles[0]);
 
-      // Save token to localStorage
       localStorage.setItem("token", token);
 
       toast.success("Login berhasil!", {
@@ -100,19 +120,16 @@ export default function Login() {
       }
     } catch (error) {
       if (error.response) {
-        // Display error message using toast
         toast.error("Email atau password salah!", {
           position: "top-center",
           duration: 4000,
         });
       } else if (error.request) {
-        // Display network error message
         toast.error("Kesalahan Jaringan", {
           position: "top-center",
           duration: 4000,
         });
       } else {
-        // Display generic error message
         toast.error("Server sedang error", {
           position: "top-center",
           duration: 4000,
@@ -120,28 +137,27 @@ export default function Login() {
       }
     } finally {
       setLoading(false);
-      setButtonLoading(false); // Mengembalikan animasi tombol login
+      setButtonLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen w-full bg-gray-100 py-6 flex flex-col justify-center sm:py-12">
-      <Toaster /> {/* Add Toaster component here */}
+      <Toaster />
       <div className="relative py-3 sm:max-w-xl sm:mx-auto">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-300 to-blue-600 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-blue-600 shadow-xl transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl"></div>
         <div className="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20">
           <div className="max-w-md mx-auto">
             <form onSubmit={login} className="space-y-6 flex items-center">
               <div className="mr-4">
                 <img
-                  src={genz}
-                  width="150"
+                  src={pengajuanpkl}
+                  width="200"
                   className="mb-4 mx-auto rounded-full"
                   alt=""
                 />
               </div>
               <div>
-                <h1 className="text-2xl font-semibold">Sistem Pengajuan Pkl</h1>
                 <div>
                   <label
                     htmlFor="email"
@@ -206,7 +222,9 @@ export default function Login() {
                 <div>
                   <button
                     type="submit"
-                    className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-indigo-500 hover:bg-indigo-700 focus:outline-none focus:ring focus:border-blue-300 ${buttonLoading ? "cursor-not-allowed opacity-50" : ""}`}
+                    className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-indigo-500 hover:bg-indigo-700 focus:outline-none focus:ring focus:border-blue-300 ${
+                      buttonLoading ? "cursor-not-allowed opacity-50" : ""
+                    }`}
                     disabled={loading || buttonLoading}
                   >
                     {loading ? "Sedang Loginnn..." : "Login"}
