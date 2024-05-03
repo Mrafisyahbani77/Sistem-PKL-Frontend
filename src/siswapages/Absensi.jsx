@@ -150,29 +150,7 @@ const Absensi = () => {
           <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-800 bg-opacity-50">
             <div className="bg-white p-4 rounded shadow-lg w-1/2">
               <h3 className="text-xl font-semibold mb-4">Form Absen</h3>
-
-              <label className="block text-sm font-semibold mb-2">
-                Tanggal Absen:
-              </label>
-              <input
-                type="date"
-                value={tanggalabsen}
-                onChange={(e) => setTanggalAbsensi(e.target.value)}
-                className="w-full p-2 border rounded mb-2"
-              />
-
-              <label className="block text-sm font-semibold mb-2">
-                Waktu Absen:
-              </label>
-              <input
-                type="time"
-                value={waktuabsen}
-                onChange={(e) => setWaktuAbsen(e.target.value)}
-                className="w-full p-2 border rounded mb-2"
-              />
-
-
-             <p>Lihat lokasi anda:</p>
+              <p>Lihat lokasi anda:</p>
               <button
                 onClick={() =>
                   window.open(
@@ -223,13 +201,11 @@ const Absensi = () => {
         <table className="min-w-full bg-white text-center shadow-md rounded-md overflow-hidden border border-gray-300">
           <thead className="bg-gray-200">
             <tr>
-              <th className=" bg-gray-400 px-4 py-2">No.</th>
-              <th className=" bg-gray-400 px-4 py-2">
-                Tanggal Absen
-              </th>
-              <th className=" bg-gray-400 px-4 py-2">Waktu</th>
-              <th className=" bg-gray-400 px-4 py-2">Lokasi</th>
-              <th className=" bg-gray-400 px-4 py-2">Foto</th>
+              <th className=" bg-gray-200 px-4 py-2">No.</th>
+              <th className=" bg-gray-200 px-4 py-2">Tanggal Absen</th>
+              <th className=" bg-gray-200 px-4 py-2">Waktu</th>
+              <th className=" bg-gray-200 px-4 py-2">Lokasi</th>
+              <th className=" bg-gray-200 px-4 py-2">Foto</th>
             </tr>
           </thead>
           <tbody>

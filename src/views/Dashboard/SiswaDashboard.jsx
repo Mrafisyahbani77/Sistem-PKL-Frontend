@@ -24,37 +24,6 @@ const SiswaDashboard = () => {
     fetchPendingApplications();
   }, []);
 
-  useEffect(() => {
-    const fetchTime = async () => {
-      try {
-        const response = await Api.get("http://127.0.0.1:8000/api/siswa/Time");
-        const eventData = response.data;
-        if (eventData.status === "Diterima") {
-          // Cari pengajuan PKL dengan ID yang sesuai dan update waktu mundurnya
-          setPendingApplications((prevApplications) => {
-            return prevApplications.map((application) => {
-              if (application.id === eventData.id) {
-                application.countdown = eventData.countdown;
-              }
-              return application;
-            });
-          });
-        }
-      } catch (error) {
-        console.error("Gagal mengambil data waktu PKL:", error);
-        setError("Gagal mengambil data waktu PKL. Silakan coba lagi.");
-      }
-    };
-
-    // Lakukan pemanggilan pertama
-    fetchTime();
-
-    // Interval untuk melakukan pemanggilan berkala setiap 1 menit
-    const interval = setInterval(fetchTime, 60000); // 1 menit
-
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <div>
       <Laysiswa>
@@ -66,18 +35,16 @@ const SiswaDashboard = () => {
           ) : (
             <ul>
               {pendingApplications.map((application) => {
-                console.log("Waktu PKL:", application.countdown); // Tambahkan ini untuk debugging
                 return (
                   <li key={application.id} className="mb-4">
                     <p className="font-semibold mb-1">
                       Tempat Pkl anda saat ini: {application.nama_perusahaan}
-                    </p>{" "}
-                    {/* Ubah properti ini sesuai dengan respons JSON yang benar */}
-                    <p className="font-semibold">
+                    </p>
+                    <p className="font-semibold mb-1">
                       Status: {application.status}
                     </p>
-                    {application.countdown && (
-                      <p>Waktu PKL: {application.countdown}</p>
+                    {application.status === 'Diterima' && (
+                      <Countdown startDate={application.created_at} />
                     )}
                   </li>
                 );
@@ -88,6 +55,42 @@ const SiswaDashboard = () => {
       </Laysiswa>
     </div>
   );
+};
+
+const Countdown = ({ startDate }) => {
+  const [countdown, setCountdown] = useState('');
+
+  useEffect(() => {
+    const calculateCountdown = () => {
+      const endTime = new Date(startDate); // startDate adalah string dalam format ISO 8601
+      endTime.setMonth(endTime.getMonth() + 6); // Tambahkan 6 bulan ke tanggal status diterima
+
+      const interval = setInterval(() => {
+        const now = new Date();
+        const difference = endTime - now;
+
+        if (difference <= 0) {
+          clearInterval(interval);
+          setCountdown('Waktu PKL telah berakhir');
+          return;
+        }
+
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+        setCountdown(`${days} hari, ${hours} jam, ${minutes} menit, ${seconds} detik`);
+      }, 1000);
+
+      return () => clearInterval(interval);
+    };
+
+    calculateCountdown();
+
+  }, [startDate]);
+
+  return <p className="font-semibold">Durasi PKL: {countdown}</p>;
 };
 
 export default SiswaDashboard;

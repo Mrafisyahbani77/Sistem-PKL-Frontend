@@ -219,7 +219,7 @@ const Crud = () => {
                   .slice(pagesVisited, pagesVisited + usersPerPage)
                   .map((user, index) => (
                     <tr key={user.id}>
-                      <td className="px-4 py-2">{index + 1}</td>
+                      <td className="px-4 py-2">{index + 1 + pagesVisited}</td>
                       <td className="px-4 py-2">{user.name}</td>
                       <td className="px-4 py-2">{user.email}</td>
                       <td className="px-4 py-2">
@@ -277,7 +277,7 @@ const Crud = () => {
                   .slice(pagesVisited, pagesVisited + usersPerPage)
                   .map((user, index) => (
                     <tr key={user.id}>
-                      <td className="px-4 py-2">{index + 1}</td>
+                      <td className="px-4 py-2">{index + 1 + pagesVisited}</td>
                       <td className="px-4 py-2">{user.name}</td>
                       <td className="px-4 py-2">{user.nisn}</td>
                       <td className="px-4 py-2">{user.kelas}</td>
@@ -339,7 +339,7 @@ const Crud = () => {
                   .slice(pagesVisited, pagesVisited + usersPerPage)
                   .map((user, index) => (
                     <tr key={user.id}>
-                      <td className="px-4 py-2">{index + 1}</td>
+                      <td className="px-4 py-2">{index + 1 + pagesVisited}</td>
                       <td className="px-4 py-2">{user.name}</td>
                       <td className="px-4 py-2">{user.nip}</td>
                       <td className="px-4 py-2">{user.jabatan}</td>
@@ -401,7 +401,7 @@ const Crud = () => {
                   .slice(pagesVisited, pagesVisited + usersPerPage)
                   .map((user, index) => (
                     <tr key={user.id}>
-                      <td className="px-4 py-2">{index + 1}</td>
+                      <td className="px-4 py-2">{index + 1 + pagesVisited}</td>
                       <td className="px-4 py-2">{user.name}</td>
                       <td className="px-4 py-2">{user.nip}</td>
                       <td className="px-4 py-2">{user.email}</td>

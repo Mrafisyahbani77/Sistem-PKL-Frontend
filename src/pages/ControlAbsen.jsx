@@ -224,14 +224,14 @@ const ControlAbsen = () => {
                           {item.waktu_absen}
                         </td>
                         <td className="py-2 px-4 border-r text-center">
-                          <a
+                          <button
                             href={`https://www.google.com/maps/search/?api=1&query=${item.latitude},${item.longitude}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-blue-500 hover:underline"
+                            className="text-white bg-blue-500 hover:bg-blue-700 py-2 px-4 rounded"
                           >
                             Lihat di Maps
-                          </a>
+                          </button>
                         </td>
                         <td className="py-2 px-4 border-r text-center">
                           {item.foto ? (

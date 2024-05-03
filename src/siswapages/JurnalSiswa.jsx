@@ -11,21 +11,28 @@ import { LuBook } from "react-icons/lu";
 const JurnalSiswa = () => {
   const [kegiatan, setKegiatan] = useState("");
   const [status, setStatus] = useState("proses");
-  const [waktu, setWaktu] = useState("");
-  const [tanggal, setTanggal] = useState(format(new Date(), "yyyy-MM-dd"));
+  const [waktuMulai, setWaktuMulai] = useState("");
+  const [tanggalMulai, setTanggalMulai] = useState(
+    format(new Date(), "yyyy-MM-dd")
+  );
+  const [waktuSelesai, setWaktuSelesai] = useState("");
+  const [tanggalSelesai, setTanggalSelesai] = useState("");
   const [journals, setJournals] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [postsPerPage] = useState(5);
+  const pagesVisited = currentPage * postsPerPage;
 
   const toggleForm = () => {
     setShowForm(!showForm);
     setEditingId(null); // Reset editingId when toggling form
     setKegiatan("");
     setStatus("proses");
-    setWaktu("");
-    setTanggal(format(new Date(), "yyyy-MM-dd"));
+    setWaktuMulai("");
+    setTanggalMulai(format(new Date(), "yyyy-MM-dd"));
+    setWaktuSelesai("");
+    setTanggalSelesai("");
   };
 
   useEffect(() => {
@@ -46,9 +53,16 @@ const JurnalSiswa = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-  
+
     try {
-      const journalData = { kegiatan, status, waktu, tanggal };
+      const journalData = {
+        kegiatan,
+        status,
+        waktu_mulai: waktuMulai,
+        tanggal_mulai: tanggalMulai,
+        waktu_selesai: waktuSelesai,
+        tanggal_selesai: tanggalSelesai,
+      };
       if (editingId) {
         await Api.put(`/api/siswa/jurnal/${editingId}`, journalData);
         Swal.fire({
@@ -64,7 +78,7 @@ const JurnalSiswa = () => {
           text: "Jurnal berhasil disubmit!",
         });
       }
-  
+
       fetchJournals();
       toggleForm(); // Close form after submit
     } catch (error) {
@@ -79,7 +93,6 @@ const JurnalSiswa = () => {
       });
     }
   };
-  
 
   const handleEdit = async (id) => {
     try {
@@ -88,8 +101,10 @@ const JurnalSiswa = () => {
 
       setKegiatan(journalData.kegiatan);
       setStatus(journalData.status);
-      setWaktu(journalData.waktu);
-      setTanggal(journalData.tanggal);
+      setWaktuMulai(journalData.waktu_mulai);
+      setTanggalMulai(journalData.tanggal_mulai);
+      setWaktuSelesai(journalData.waktu_selesai);
+      setTanggalSelesai(journalData.tanggal_selesai);
       setEditingId(id);
       setShowForm(true); // Show form for editing
     } catch (error) {
@@ -125,19 +140,6 @@ const JurnalSiswa = () => {
   const formatTanggal = (dateString) => {
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateString).toLocaleDateString("id-ID", options);
-  };
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      // case "belum":
-      //   return "text-red-500";
-      // case "proses":
-      //   return "text-white bg-blue-500";
-      // case "selesai":
-      //   return "text-white bg-green-500 ";
-      // default:
-      //   return "";
-    }
   };
 
   const indexOfLastPost = (currentPage + 1) * postsPerPage;
@@ -233,42 +235,60 @@ const JurnalSiswa = () => {
           >
             <thead className="bg-gray-200">
               <tr>
-                <th className="py-2 px-4 border-r">No</th>
-                <th className="py-2 px-4 border-r">Kegiatan</th>
-                <th className="py-2 px-4 border-r">Status</th>
-                <th className="py-2 px-4 border-r">Waktu</th>
-                <th className="py-2 px-4 border-r">Tanggal</th>
+                <th className="py-2 px-4 border">No</th>
+                <th className="py-2 px-4 border">Kegiatan</th>
+                <th className="py-2 px-4 border">Status</th>
+                <th className="py-2 px-4 border">Waktu Mulai</th>
+                <th className="py-2 px-4 border">Tanggal Mulai</th>
+                <th className="py-2 px-4 border">Waktu Selesai</th>
+                <th className="py-2 px-4">Tanggal Selesai</th>
                 <th className="py-2 px-4">Aksi</th>
               </tr>
             </thead>
             <tbody className="text-center">
               {currentJournals.map((journal, index) => (
-                <tr key={journal.id} className="hover:bg-gray-100">
+                <tr key={journal.id} className="">
                   <td
-                    className="py-2 px-4 border-r"
+                    className="py-2 px-4 border"
                     style={{ wordBreak: "break-word", padding: "8px" }}
                   >
-                    {index + 1}
+                    {index + 1 + pagesVisited}
                   </td>
                   <td
-                    className="py-2 px-4 border-r"
+                    className="py-2 px-4 max-w-[100px] overflow-x-auto whitespace-nowrap border"
                     style={{ wordBreak: "break-word", padding: "8px" }}
                   >
                     {journal.kegiatan}
                   </td>
-                  <td
-                    className={`border-r border-l text-center px-4 py-2 rounded-full ${getStatusColor(
-                      journal.status
-                    )}`}
-                    style={{ padding: "8px", display: "table-cell" }}
-                  >
-                    {journal.status}
+                  <td className="py-2 px-4 border">
+                    <span
+                      className={`py-1 px-4 border relative rounded-full ${
+                        journal.status === "selesai"
+                          ? "text-black text-sm bg-green-300"
+                          : "text-black text-sm bg-blue-300"
+                      }`}
+                    >
+                      {journal.status === "selesai" ? "Selesai" : "Proses"}
+                      <span
+                        className={`absolute top-0 right-0 h-2 w-2 rounded-full ${
+                          journal.status === "selesai"
+                            ? "bg-green-600"
+                            : "bg-blue-600"
+                        }`}
+                      ></span>
+                    </span>
                   </td>
-                  <td className="py-2 px-4 border-r" style={{ padding: "8px" }}>
-                    {journal.waktu}
+                  <td className="py-2 px-4 border" style={{ padding: "8px" }}>
+                    {journal.waktu_mulai}
                   </td>
-                  <td className="py-2 px-4 border-r" style={{ padding: "8px" }}>
-                    {formatTanggal(journal.tanggal)}
+                  <td className="py-2 px-4 border" style={{ padding: "8px" }}>
+                    {formatTanggal(journal.tanggal_mulai)}
+                  </td>
+                  <td className="py-2 px-4 border" style={{ padding: "8px" }}>
+                    {journal.waktu_selesai}
+                  </td>
+                  <td className="py-2 px-4 border" style={{ padding: "8px" }}>
+                    {formatTanggal(journal.tanggal_selesai)}
                   </td>
                   <td className="py-2 px-4" style={{ padding: "8px" }}>
                     <button
