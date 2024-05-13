@@ -214,7 +214,7 @@ const Absensi = () => {
               .map((absensi, index) => (
                 <tr key={index}>
                   <td className="border border-gray-400 px-4 py-2">
-                    {index + 1}
+                    {index + 1  + pagesVisited}
                   </td>
                   <td className="border border-gray-400 px-4 py-2">
                     {absensi.tanggal_absen}

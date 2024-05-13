@@ -3,7 +3,7 @@ import Laypem from "../../components/Laypem";
 import Api from "../../Api";
 
 export default function Pembimbing() {
-  document.title="PembimbingDashboard";
+  document.title = "PembimbingDashboard";
 
   const [siswaDibimbing, setSiswaDibimbing] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -27,7 +27,9 @@ export default function Pembimbing() {
   }, []);
 
   const handleCompanyClick = (group_id) => {
-    setSelectedCompany(siswaDibimbing.find(group => group.group_id === group_id));
+    setSelectedCompany(
+      siswaDibimbing.find((group) => group.group_id === group_id)
+    );
   };
 
   const handleResetClick = () => {
@@ -35,9 +37,9 @@ export default function Pembimbing() {
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen">
+    <div>
       <Laypem>
-        <div className="mx-auto max-w-3xl px-4 py-8">
+        <div className="flex flex-col flex-1 p-8 transition-all">
           <h1 className="text-2xl font-bold mb-6">
             Daftar Siswa yang Dibimbing
           </h1>
@@ -47,23 +49,22 @@ export default function Pembimbing() {
             <p className="text-gray-600">Belum ada siswa untuk dibimbing</p>
           ) : selectedCompany ? (
             <div>
-              <p className="text-lg font-semibold mb-2">
-                Nama Perusahaan: {selectedCompany.nama_perusahaan}
-              </p>
-              <button
-                onClick={handleResetClick}
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold mb-5 py-2 px-4 rounded mt-4"
-              >
-                Kembali
-              </button>
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
+                <p className="text-lg font-semibold mb-2 py-3 px-2 bg-gradient-to-r from-gray-400 to-gray-300 rounded-lg shadow-md">
+                  Nama Perusahaan: {selectedCompany.nama_perusahaan}
+                </p>
+              </div>
+
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
                 {selectedCompany.siswa.map((siswa) => (
                   <div
                     key={siswa.user_id}
-                    className="bg-white rounded-lg shadow-md overflow-hidden"
+                    className="bg-gradient-to-r from-gray-400 to-gray-300 rounded-lg shadow-md"
                   >
                     <div className="p-4">
-                      <p className="text-lg font-semibold mb-2">Nama Siswa: {siswa.nama}</p>
+                      <p className="text-lg font-semibold mb-2">
+                        Nama Siswa: {siswa.nama}
+                      </p>
                       <p className="text-lg font-semibold mb-2">
                         Kelas: {siswa.kelas}
                       </p>
@@ -74,15 +75,26 @@ export default function Pembimbing() {
                   </div>
                 ))}
               </div>
+              <button
+                onClick={handleResetClick}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold mb-5 py-2 px-4 rounded mt-4"
+              >
+                Kembali
+              </button>
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
               {siswaDibimbing.map((group) => (
-                <div key={group.group_id} className="bg-white rounded-lg shadow-md overflow-hidden text-center">
-                  <p className="text-lg font-semibold mb-2">Nama Perusahaan: {group.nama_perusahaan}</p>
+                <div
+                  key={group.group_id}
+                  className="bg-gradient-to-r from-gray-400 to-gray-300 rounded-lg py-5 shadow-md overflow-hidden text-center"
+                >
+                  <p className="text-lg font-semibold mb-2">
+                    Nama Perusahaan: {group.nama_perusahaan}
+                  </p>
                   <button
                     onClick={() => handleCompanyClick(group.group_id)}
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mx-auto"
+                    className="bg-gradient-to-r from-blue-400 to-blue-500 hover:bg-blue-700 text-white shadow-sm font-bold py-2 px-4 rounded mx-auto"
                   >
                     Lihat Siswa
                   </button>

@@ -203,8 +203,8 @@ const Crud = () => {
     switch (roleCategory) {
       case "admin":
         return (
-          <div className="overflow-x-auto">
-            <table className="bg-white table-auto w-full shadow-md rounded-md overflow-hidden border border-gray-300">
+          <div className="">
+            <table className="bg-white table-auto w-full shadow-md rounded-md border border-gray-300">
               <thead className="bg-gray-200">
                 <tr className="bg-gray-200">
                   <th className="px-4 py-2">No</th>
@@ -219,19 +219,19 @@ const Crud = () => {
                   .slice(pagesVisited, pagesVisited + usersPerPage)
                   .map((user, index) => (
                     <tr key={user.id}>
-                      <td className="px-4 py-2">{index + 1 + pagesVisited}</td>
-                      <td className="px-4 py-2">{user.name}</td>
-                      <td className="px-4 py-2">{user.email}</td>
-                      <td className="px-4 py-2">
+                      <td className="px-4 py-2 border">{index + 1 + pagesVisited}</td>
+                      <td className="px-4 py-2 border max-w-[50px] overflow-x-auto whitespace-nowrap">{user.name}</td>
+                      <td className="px-4 py-2 border max-w-[100px] overflow-x-auto whitespace-nowrap">{user.email}</td>
+                      <td className="px-4 py-2 border">
                         <FaUserEdit
                           onClick={() => handleEdit(user.id)}
-                          className="cursor-pointer text-blue-500"
+                          className="cursor-pointer text-center max-w-[50px] text-blue-500"
                         />
                       </td>
-                      <td className="px-4 py-2">
+                      <td className="py-2 px-4 border">
                         <MdOutlineDeleteForever
                           onClick={() => handleDelete(user.id)}
-                          className="cursor-pointer text-red-500"
+                          className="cursor-pointer  max-w-[50px] text-center text-red-500"
                         />
                       </td>
                     </tr>
@@ -259,17 +259,17 @@ const Crud = () => {
         );
       case "siswa":
         return (
-          <div className="overflow-x-auto">
-            <table className="bg-white table-auto w-full shadow-md rounded-md overflow-hidden border-r border-gray-300">
+          <div className="">
+            <table className="bg-white table-auto w-full shadow-md rounded-md border border-gray-300">
               <thead className="bg-gray-200">
                 <tr className="bg-gray-200">
-                  <th className="px-4 py-2 border-r">No</th>
-                  <th className="px-4 py-2 border-r">Nama</th>
-                  <th className="px-4 py-2 border-r">Nisn</th>
-                  <th className="px-4 py-2 border-r">Kelas</th>
-                  <th className="px-4 py-2 border-r">Email</th>
-                  <th className="px-4 py-2 border-r">Edit</th>
-                  <th className="px-4 py-2 border-r">Delete</th>
+                  <th className="px-4 py-2">No</th>
+                  <th className="px-4 py-2">Nama</th>
+                  <th className="px-4 py-2">Nisn</th>
+                  <th className="px-4 py-2">Kelas</th>
+                  <th className="px-4 py-2">Email</th>
+                  <th className="px-4 py-2">Edit</th>
+                  <th className="px-4 py-2">Delete</th>
                 </tr>
               </thead>
               <tbody>
@@ -277,18 +277,18 @@ const Crud = () => {
                   .slice(pagesVisited, pagesVisited + usersPerPage)
                   .map((user, index) => (
                     <tr key={user.id}>
-                      <td className="px-4 py-2">{index + 1 + pagesVisited}</td>
-                      <td className="px-4 py-2">{user.name}</td>
-                      <td className="px-4 py-2">{user.nisn}</td>
-                      <td className="px-4 py-2">{user.kelas}</td>
-                      <td className="px-4 py-2">{user.email}</td>
-                      <td className="px-4 py-2">
+                      <td className="px-4 py-2 border">{index + 1 + pagesVisited}</td>
+                      <td className="px-4 py-2 border">{user.name}</td>
+                      <td className="px-4 py-2 border max-w-[100px] overflow-x-auto whitespace-nowrap">{user.nisn}</td>
+                      <td className="px-4 py-2 border">{user.kelas}</td>
+                      <td className="px-4 py-2 border overflow-x-auto whitespace-nowrap  max-w-[100px]">{user.email}</td>
+                      <td className="px-4 py-2 border max-w-[100px]">
                         <FaUserEdit
                           onClick={() => handleEdit(user.id)}
                           className="cursor-pointer text-blue-500"
                         />
                       </td>
-                      <td className="px-4 py-2">
+                      <td className="px-4 py-2 border max-w-[100px]">
                         <MdOutlineDeleteForever
                           onClick={() => handleDelete(user.id)}
                           className="cursor-pointer text-red-500"
@@ -320,18 +320,18 @@ const Crud = () => {
       case "pembimbing":
         return (
           <div className="overflow-x-auto">
-            <table className="bg-white table-auto w-full shadow-md rounded-md overflow-hidden border-r border-gray-300">
+            <table className="bg-white table-auto w-full shadow-md rounded-md overflow-hidden border border-gray-300">
               <thead className="bg-gray-200">
                 <tr className="bg-gray-200">
-                  <th className="px-4 py-2 border-r">No</th>
-                  <th className="px-4 py-2 border-r">Nama</th>
-                  <th className="px-4 py-2 border-r">Nip</th>
-                  <th className="px-4 py-2 border-r">Jabatan</th>
-                  <th className="px-4 py-2 border-r">Pangkat</th>
-                  <th className="px-4 py-2 border-r">Nomor Telepon</th>
-                  <th className="px-4 py-2 border-r">Email</th>
-                  <th className="px-4 py-2 border-r">Edit</th>
-                  <th className="px-4 py-2 border-r">Delete</th>
+                  <th className="px-4 py-2">No</th>
+                  <th className="px-4 py-2">Nama</th>
+                  <th className="px-4 py-2">Nip</th>
+                  <th className="px-4 py-2">Jabatan</th>
+                  <th className="px-4 py-2">Pangkat</th>
+                  <th className="px-4 py-2">Nomor Telepon</th>
+                  <th className="px-4 py-2">Email</th>
+                  <th className="px-4 py-2">Edit</th>
+                  <th className="px-4 py-2">Delete</th>
                 </tr>
               </thead>
               <tbody>
@@ -339,20 +339,20 @@ const Crud = () => {
                   .slice(pagesVisited, pagesVisited + usersPerPage)
                   .map((user, index) => (
                     <tr key={user.id}>
-                      <td className="px-4 py-2">{index + 1 + pagesVisited}</td>
-                      <td className="px-4 py-2">{user.name}</td>
-                      <td className="px-4 py-2">{user.nip}</td>
-                      <td className="px-4 py-2">{user.jabatan}</td>
-                      <td className="px-4 py-2">{user.pangkat}</td>
-                      <td className="px-4 py-2">{user.nomer_telpon}</td>
-                      <td className="px-4 py-2">{user.email}</td>
-                      <td className="px-4 py-2">
+                      <td className="px-4 py-2 border">{index + 1 + pagesVisited}</td>
+                      <td className="px-4 py-2 border">{user.name}</td>
+                      <td className="px-4 py-2 border">{user.nip}</td>
+                      <td className="px-4 py-2 border">{user.jabatan}</td>
+                      <td className="px-4 py-2 border">{user.pangkat}</td>
+                      <td className="px-4 py-2 border">{user.nomer_telpon}</td>
+                      <td className="px-4 py-2 border">{user.email}</td>
+                      <td className="px-4 py-2 border">
                         <FaUserEdit
                           onClick={() => handleEdit(user.id)}
                           className="cursor-pointer text-blue-500"
                         />
                       </td>
-                      <td className="px-4 py-2">
+                      <td className="px-4 py-2 border">
                         <MdOutlineDeleteForever
                           onClick={() => handleDelete(user.id)}
                           className="cursor-pointer text-red-500"
@@ -385,15 +385,15 @@ const Crud = () => {
       case "kaprog":
         return (
           <div className="overflow-x-auto">
-            <table className="bg-white table-auto w-full shadow-md rounded-md overflow-hidden border-r border-gray-300">
+            <table className="bg-white table-auto w-full shadow-md rounded-md overflow-hidden border border-gray-300">
               <thead className="bg-gray-200">
                 <tr className="bg-gray-200">
-                  <th className="px-4 py-2 border-r">No</th>
-                  <th className="px-4 py-2 border-r">Nama</th>
-                  <th className="px-4 py-2 border-r">Nip</th>
-                  <th className="px-4 py-2 border-r">Email</th>
-                  <th className="px-4 py-2 border-r">Edit</th>
-                  <th className="px-4 py-2 border-r">Delete</th>
+                  <th className="px-4 py-2">No</th>
+                  <th className="px-4 py-2">Nama</th>
+                  <th className="px-4 py-2">Nip</th>
+                  <th className="px-4 py-2">Email</th>
+                  <th className="px-4 py-2">Edit</th>
+                  <th className="px-4 py-2">Delete</th>
                 </tr>
               </thead>
               <tbody>
@@ -401,17 +401,17 @@ const Crud = () => {
                   .slice(pagesVisited, pagesVisited + usersPerPage)
                   .map((user, index) => (
                     <tr key={user.id}>
-                      <td className="px-4 py-2">{index + 1 + pagesVisited}</td>
-                      <td className="px-4 py-2">{user.name}</td>
-                      <td className="px-4 py-2">{user.nip}</td>
-                      <td className="px-4 py-2">{user.email}</td>
-                      <td className="px-4 py-2">
+                      <td className="px-4 py-2 border">{index + 1 + pagesVisited}</td>
+                      <td className="px-4 py-2 border">{user.name}</td>
+                      <td className="px-4 py-2 border">{user.nip}</td>
+                      <td className="px-4 py-2 border">{user.email}</td>
+                      <td className="px-4 py-2 border">
                         <FaUserEdit
                           onClick={() => handleEdit(user.id)}
                           className="cursor-pointer text-blue-500"
                         />
                       </td>
-                      <td className="px-4 py-2">
+                      <td className="px-4 py-2 border">
                         <MdOutlineDeleteForever
                           onClick={() => handleDelete(user.id)}
                           className="cursor-pointer text-red-500"
@@ -453,21 +453,22 @@ const Crud = () => {
     <div className="flex bg-gray-200">
       <Sidebar />
       <div className="flex-1 h-screen p-8">
-        <div className="p-4">
+        <div className="mb-3">
           <button
-            className="text-sm font-bold text-white bg-blue-500 py-2 px-4 rounded-md"
+            className="text-sm font-bold ml-4 text-white bg-blue-500 py-2 px-4 rounded"
             onClick={() => setShowAddForm(true)}
           >
             Tambah User
           </button>
-        </div>
-        <div className="p-4">
-          <button
-            className="text-sm font-bold text-white bg-blue-500 py-2 px-4 rounded-md"
-            onClick={() => setShowTambahForm(true)}
-          >
-            Import Akun
-          </button>
+
+          <div className="float-left">
+            <button
+              className="text-sm font-bold text-white bg-blue-500 py-2 px-4 rounded"
+              onClick={() => setShowTambahForm(true)}
+            >
+              Import Akun
+            </button>
+          </div>
         </div>
         <div className="text-center mx-auto">
           <div className="flex justify-between mb-4">
@@ -504,7 +505,7 @@ const Crud = () => {
       {/* Form tambah user */}
       {showAddForm && (
         <div className="fixed inset-0 flex items-center justify-center overflow-y-auto bg-black bg-opacity-50">
-          <div className="bg-white p-8 min-w-80 mx-auto rounded-md">
+          <div className="bg-white p-8 mx-auto rounded-md">
             <UserForm
               onClose={() => {
                 setShowAddForm(false);

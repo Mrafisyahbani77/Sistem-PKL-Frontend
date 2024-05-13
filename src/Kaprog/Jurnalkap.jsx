@@ -11,6 +11,8 @@ const Jurnalkap = () => {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [pageNumber, setPageNumber] = useState(0);
   const usersPerPage = 6;
+  const JurnalPerPage = 6;
+  const halVisited = pageNumber * JurnalPerPage;
 
   useEffect(() => {
     const fetchSiswa = async () => {
@@ -77,6 +79,7 @@ const Jurnalkap = () => {
   );
 
   const pageCount = Math.ceil(filteredSiswa.length / usersPerPage);
+  const halCount = Math.ceil(jurnals.length / JurnalPerPage);
 
   return (
     <div className="flex">
@@ -123,9 +126,9 @@ const Jurnalkap = () => {
               .map((user, index) => (
                 <tr
                   key={user.id}
-                  className={`cursor-pointer py-2 px-4 border-b transition-colors duration-300 ${
+                  className={`py-2 px-4 border-b transition-colors duration-300 ${
                     selectedUserId === user.id ? "bg-gray-200" : ""
-                  } hover:bg-gray-400`}
+                  } `}
                 >
                   <td className="py-2 px-4 border-r text-center">
                     {index + 1}
@@ -180,51 +183,103 @@ const Jurnalkap = () => {
                 <thead>
                   <tr className="bg-gray-200">
                     <th className="py-2 px-4 border-r">
+                      <span>No</span>
+                    </th>
+                    <th className="py-2 px-4 border-r">
                       <span>Kegiatan</span>
                     </th>
                     <th className="py-2 px-4 border-r">
                       <span>Status</span>
                     </th>
                     <th className="py-2 px-4 border-r">
-                      <span>Waktu</span>
+                      <span>Waktu_mulai</span>
                     </th>
                     <th className="py-2 px-4 border-r">
-                      <span>Tanggal</span>
+                      <span>Waktu_selesai</span>
+                    </th>
+                    <th className="py-2 px-4 border-r">
+                      <span>Tanggal_mulai</span>
+                    </th>
+                    <th className="py-2 px-4 border-r">
+                      <span>Tanggal_selesai</span>
                     </th>
                   </tr>
                 </thead>
                 <tbody>
                   {Array.isArray(jurnals) && jurnals.length > 0 ? (
-                    jurnals.map((jurnal) => (
-                      <tr
-                        key={jurnal.id}
-                        className="hover:bg-gray-100 text-center"
-                      >
-                        <td className="py-2 px-4 border-r">
-                          {jurnal.kegiatan}
-                        </td>
-                        <td
-                          className={`py-2 px-4 border-r ${
-                            jurnal.status === "selesai"
-                              ? "text-white bg-green-500 rounded-full"
-                              : "text-white bg-blue-500 rounded-full"
-                          }`}
-                        >
-                          {jurnal.status}
-                        </td>
-                        <td className="py-2 px-4 border-r">{jurnal.waktu}</td>
-                        <td className="py-2 px-4 border-r">{jurnal.tanggal}</td>
-                      </tr>
-                    ))
+                    <>
+                      {jurnals
+                        .slice(halVisited, halVisited + JurnalPerPage)
+                        .map((jurnal, index) => (
+                          <tr key={jurnal.id} className="text-center">
+                            <td className="py-2 px-4 border">
+                              {index + 1 + halVisited}
+                            </td>
+                            <td className="py-2 px-4 border max-w-[100px] overflow-x-auto whitespace-nowrap">
+                              {jurnal.kegiatan}
+                            </td>
+                            <td className="py-2 px-4 border">
+                              <span
+                                className={`py-1 px-4 border relative rounded-full ${
+                                  jurnal.status === "selesai"
+                                    ? "text-black text-sm bg-green-300"
+                                    : "text-black text-sm bg-blue-300"
+                                }`}
+                              >
+                                {jurnal.status === "selesai"
+                                  ? "Selesai"
+                                  : "Proses"}
+                                <span
+                                  className={`absolute top-0 right-0 h-2 w-2 rounded-full ${
+                                    jurnal.status === "selesai"
+                                      ? "bg-green-600"
+                                      : "bg-blue-600"
+                                  }`}
+                                ></span>
+                              </span>
+                            </td>
+
+                            <td className="py-2 px-4 border">
+                              {jurnal.waktu_mulai}
+                            </td>
+                            <td className="py-2 px-4 border">
+                              {jurnal.waktu_selesai}
+                            </td>
+                            <td className="py-2 px-4 border">
+                              {jurnal.tanggal_mulai}
+                            </td>
+                            <td className="py-2 px-4 border">
+                              {jurnal.tanggal_selesai}
+                            </td>
+                          </tr>
+                        ))}
+                    </>
                   ) : (
                     <tr>
-                      <td colSpan="4" className="text-center py-4">
-                        Tidak Ada Data Jurnal
+                      <td colSpan="7" className="text-center py-4">
+                        Tidak ada data jurnal siswa
                       </td>
                     </tr>
                   )}
                 </tbody>
               </table>
+              <ReactPaginate
+                previousLabel={"Sebelumnya"}
+                nextLabel={"Berikutnya"}
+                pageCount={halCount}
+                onPageChange={changePage}
+                containerClassName={"pagination flex gap-2 mt-4"}
+                previousLinkClassName={
+                  "pagination__link px-4 py-2 border border-gray-300 rounded-md text-gray-600 hover:text-gray-800 hover:border-gray-400 bg-gray-100"
+                }
+                nextLinkClassName={
+                  "pagination__link px-4 py-2 border border-gray-300 rounded-md text-gray-600 hover:text-gray-800 hover:border-gray-400 bg-gray-100"
+                }
+                disabledClassName={"pagination__link--disabled"}
+                activeClassName={
+                  "pagination__link--active bg-gray-500 text-white border-blue-500"
+                }
+              />
               <button
                 onClick={handleCloseJurnal}
                 className="p-2 mt-4 border rounded-md bg-red-500 text-white"

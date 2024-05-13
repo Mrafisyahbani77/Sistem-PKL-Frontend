@@ -230,7 +230,7 @@ const JurnalSiswa = () => {
         <div className="overflow-x-auto">
           <br></br>
           <table
-            className="min-w-full bg-white shadow-md rounded-md overflow-hidden border border-gray-300"
+            className="min-w-full bg-white shadow-md rounded-md border border-gray-300"
             style={{ tableLayout: "fixed", borderCollapse: "collapse" }}
           >
             <thead className="bg-gray-200">
@@ -260,7 +260,7 @@ const JurnalSiswa = () => {
                   >
                     {journal.kegiatan}
                   </td>
-                  <td className="py-2 px-4 border">
+                  <td className="py-2 px-4 border relative">
                     <span
                       className={`py-1 px-4 border relative rounded-full ${
                         journal.status === "selesai"
@@ -273,7 +273,7 @@ const JurnalSiswa = () => {
                         className={`absolute top-0 right-0 h-2 w-2 rounded-full ${
                           journal.status === "selesai"
                             ? "bg-green-600"
-                            : "bg-blue-600"
+                            : "bg-blue-600"       
                         }`}
                       ></span>
                     </span>
@@ -288,8 +288,10 @@ const JurnalSiswa = () => {
                     {journal.waktu_selesai}
                   </td>
                   <td className="py-2 px-4 border" style={{ padding: "8px" }}>
-                    {formatTanggal(journal.tanggal_selesai)}
+                    {journal.tanggal_selesai &&
+                      formatTanggal(journal.tanggal_selesai)}
                   </td>
+
                   <td className="py-2 px-4" style={{ padding: "8px" }}>
                     <button
                       onClick={() => handleEdit(journal.id)}

@@ -433,7 +433,7 @@ const FormPengajuan = ({ onClose }) => {
             {index !== 0 && (
               <button
                 onClick={() => removeForm(index)}
-                className="bg-red-500 text-white py-2 px-4 rounded mr-2 hover:bg-red-600"
+                className="bg-red-500 text-white py-2 px-4 rounded mt-3 mr-2 hover:bg-red-600"
               >
                 Hapus Form
               </button>

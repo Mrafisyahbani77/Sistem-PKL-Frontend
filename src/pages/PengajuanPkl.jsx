@@ -82,8 +82,9 @@ const PengajuanPkl = () => {
   return (
     <div className='flex h-screen'>
       <Sidebar />
-      <form onSubmit={handleSubmit} className="max-w-md mx-auto mt-8 p-4 border rounded shadow-lg">
+      <form onSubmit={handleSubmit} className="max-w-full mx-20 mt-2 p-4 w-full border rounded shadow-lg">
         <label className="block mb-2">
+          <h1 className='font-semibold mb-2 text-xl'>Form Pengajuan Pkl</h1>
           To:
           <input
             type="email"
@@ -103,13 +104,14 @@ const PengajuanPkl = () => {
             className="block w-full mt-1 p-2 border focus:outline-none focus:ring focus:border-blue-300 rounded"
           />
         </label>
+        <div className=''>
         <label className="block mb-2">
           Message:
           <textarea
             name="message"
             value={emailData.message}
             onChange={handleChange}
-            className="block w-full mt-1 p-2 border focus:outline-none focus:ring focus:border-blue-300 rounded"
+            className="flex w-full mt-1 p-2 border focus:outline-none focus:ring focus:border-blue-300 rounded"
           />
         </label>
         <label className="block mb-2">
@@ -118,11 +120,12 @@ const PengajuanPkl = () => {
             type="file"
             name="attachment"
             onChange={handleChange}
-            className="block w-full mt-1 p-2 border focus:outline-none focus:ring focus:border-blue-300 rounded"
+            className="flex w-full mt-1 p-2 border focus:outline-none focus:ring focus:border-blue-300 rounded"
           />
         </label>
+        </div>
         <button type="submit" className="mt-4 bg-blue-500 text-white px-4 py-2 rounded" disabled={loading}>
-          {loading ? 'Sending...' : 'Send Email'}
+          {loading ? 'Mengirim...' : 'Kirim Email'}
         </button>
       </form>
     </div>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Api from "../Api";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";

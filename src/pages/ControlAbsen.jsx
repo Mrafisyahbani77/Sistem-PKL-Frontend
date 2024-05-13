@@ -203,6 +203,7 @@ const ControlAbsen = () => {
               <table className="min-w-full divide-y divide-gray-200 border rounded overflow-hidden mt-4">
                 <thead className="bg-gray-200">
                   <tr className="bg-gray-50">
+                    <th className="py-2 px-8 border-r">No</th>
                     <th className="py-2 px-8 border-r">Tanggal</th>
                     <th className="py-2 px-4 border-r">Waktu</th>
                     <th className="py-2 px-4 border-r">Lokasi</th>
@@ -217,6 +218,9 @@ const ControlAbsen = () => {
                     )
                     .map((item, index) => (
                       <tr key={index} className="hover:bg-gray-50">
+                        <td className="py-2 px-4 border-r text-center">
+                          {index + 1 }
+                        </td>
                         <td className="py-2 px-4 border-r text-center">
                           {item.tanggal_absen}
                         </td>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import Api from "../Api";
+import toast from "react-hot-toast";
 
 const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
   const [submitting, setSubmitting] = useState(false);
@@ -60,6 +61,67 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
     e.preventDefault();
     setSubmitting(true);
 
+    //validasi nama
+    if (!formData.name.trim()) {
+      setErrorMessage("Nama tidak boleh kosong.");
+      toast.error("Nama tidak boleh kosong.", {
+        position: "top-center",
+        duration: 4000,
+      });
+      setSubmitting(false);
+      return;
+    }
+
+    // Validasi email
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(formData.email)) {
+      toast.error("Email harus valid", {
+        position: "top-center",
+        duration: 4000,
+      });
+      setSubmitting(false);
+      return;
+    }
+
+    // Validasi password
+    if (formData.password.length < 8) {
+      setErrorMessage("Password harus terdiri dari minimal 8 karakter.");
+      toast.error("Password harus terdiri dari minimal 8 karakter.", {
+        position: "top-center",
+        duration: 4000,
+      });
+      setSubmitting(false);
+      return;
+    }
+
+    // Validasi NIP
+    if (formData.role === "pembimbing" || formData.role === "kaprog") {
+      const nipPattern = /^\d{10}$/;
+      if (!nipPattern.test(formData.nip)) {
+        setErrorMessage("NIP harus valid.");
+        toast.error("NIP harus valid.", {
+          position: "top-center",
+          duration: 4000,
+        });
+        setSubmitting(false);
+        return;
+      }
+    }
+
+    // Validasi NISN
+    if (formData.role === "siswa") {
+      const nisnPattern = /^\d{10}$/;
+      if (!nisnPattern.test(formData.nisn)) {
+        setErrorMessage("NISN harus valid.");
+        toast.error("NISN harus valid.", {
+          position: "top-center",
+          duration: 4000,
+        });
+        setSubmitting(false);
+        return;
+      }
+    }
+
     try {
       if (!formData.role) {
         throw new Error("Role tidak boleh kosong.");
@@ -99,7 +161,7 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
     } catch (error) {
       setErrorMessage(
         error.message ||
-        "Gagal menambahkan akun. Pastikan data yang dimasukkan valid."
+          "Gagal menambahkan akun. Pastikan data yang dimasukkan valid."
       );
 
       Swal.fire({
@@ -113,7 +175,6 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
       setSubmitting(false);
     }
   };
-
 
   const renderFormBasedOnRole = () => {
     switch (formData.role) {
@@ -134,7 +195,6 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 value={formData.name || ""}
                 onChange={onInputChange}
                 className="mt-1 p-2 w-full border rounded-md"
-                required
               />
             </div>
             <div className="mb-4">
@@ -145,13 +205,12 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 Email
               </label>
               <input
-                type="email"
+                type="text"
                 id="email"
                 name="email"
                 value={formData.email || ""}
                 onChange={onInputChange}
                 className="mt-1 p-2 w-full border rounded-md"
-                required
               />
             </div>
             <div className="mb-4">
@@ -168,7 +227,6 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 value={formData.password || ""}
                 onChange={onInputChange}
                 className=" mt-1 p-2 w-full border rounded-md"
-                required
               />
             </div>
           </>
@@ -190,7 +248,6 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 value={formData.name || ""}
                 onChange={onInputChange}
                 className="mt-1 p-2 w-full border rounded-md"
-                required
               />
             </div>
             <div className="mb-4">
@@ -207,7 +264,6 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 value={formData.nisn || ""}
                 onChange={onInputChange}
                 className="mt-1 p-2 w-full border rounded-md"
-                required
               />
             </div>
             <label className="block text-sm font-semibold mt-4 mb-2">
@@ -246,7 +302,6 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 value={formData.email || ""}
                 onChange={onInputChange}
                 className="mt-1 p-2 w-full border rounded-md"
-                required
               />
             </div>
             <div className="mb-4">
@@ -263,7 +318,6 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 value={formData.password || ""}
                 onChange={onInputChange}
                 className="mt-1 p-2 w-full border rounded-md"
-                required
               />
             </div>
           </>
@@ -285,7 +339,6 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 value={formData.name || ""}
                 onChange={onInputChange}
                 className="mt-1 p-2 w-full border rounded-md"
-                required
               />
             </div>
             <div className="mb-4">
@@ -302,7 +355,6 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 value={formData.nip || ""}
                 onChange={onInputChange}
                 className="mt-1 p-2 w-full border rounded-md"
-                required
               />
             </div>
             <div className="mb-4">
@@ -319,7 +371,6 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 value={formData.jabatan || ""}
                 onChange={onInputChange}
                 className="mt-1 p-2 w-full border rounded-md"
-                required
               />
             </div>
             <div className="mb-4">
@@ -336,7 +387,6 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 value={formData.pangkat || ""}
                 onChange={onInputChange}
                 className="mt-1 p-2 w-full border rounded-md"
-                required
               />
             </div>
             <div className="mb-4">
@@ -353,7 +403,6 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 value={formData.email || ""}
                 onChange={onInputChange}
                 className="mt-1 p-2 w-full border rounded-md"
-                required
               />
             </div>
             <div className="mb-4">
@@ -370,7 +419,6 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 value={formData.password || ""}
                 onChange={onInputChange}
                 className="mt-1 p-2 w-full border rounded-md"
-                required
               />
             </div>
             <div className="mb-4">
@@ -388,7 +436,6 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 value={formData.nomer_telpon || ""}
                 onChange={onInputChange}
                 className="mt-1 p-2 w-full border rounded-md"
-                required
               />
             </div>
           </>
@@ -410,7 +457,6 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 value={formData.name || ""}
                 onChange={onInputChange}
                 className="mt-1 p-2 w-full border rounded-md"
-                required
               />
             </div>
             <div className="mb-4">
@@ -427,7 +473,6 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 value={formData.nip || ""}
                 onChange={onInputChange}
                 className="mt-1 p-2 w-full border rounded-md"
-                required
               />
             </div>
             <div className="mb-4">
@@ -444,7 +489,6 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 value={formData.email || ""}
                 onChange={onInputChange}
                 className="mt-1 p-2 w-full border rounded-md"
-                required
               />
             </div>
             <div className="mb-4">
@@ -461,7 +505,6 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 value={formData.password || ""}
                 onChange={onInputChange}
                 className="mt-1 p-2 w-full border rounded-md"
-                required
               />
             </div>
           </>
@@ -492,12 +535,6 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
         </button>
       </div>
       <form onSubmit={handleFormSubmit}>
-        {successMessage && (
-          <div className="text-green-600 mb-4">{successMessage}</div>
-        )}
-        {errorMessage && (
-          <div className="text-red-600 mb-4">{errorMessage}</div>
-        )}
         <div className="mb-4">
           <label
             htmlFor="role"
@@ -527,7 +564,7 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
             className="bg-blue-500 text-white py-2 px-4 rounded-md"
             disabled={submitting}
           >
-            {submitting ? "Submitting..." : "Submit"}
+            {submitting ? "Tambah..." : "Tambah"}
           </button>
         </div>
       </form>

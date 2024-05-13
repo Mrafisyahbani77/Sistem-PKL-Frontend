@@ -27,6 +27,12 @@ const DetailAssign = ({ pembimbingId, onClose }) => {
   return (
     <div className="fixed top-0 left-0 flex justify-center items-center w-full h-full bg-gray-800 bg-opacity-75">
       <div className="bg-white p-8 rounded-lg shadow-md border border-gray-300">
+        <button
+          className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mt-4"
+          onClick={onClose}
+        >
+          Tutup
+        </button>
         <h3 className="text-xl font-bold mb-4">Perusahaan yang Dibimbing</h3>
         <table className="table-auto w-full">
           <thead>
@@ -52,12 +58,6 @@ const DetailAssign = ({ pembimbingId, onClose }) => {
             )}
           </tbody>
         </table>
-        <button
-          className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mt-4"
-          onClick={onClose}
-        >
-          Tutup
-        </button>
       </div>
     </div>
   );

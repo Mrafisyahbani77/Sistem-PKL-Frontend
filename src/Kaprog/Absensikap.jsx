@@ -87,11 +87,11 @@ const Absensikap = () => {
     .map((siswa, index) => (
       <tr
         key={index}
-        className={`cursor-pointer py-2 px-4 border-b transition-colors text-center duration-300  ${
+        className={`py-2 px-4 border-b transition-colors text-center duration-300  ${
           selectedSiswa && selectedSiswa.nisn === siswa.nisn
             ? "bg-gray-100"
             : ""
-        } hover:bg-gray-400`}
+        } `}
       >
         <td className="py-2 px-4 border-r">{index + 1 + pagesVisited}</td>
         <td className="py-2 px-4 border-r">{siswa.nisn}</td>

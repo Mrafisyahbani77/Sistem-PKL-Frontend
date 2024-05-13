@@ -172,6 +172,7 @@ export default function Login() {
                       name="email"
                       type="text"
                       autoComplete="email"
+                      placeholder="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="block w-full px-4 py-3 rounded-md shadow-sm bg-gray-200 focus:outline-none focus:ring focus:border-blue-300 sm:text-sm"
@@ -193,6 +194,7 @@ export default function Login() {
                       name="password"
                       type="password"
                       autoComplete="current-password"
+                      placeholder="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       className="block w-full px-4 py-3 rounded-md shadow-sm bg-gray-200 focus:outline-none focus:ring focus:border-blue-300 sm:text-sm"
