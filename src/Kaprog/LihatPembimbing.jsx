@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import Sidekap from "../components/Sidekap";
 
@@ -25,20 +25,20 @@ export default function LihatPembimbing() {
   }, []); 
 
   return (
-    <div className="h-screen flex">
+    <div className="flex bg-gray-200">
       <Sidekap />
-      <div className="p-8 flex">
+      <div className="flex flex-col p-8 space-y-4">
         {loading ? (
           <p>Loading...</p>
         ) : pembimbingList.length > 0 ? (
           pembimbingList.map((pembimbing, index) => (
-            <div key={index} className="bg-white p-6 inline-block rounded-lg shadow-md mb-4">
+            <div key={index} className="bg-gradient-to-r from-gray-300 to-gray400 p-6 max-h-52 rounded shadow-md">
               <div className="">
-                <h5 className="text-2xl font-semibold mb-4">Nama: {pembimbing.name}</h5>
-                <p className="text-gray-600 mb-2">NIP: {pembimbing.nip}</p>
-                <p className="text-gray-600 mb-2">Nomer Telpon: {pembimbing.nomer_telpon}</p>
-                <p className="text-gray-600 mb-2">Jabatan: {pembimbing.jabatan}</p>
-                <p className="text-gray-600 mb-2">Pangkat: {pembimbing.pangkat}</p>
+                <h5 className="text-lg font-semibold mb-4">Nama Pembimbing: {pembimbing.name}</h5>
+                <p className="text-gray-600 mb-2 font-sans">NIP: {pembimbing.nip}</p>
+                <p className="text-gray-600 mb-2 font-sans">Nomer Telpon: {pembimbing.nomer_telpon}</p>
+                <p className="text-gray-600 mb-2 font-mono">Jabatan: {pembimbing.jabatan}</p>
+                <p className="text-gray-600 mb-2 font-mono">Pangkat: {pembimbing.pangkat}</p>
               </div>
             </div>
           ))

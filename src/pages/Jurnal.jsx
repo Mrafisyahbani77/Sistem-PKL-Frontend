@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import ReactPaginate from "react-paginate";
 import { FaBook, FaDownload } from "react-icons/fa";
 import Api from "../Api";
 import axios from "axios";
-import { Toaster, toast } from "react-hot-toast";
+import { toast } from "react-hot-toast";
 
 const Jurnal = () => {
   const [siswa, setSiswa] = useState([]);

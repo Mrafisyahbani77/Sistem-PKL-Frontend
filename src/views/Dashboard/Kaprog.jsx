@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Api from "../../Api";
 import Laykap from "../../components/Laykap";
 import { FaUserGraduate, FaChalkboardTeacher, FaBook } from "react-icons/fa";

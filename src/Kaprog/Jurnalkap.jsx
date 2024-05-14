@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import Sidekap from "../components/Sidekap";
 import ReactPaginate from "react-paginate";
 import { FaBook } from "react-icons/fa";
@@ -13,6 +13,8 @@ const Jurnalkap = () => {
   const usersPerPage = 6;
   const JurnalPerPage = 6;
   const halVisited = pageNumber * JurnalPerPage;
+  const pagesVisited = pageNumber * usersPerPage;
+  
 
   useEffect(() => {
     const fetchSiswa = async () => {
@@ -122,7 +124,7 @@ const Jurnalkap = () => {
           </thead>
           <tbody>
             {filteredSiswa
-              .slice(pageNumber * usersPerPage, (pageNumber + 1) * usersPerPage)
+              .slice(pageNumber * usersPerPage, (pageNumber + 1) * usersPerPage, pagesVisited)
               .map((user, index) => (
                 <tr
                   key={user.id}
@@ -131,7 +133,7 @@ const Jurnalkap = () => {
                   } `}
                 >
                   <td className="py-2 px-4 border-r text-center">
-                    {index + 1}
+                    {index + 1 + pagesVisited}
                   </td>
                   <td className="py-2 px-4 border-r text-center">
                     {user.nisn}

@@ -1,5 +1,5 @@
 // Import useEffect, useState, dan Fragment dari React
-import React, { useState, useEffect, Fragment } from "react";
+import  { useState, useEffect} from "react";
 import Sidekap from "../components/Sidekap";
 import axios from "axios";
 import ReactPaginate from "react-paginate";
