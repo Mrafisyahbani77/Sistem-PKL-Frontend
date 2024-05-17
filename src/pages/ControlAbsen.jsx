@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar.jsx";
 import Api from "../Api";
 import ReactPaginate from "react-paginate";
-import Loader from "../components/Loader.jsx";
+
 
 const ControlAbsen = () => {
   const [siswaList, setSiswaList] = useState([]);
@@ -91,6 +91,7 @@ const ControlAbsen = () => {
   );
 
   const pageCount = Math.ceil(filteredSiswaList.length / usersPerPage);
+
 
   const displaySiswaList = isLoading ? (
     <tr>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Api from "../../Api";
 import Laysiswa from "../../components/Laysiswa";
 import Cookies from "js-cookie";
@@ -9,12 +9,24 @@ const SiswaDashboard = () => {
   const [pendingApplications, setPendingApplications] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-
   const [nameData, setLoadName] = useState("");
+  const [role, setRole] = useState ("")
 
   useEffect(() => {
     loadName();
+    loadRole()
   }, []);
+
+  const loadRole = () => {
+    const role = Cookies.get("role");
+    if (role){
+      try{
+        setRole(JSON.parse(role));
+      }catch(e){
+        setRole({role})
+      }
+    }
+  }
 
   const loadName = () => {
     const nameData = Cookies.get("user");
@@ -45,7 +57,7 @@ const SiswaDashboard = () => {
     <div>
       <Laysiswa>
         <p className="lg:text-lg md:text-xl sm:text-sm font-bold mb-4">
-          Selamat Datang Di Dashboard, {nameData.name}
+          Selamat Datang Di Dashboard {role.role}, Hallo {nameData.name}
         </p>
         <div className="w-full max-w-xl mx-auto mt-8 p-8 bg-gradient-to-r from-gray-200 to-gray-400 rounded shadow-lg">
           <h1 className="text-2xl font-bold mb-6">Status Pengajuan PKL</h1>

@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Api from "../../Api";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import { faEnvelope, faLock } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import toast, { Toaster } from "react-hot-toast"; 
-import pengajuanpkl from "../../assets/images/pkl.png"
+import toast, { Toaster } from "react-hot-toast";
+import pengajuanpkl from "../../assets/images/pkl.png";
 
 export default function Login() {
   document.title = "Login - Sistem Pengajuan Pkl";
@@ -13,13 +13,8 @@ export default function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [buttonLoading, setButtonLoading] = useState(false);
-
-  const handleRememberMeChange = () => {
-    setRememberMe(!rememberMe);
-  };
 
   const token = Cookies.get("token");
 
@@ -180,7 +175,7 @@ export default function Login() {
                   </div>
                 </div>
 
-                <div>
+                <div className="mt-2">
                   <label
                     htmlFor="password"
                     className="block text-sm font-medium text-gray-700"
@@ -201,27 +196,7 @@ export default function Login() {
                     />
                   </div>
                 </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <input
-                      id="rememberMe"
-                      name="rememberMe"
-                      type="checkbox"
-                      className="h-4 w-4 text-blue-500 focus:ring-blue-400 border-gray-300 rounded"
-                      checked={rememberMe}
-                      onChange={handleRememberMeChange}
-                    />
-                    <label
-                      htmlFor="rememberMe"
-                      className="ml-2 block text-sm text-gray-900"
-                    >
-                      Remember me
-                    </label>
-                  </div>
-                </div>
-
-                <div>
+                <div className="mt-3">
                   <button
                     type="submit"
                     className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-indigo-500 hover:bg-indigo-700 focus:outline-none focus:ring focus:border-blue-300 ${

@@ -19,10 +19,23 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [nameData, setLoadName] = useState("");
+  const [role, setRole] = useState("");
 
   useEffect(() => {
     loadName();
+    loadRole();
   }, []);
+
+  const loadRole = () => {
+    const role = Cookies.get("role");
+    if (role) {
+      try {
+        setRole(JSON.parse(role));
+      } catch (e) {
+        setRole({ role });
+      }
+    }
+  };
 
   const token = Cookies.get("token");
 
@@ -77,7 +90,7 @@ const AdminDashboard = () => {
       <Layout>
         <div className="flex flex-col flex-1 p-8 transition-all">
           <p className="lg:text-sm md:text-xl font-bold mb-4">
-            Selamat Datang Di Dashboard, {nameData.name}
+            Selamat Datang Di Dashboard {role.role}, Hallo {nameData.name}
           </p>
           <div className="grid gap-y-10 gap-x-6 md:grid-cols-2 xl:grid-cols-4 mb-12 mt-12">
             {[
