@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Cookies from "js-cookie";
 
-//icons
+// icons
 import { MdDashboard } from "react-icons/md";
 import { FaBook } from "react-icons/fa";
 import { TiUserAdd } from "react-icons/ti";
@@ -18,7 +18,6 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const user = JSON.parse(Cookies.get("user"));
-  
 
   const Menus = [
     {
@@ -73,11 +72,11 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="flex min-h-screen h-screen">
       <div
         className={`${
           open ? "w-72" : "w-20 "
-        } bg-gray-800 h-screen p-5 pt-8 relative duration-300`}
+        } bg-gray-800 min-h-screen h-screen p-5 pt-8 relative duration-300`}
       >
         <img
           src="./src/assets/control.png"
