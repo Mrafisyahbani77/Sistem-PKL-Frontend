@@ -22,37 +22,37 @@ const Sidebar = () => {
   const Menus = [
     {
       title: "Dashboard",
-      icon: <MdDashboard style={{ fontSize: "24px" }} />,
+      icon: <MdDashboard style={{ fontSize: "22px" }} />,
       path: "/AdminDashboard",
     },
     {
       title: "Manajemen Pengguna",
-      icon: <TiUserAdd style={{ fontSize: "24px" }} />,
+      icon: <TiUserAdd style={{ fontSize: "22px" }} />,
       path: "/Crud",
     },
     {
       title: "Pengajuan Pkl",
-      icon: <SiMinutemailer style={{ fontSize: "24px" }} />,
+      icon: <SiMinutemailer style={{ fontSize: "22px" }} />,
       path: "/PengajuanPkl",
     },
     {
       title: "Data Pengajuan",
-      icon: <FaMagnifyingGlassChart style={{ fontSize: "20px" }} />,
+      icon: <FaMagnifyingGlassChart style={{ fontSize: "22px" }} />,
       path: "/DataPengajuan",
     },
     {
       title: "Perusahaan Rekomendasi",
-      icon: <BiSolidBusiness style={{ fontSize: "24px" }} />,
+      icon: <BiSolidBusiness style={{ fontSize: "22px" }} />,
       path: "/Perusahaan",
     },
     {
       title: "Jurnal Siswa",
-      icon: <FaBook style={{ fontSize: "24px" }} />,
+      icon: <FaBook style={{ fontSize: "22px" }} />,
       path: "/Jurnal",
     },
     {
       title: "Absensi Siswa",
-      icon: <FaAddressBook style={{ fontSize: "24px" }} />,
+      icon: <FaAddressBook style={{ fontSize: "22px" }} />,
       path: "/ControlAbsen",
     },
     {
@@ -105,8 +105,8 @@ const Sidebar = () => {
           {Menus.map((Menu, index) => (
             <li
               key={index}
-              className={`flex rounded-md p-2 cursor-pointer  hover:bg-gray-600 text-white text-sm items-center gap-x-4 
-              ${Menu.gap ? "mt-9" : "mt-5"} ${index === 0 && "bg-light-gray"} ${
+              className={`flex rounded-md p-2 cursor-pointer  hover:bg-gray-600 text-white text-sm font-sans items-center gap-x-4 
+              ${Menu.gap ? "mt-9" : "mt-3"} ${index === 0 && "bg-light-gray"} ${
                 location.pathname === Menu.path ? "bg-gray-600" : ""
               }`}
               onClick={() => handleNavigate(Menu.path)}
