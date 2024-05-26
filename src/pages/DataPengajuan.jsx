@@ -209,20 +209,20 @@ const DataPengajuan = () => {
         </h2>
         <table className="bg-white table-auto w-full shadow-md rounded-md overflow-hidden border border-gray-300">
           <thead className="bg-gray-200">
-            <tr className="bg-gray-200">
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <tr className="bg-gray-300">
+              <th className="px-6 py-3 font-medium border ">
                 No
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 font-medium border">
                 Nama Akun Siswa
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 font-medium border">
                 NISN
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 font-medium border">
                 Kelas
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 font-medium border">
                 Detail
               </th>
             </tr>
@@ -244,21 +244,21 @@ const DataPengajuan = () => {
                 }, [])
                 .slice(pagesVisited, pagesVisited + itemsPerPage)
                 .map((pengajuan, index) => (
-                  <tr key={index}>
-                    <td className="px-6 py-4 whitespace-nowrap">{index + 1}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                  <tr className="text-center" key={index}>
+                    <td className="px-6 py-4 border ">{index + 1}</td>
+                    <td className="px-6 py-4 whitespace-nowrap w-max-[100px] overflow-x-auto border">
                       {pengajuan.name}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 whitespace-nowrap w-max-[100px] overflow-x-auto">
                       {pengajuan.nisn}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 border">
                       {pengajuan.kelas}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 border">
                       <button
                         onClick={() => handleDetailClick(pengajuan)}
-                        className="text-blue-500 hover:underline focus:outline-none"
+                        className="bg-blue-500 text-white rounded py-1 px-2 hover:bg-blue-600"
                       >
                         Detail
                       </button>
