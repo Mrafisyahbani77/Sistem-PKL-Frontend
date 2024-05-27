@@ -1,8 +1,7 @@
 import React, { useState, useRef } from "react";
 import axios from "axios";
 
-export default function ImportAkun() {
-  const [isOpen, setIsOpen] = useState(false);
+export default function ImportAkun({ onClose }) {
   const fileInputRef = useRef();
 
   const handleImport = async () => {
@@ -26,7 +25,7 @@ export default function ImportAkun() {
     formData.append("file", file);
 
     try {
-    const token = localStorage.getItem('token')
+      const token = localStorage.getItem("token");
 
       await axios.post(
         "http://127.0.0.1:8000/api/admin/import-akun",
@@ -48,22 +47,27 @@ export default function ImportAkun() {
 
   return (
     <div>
-      <button onClick={() => setIsOpen(true)}>Import Excel File</button>
-      {isOpen && (
-        <div>
-          <input
-            type="file"
-            accept=".xlsx,.xls"
-            ref={fileInputRef}
-            style={{ display: "none" }}
-            onChange={handleImport}
-          />
-          <button onClick={() => fileInputRef.current.click()}>
-            Choose File
-          </button>
-          <button onClick={() => setIsOpen(false)}>Cancel</button>
-        </div>
-      )}
+      <div>
+        <button
+          onClick={onClose}
+          className="bg-gray-800 hover:bg-gray-900 text-white text-sm py-2 rounded px-2"
+        >
+          Tutup
+        </button>
+        <input
+          type="file"
+          accept=".xlsx,.xls"
+          ref={fileInputRef}
+          style={{ display: "none" }}
+          onChange={handleImport}
+        />
+        <button
+          className="flex w-full mt-1 p-2 border focus:outline-none focus:ring focus:border-blue-300 rounded"
+          onClick={() => fileInputRef.current.click()}
+        >
+          Pilih File
+        </button>
+      </div>
     </div>
   );
 }

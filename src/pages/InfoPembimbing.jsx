@@ -127,7 +127,7 @@ const InfoPembimbing = () => {
               <th className="px-4 py-2 border ">Pangkat</th>
               <th className="px-4 py-2 border ">Nomer Telpon</th>
               <th className="px-4 py-2 border ">Perusahaan Yang dibimbing</th>
-              <th className="px-4 py-2 border ">Action</th>
+              <th className="px-4 py-2 border ">Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -152,18 +152,18 @@ const InfoPembimbing = () => {
                   </td>
                   <td className="px-4 py-2 border ">
                     <button
-                      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                      className="bg-blue-500 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-2 rounded"
                       onClick={() => handleDetail(pembimbing.user_id)}
                     >
-                      Detail Assign
+                      Detail Pembimbing
                     </button>
                   </td>
                   <td className="px-4 py-2 border ">
                     <button
-                      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                      className="bg-green-500 hover:bg-green-700 text-white text-sm font-semibold py-2 px-2 rounded"
                       onClick={() => handleDe(pembimbing.user_id)}
                     >
-                      Assign Pembimbing
+                      Berikan Pembimbing
                     </button>
                   </td>
                 </tr>
@@ -199,17 +199,17 @@ const InfoPembimbing = () => {
           <div className="absolute top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
             <div className="bg-white p-8 rounded shadow">
               <button
-                className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mt-4"
+                className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-1 text-sm px-2 rounded mt-2"
                 onClick={onClose}
               >
                 Tutup
               </button>
-              <h3 className="text-xl font-bold mt-4">Assign Pembimbing</h3>
+              <h3 className="text-xl font-bold mt-4">Memberikan Pembimbing</h3>
               <select
-                className="border rounded px-4 py-2 mt-2"
+                className="border rounded px-4 text-sm py-2 mt-2"
                 onChange={(e) => setSelectedCompanyId(e.target.value)}
               >
-                <option value="">Pilih Grup</option>
+                <option value="">Pilih Grup Siswa</option>
                 {companies.map((company, index) => (
                   <option key={index} value={company.group_id}>
                     {company.nama_perusahaan}
@@ -217,10 +217,10 @@ const InfoPembimbing = () => {
                 ))}
               </select>
               <button
-                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-2"
+                className="bg-green-500 ml-2 hover:bg-green-700 text-sm text-white font-bold py-2 px-4 rounded mt-2"
                 onClick={handleAssign}
               >
-                Assign
+                Berikan
               </button>
             </div>
           </div>

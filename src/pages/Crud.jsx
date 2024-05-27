@@ -219,9 +219,15 @@ const Crud = () => {
                   .slice(pagesVisited, pagesVisited + usersPerPage)
                   .map((user, index) => (
                     <tr key={user.id}>
-                      <td className="px-4 py-2 border">{index + 1 + pagesVisited}</td>
-                      <td className="px-4 py-2 border max-w-[50px] overflow-x-auto whitespace-nowrap">{user.name}</td>
-                      <td className="px-4 py-2 border max-w-[100px] overflow-x-auto whitespace-nowrap">{user.email}</td>
+                      <td className="px-4 py-2 border">
+                        {index + 1 + pagesVisited}
+                      </td>
+                      <td className="px-4 py-2 border max-w-[50px] overflow-x-auto whitespace-nowrap">
+                        {user.name}
+                      </td>
+                      <td className="px-4 py-2 border max-w-[100px] overflow-x-auto whitespace-nowrap">
+                        {user.email}
+                      </td>
                       <td className="px-4 py-2 border">
                         <FaUserEdit
                           onClick={() => handleEdit(user.id)}
@@ -277,11 +283,17 @@ const Crud = () => {
                   .slice(pagesVisited, pagesVisited + usersPerPage)
                   .map((user, index) => (
                     <tr key={user.id}>
-                      <td className="px-4 py-2 border">{index + 1 + pagesVisited}</td>
+                      <td className="px-4 py-2 border">
+                        {index + 1 + pagesVisited}
+                      </td>
                       <td className="px-4 py-2 border">{user.name}</td>
-                      <td className="px-4 py-2 border max-w-[100px] overflow-x-auto whitespace-nowrap">{user.nisn}</td>
+                      <td className="px-4 py-2 border max-w-[100px] overflow-x-auto whitespace-nowrap">
+                        {user.nisn}
+                      </td>
                       <td className="px-4 py-2 border">{user.kelas}</td>
-                      <td className="px-4 py-2 border overflow-x-auto whitespace-nowrap  max-w-[100px]">{user.email}</td>
+                      <td className="px-4 py-2 border overflow-x-auto whitespace-nowrap  max-w-[100px]">
+                        {user.email}
+                      </td>
                       <td className="px-4 py-2 border max-w-[100px]">
                         <FaUserEdit
                           onClick={() => handleEdit(user.id)}
@@ -339,7 +351,9 @@ const Crud = () => {
                   .slice(pagesVisited, pagesVisited + usersPerPage)
                   .map((user, index) => (
                     <tr key={user.id}>
-                      <td className="px-4 py-2 border">{index + 1 + pagesVisited}</td>
+                      <td className="px-4 py-2 border">
+                        {index + 1 + pagesVisited}
+                      </td>
                       <td className="px-4 py-2 border">{user.name}</td>
                       <td className="px-4 py-2 border">{user.nip}</td>
                       <td className="px-4 py-2 border">{user.jabatan}</td>
@@ -401,7 +415,9 @@ const Crud = () => {
                   .slice(pagesVisited, pagesVisited + usersPerPage)
                   .map((user, index) => (
                     <tr key={user.id}>
-                      <td className="px-4 py-2 border">{index + 1 + pagesVisited}</td>
+                      <td className="px-4 py-2 border">
+                        {index + 1 + pagesVisited}
+                      </td>
                       <td className="px-4 py-2 border">{user.name}</td>
                       <td className="px-4 py-2 border">{user.nip}</td>
                       <td className="px-4 py-2 border">{user.email}</td>

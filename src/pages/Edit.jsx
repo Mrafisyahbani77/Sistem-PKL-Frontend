@@ -47,25 +47,25 @@ const Edit = ({ formData, onInputChange, onSubmit, onClose, roleCategory }) => {
     }
   };
 
-  const renderPasswordInput = () => {
-    if (!isEditMode) {
-      return (
-        <div>
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password || "********"} // Auto-input password from database
-            onChange={onInputChange}
-            required
-            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-          />
-        </div>
-      );
-    }
-    return null;
-  };
+  // const renderPasswordInput = () => {
+  //   if (!isEditMode) {
+  //     return (
+  //       <div>
+  //         <label htmlFor="password">Password</label>
+  //         <input
+  //           type="password"
+  //           id="password"
+  //           name="password"
+  //           value={formData.password || "********"} // Auto-input password from database
+  //           onChange={onInputChange}
+  //           required
+  //           className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+  //         />
+  //       </div>
+  //     );
+  //   }
+  //   return null;
+  // };
 
   return (
     <form className="space-y-4" onSubmit={handleFormSubmit}>
@@ -176,7 +176,7 @@ const Edit = ({ formData, onInputChange, onSubmit, onClose, roleCategory }) => {
           </div>
         </>
       )}
-      {renderPasswordInput()}
+      {/* {renderPasswordInput()} */}
       <div className="flex justify-end">
         <button
           type="button"
