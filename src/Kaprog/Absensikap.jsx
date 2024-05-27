@@ -79,7 +79,8 @@ const Absensikap = () => {
       (siswa.name &&
         siswa.name.toLowerCase().includes(searchTerm?.toLowerCase())) ||
       (siswa.nisn &&
-        siswa.nisn.toLowerCase().includes(searchTerm?.toLowerCase()))
+        siswa.nisn.toLowerCase().includes(searchTerm?.toLowerCase())) ||
+      (selectedKelas && siswa.kelas === selectedKelas)
   );
 
   const pageCount = Math.ceil(filteredSiswaList.length / usersPerPage);
@@ -129,6 +130,7 @@ const Absensikap = () => {
             onChange={handleSearch}
             className="p-2 border rounded"
           />
+          
         </div>
         <table className="bg-white table-auto w-full shadow-md rounded-md border border-gray-300">
           <thead className="bg-gray-200">
@@ -171,7 +173,7 @@ const Absensikap = () => {
               <h3 className="text-2xl font-bold mb-2">
                 Detail Absensi untuk {selectedSiswa.name}
               </h3>
-              <table className="w-full divide-y divide-gray-200 border rounded overflow-hidden mt-4">
+              <table className="w-full divide-y divide-gray-200 border rounded mt-4">
                 <thead className="bg-gray-200">
                   <tr className="bgv-gray-50">
                     <th className="py-2 px-4 border">No</th>
@@ -194,12 +196,12 @@ const Absensikap = () => {
                         <td className="py-2 px-4 border text-center">
                           {item.waktu_absen}
                         </td>
-                        <td className="py-2 px-10 border text-center">
+                        <td className="py-2 px-2 border text-center">
                           <a
                             href={`https://www.google.com/maps/search/?api=1&query=${item.latitude},${item.longitude}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-2 rounded"
+                            className="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-1 px-2 rounded"
                           >
                             Lihat Lokasi
                           </a>
