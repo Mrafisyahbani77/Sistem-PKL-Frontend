@@ -170,7 +170,7 @@ export default function Login() {
                       placeholder="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="block w-full px-4 py-3 rounded-md shadow-sm bg-gray-200 focus:outline-none focus:ring focus:border-blue-300 sm:text-sm"
+                      className="block w-full px-4 py-3 rounded-md shadow-sm bg-gray-200 focus:outline-none focus:ring w-max-[100px] whitespace-nowrap overflow-x-auto focus:border-blue-300 sm:text-sm"
                     />
                   </div>
                 </div>
@@ -204,7 +204,7 @@ export default function Login() {
                     }`}
                     disabled={loading || buttonLoading}
                   >
-                    {loading ? "Sedang Loginnn..." : "Login"}
+                    {loading ? "Loadinggg...." : "Login"}
                   </button>
                 </div>
               </div>
