@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar.jsx";
 import Api from "../Api";
 import ReactPaginate from "react-paginate";
-
+import axios from "axios";
+import Swal from "sweetalert2";
 
 const ControlAbsen = () => {
   const [siswaList, setSiswaList] = useState([]);
@@ -90,8 +91,43 @@ const ControlAbsen = () => {
         siswa.nisn.toLowerCase().includes(searchTerm?.toLowerCase()))
   );
 
-  const pageCount = Math.ceil(filteredSiswaList.length / usersPerPage);
+  const ExportAbsen = async () => {
+    const token = localStorage.getItem("token");
 
+    try {
+      const response = await axios.get(
+        "http://127.0.0.1:8000/api/admin/export-absen",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          responseType: "blob",
+        }
+      );
+
+      const blobUrl = URL.createObjectURL(response.data);
+
+      const downloadLink = document.createElement("a");
+      downloadLink.href = blobUrl;
+      downloadLink.download = "Laporan-absen-siswa.pdf";
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+
+      Swal.fire({
+        icon: "success",
+        title: "PDF Berhasil Dibuat",
+      });
+    } catch (error) {
+      console.error("Error exporting absen:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Gagal Membuat PDF",
+        text: error.message,
+      });
+    }
+  };
+
+  const pageCount = Math.ceil(filteredSiswaList.length / usersPerPage);
 
   const displaySiswaList = isLoading ? (
     <tr>
@@ -111,10 +147,8 @@ const ControlAbsen = () => {
       .map((siswa, index) => (
         <tr
           key={index}
-          className={`cursor-pointer py-2 px-4 border-b transition-colors text-center duration-300  ${
-            selectedSiswa && selectedSiswa.nisn === siswa.nisn
-              ? "bg-gray-100"
-              : ""
+          className={`py-2 px-4 border-b transition-colors text-center duration-300  ${
+            selectedSiswa && selectedSiswa.nisn === siswa.nisn ? "" : ""
           }`}
         >
           <td className="py-2 px-4 border-r">{index + 1 + pagesVisited}</td>
@@ -157,6 +191,12 @@ const ControlAbsen = () => {
             className="p-2 border rounded"
           />
         </div>
+        <button
+          onClick={ExportAbsen}
+          className="bg-blue-500 rounded py-2 px-2 text-sm text-white hover:bg-blue-600"
+        >
+          Export Absen
+        </button>
         {/* Tabel Akun Siswa */}
         <table className="bg-white table-auto w-full shadow-md rounded-md overflow-hidden border border-gray-300">
           <thead className="bg-gray-200">
@@ -220,7 +260,7 @@ const ControlAbsen = () => {
                     .map((item, index) => (
                       <tr key={index} className="hover:bg-gray-50">
                         <td className="py-2 px-4 border-r text-center">
-                          {index + 1 }
+                          {index + 1}
                         </td>
                         <td className="py-2 px-4 border-r text-center">
                           {item.tanggal_absen}
