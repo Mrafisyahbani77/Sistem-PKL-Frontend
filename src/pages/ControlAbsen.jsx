@@ -190,13 +190,14 @@ const ControlAbsen = () => {
             onChange={handleSearch}
             className="p-2 border rounded"
           />
+
+          <button
+            onClick={ExportAbsen}
+            className="bg-blue-500 float-right rounded py-2 px-2 text-sm text-white font-semibold hover:bg-blue-600"
+          >
+            Export Absen
+          </button>
         </div>
-        <button
-          onClick={ExportAbsen}
-          className="bg-blue-500 rounded py-2 px-2 text-sm text-white hover:bg-blue-600"
-        >
-          Export Absen
-        </button>
         {/* Tabel Akun Siswa */}
         <table className="bg-white table-auto w-full shadow-md rounded-md overflow-hidden border border-gray-300">
           <thead className="bg-gray-200">
