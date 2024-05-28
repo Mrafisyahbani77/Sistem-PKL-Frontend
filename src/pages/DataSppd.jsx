@@ -15,6 +15,10 @@ export default function DataSppd() {
     fetchData();
   }, []);
 
+  const onClos = () => {
+    setShowGenerateForm(null);
+  };
+
   const fetchData = async () => {
     try {
       const response = await axios.get("http://127.0.0.1:8000/api/admin/sppd", {
@@ -114,7 +118,7 @@ export default function DataSppd() {
               </table>
               <div className="mt-4">
                 <button
-                    onClick={() => {
+                  onClick={() => {
                     setShowPopup();
                     setShowGenerateForm(true);
                   }}
@@ -126,14 +130,22 @@ export default function DataSppd() {
                   onClick={() => setShowPopup(false)}
                   className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded ml-4"
                 >
-                  Close
+                  Tutup
                 </button>
               </div>
             </div>
           </div>
         )}
         {showGenerateForm && (
-          <GenerateSppd userId={selectedPembimbing.user_id} />
+          <div className="flex">
+            <GenerateSppd userId={selectedPembimbing.user_id}/>
+            <button
+              onClick={onClos}
+              className="bg-gray-500 hover:bg-gray-600 py-2 px-2 rounded text-sm text-white"
+            >
+              Tutup Form
+            </button>
+          </div>
         )}{" "}
         {/* Tampilkan form generate PDF jika showGenerateForm bernilai true */}
       </div>

@@ -7,24 +7,28 @@ export default function GenerateSppd({ userId }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/api/admin/tambah-nosurat", {
-        nosurat: nosurat,
-        user_id: userId, // Menggunakan userId dari props
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/admin/tambah-nosurat",
+        {
+          nosurat: nosurat,
+          user_id: userId, // Menggunakan userId dari props
         },
-        responseType: 'blob'
-      });
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          responseType: "blob",
+        }
+      );
 
-      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const blob = new Blob([response.data], { type: "application/pdf" });
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = url;
-      a.download = 'surat-sppd.pdf';
+      a.download = "surat-sppd.pdf";
       a.click();
       window.URL.revokeObjectURL(url);
 
@@ -41,13 +45,19 @@ export default function GenerateSppd({ userId }) {
         <label>
           Masukkan Nomor Surat:
           <input
-          className="rounded ml-5 bg-gray-300"
+            className="rounded ml-5 bg-gray-200"
+            placeholder="007"
             type="text"
             value={nosurat}
             onChange={(e) => setNosurat(e.target.value)}
           />
         </label>
-        <button type="submit" className="bg-blue-500 hover:bg-blue-700 ml-10 text-white font-bold py-2 px-4 rounded mt-4">Generate PDF</button>
+        <button
+          type="submit"
+          className="bg-blue-500 hover:bg-blue-700 ml-10 text-white font-bold py-2 px-4 rounded mt-4"
+        >
+          Generate PDF
+        </button>
       </form>
     </div>
   );
