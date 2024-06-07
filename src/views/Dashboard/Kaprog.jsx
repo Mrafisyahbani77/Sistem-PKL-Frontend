@@ -9,7 +9,6 @@ const KaprogDashboard = () => {
 
   const [totalUsersRole3, setTotalUsersRole3] = useState(0);
   const [totalUsersRole4, setTotalUsersRole4] = useState(0);
-  const [totalJurnals, setTotalJurnals] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [nameData, setLoadName] = useState("")
@@ -44,7 +43,6 @@ const KaprogDashboard = () => {
         const response = await Api.get("/api/kaprog/dashboard");
         setTotalUsersRole3(response.data.total_users_role_3);
         setTotalUsersRole4(response.data.total_users_role_4);
-        setTotalJurnals(response.data.total_jurnals);
       } catch (error) {
         console.error("Error fetching data:", error.message);
         setError("Error fetching data. Please try again.");
@@ -90,19 +88,7 @@ const KaprogDashboard = () => {
                 )}
               </div>
             </div>
-            <div className="card border-0 shadow w-full h-full p-4 bg-tertiary flex items-center">
-              <div className="card-body text-center flex items-center">
-                <FaBook size={20} className="mr-2" />
-                <h6 className="text-sm">Total Jurnal Seluruh Siswa:</h6>
-                {loading ? (
-                  <p>Loading...</p>
-                ) : error ? (
-                  <p>{error}</p>
-                ) : (
-                  <h5 className="font-extrabold text-center"> {totalJurnals}</h5>
-                )}
-              </div>
-            </div>
+
           </div>
         </div>
       </Laykap>
