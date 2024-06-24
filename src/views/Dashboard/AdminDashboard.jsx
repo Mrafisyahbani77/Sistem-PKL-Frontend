@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import Api from "../../Api";
 import Cookies from "js-cookie";
 import Layout from "../../components/Layout";
+import Forbidden from "../../routes/Forbidden";
+import { Link } from "react-router-dom";
 
 //icon
 import { MdScheduleSend } from "react-icons/md";
@@ -20,6 +22,17 @@ const AdminDashboard = () => {
   const [error, setError] = useState(null);
   const [nameData, setLoadName] = useState("");
   const [role, setRole] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false); // Default false
+
+  useEffect(() => {
+    const role = Cookies.get("role");
+    try {
+      const parsedRole = JSON.parse(role);
+      setIsAdmin(parsedRole.includes("admin"));
+    } catch (e) {
+      setIsAdmin(role === "admin");
+    }
+  }, []);
 
   useEffect(() => {
     loadName();
@@ -37,14 +50,18 @@ const AdminDashboard = () => {
     }
   };
 
-  const token = Cookies.get("token");
-
   const loadName = () => {
     const nameData = Cookies.get("user");
     if (nameData) {
-      setLoadName(JSON.parse(nameData));
+      try {
+        setLoadName(JSON.parse(nameData));
+      } catch (e) {
+        setLoadName(nameData);
+      }
     }
   };
+
+  const token = Cookies.get("token");
 
   const fetchData = async () => {
     try {
@@ -70,7 +87,6 @@ const AdminDashboard = () => {
       const response = await Api.get(
         "/api/admin/dashboard/count-pending-applications"
       );
-
       setCountPendingApplications(response.data.countPendingApplications);
     } catch (error) {
       console.error(
@@ -81,9 +97,26 @@ const AdminDashboard = () => {
   };
 
   useEffect(() => {
-    fetchData();
-    fetchPendingApplicationsCount();
-  }, []);
+    if (isAdmin) {
+      fetchData();
+      fetchPendingApplicationsCount();
+    }
+  }, [isAdmin]);
+
+  if (!isAdmin) {
+    return (
+      <div>
+        <Forbidden />
+        {/* <div>
+          <Link to="/DashboardUser">
+            <button className="btn bg-yellow-500 items-center text-[20px] mt-5">
+              Kembali Ke Halaman Utama
+            </button>
+          </Link>
+        </div> */}
+      </div>
+    );
+  }
 
   return (
     <div>
