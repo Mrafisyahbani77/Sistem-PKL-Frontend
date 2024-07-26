@@ -324,7 +324,7 @@ const FormPengajuan = ({ onClose }) => {
             </select>
 
             <label className="block text-sm font-semibold mt-4 mb-2">
-              NISN:
+              <span className="text-red-500 w-5">*</span>NISN:
             </label>
             <input
               type="text"
@@ -333,7 +333,7 @@ const FormPengajuan = ({ onClose }) => {
               onChange={(e) => handleInputChange(e, "nisn", index)}
             />
 
-            <label className="block text-sm font-semibold mt-4 mb-2">CV:</label>
+            <label className="block text-sm font-semibold mt-4 mb-2"><span className="text-red-500 w-5">*</span>CV:</label>
             <div className="flex">
               <input
                 type="text"
@@ -351,7 +351,7 @@ const FormPengajuan = ({ onClose }) => {
             </div>
 
             <label className="block text-sm font-semibold mt-4 mb-2">
-              Portofolio:
+             <span className="text-red-500 w-5">*</span> Portofolio:
             </label>
             <div className="flex">
               <input
@@ -395,7 +395,7 @@ const FormPengajuan = ({ onClose }) => {
                   ))}
                 </select>
                 <label className="block text-sm font-semibold mt-4 mb-2">
-                  Nama Perusahaan(jika punya ):
+                  Nama Perusahaan(jika punya rekomendasi):
                 </label>
                 <input
                   type="email"
