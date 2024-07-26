@@ -4,6 +4,8 @@ import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import { faEnvelope, faLock } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Eye } from "lucide-react";
+import { EyeOff } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import pengajuanpkl from "../../assets/images/pkl.png";
 
@@ -15,6 +17,11 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [buttonLoading, setButtonLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleTogglePassword = () => {
+    setShowPassword(!showPassword);
+  };
 
   const token = Cookies.get("token");
 
@@ -183,17 +190,28 @@ export default function Login() {
                     <FontAwesomeIcon icon={faLock} className="mr-2" />
                     Password
                   </label>
-                  <div className="mt-1">
+                  <div className="mt-1 relative">
                     <input
                       id="password"
                       name="password"
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       autoComplete="current-password"
                       placeholder="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       className="block w-full px-4 py-3 rounded-md shadow-sm bg-gray-200 focus:outline-none focus:ring focus:border-blue-300 sm:text-sm"
                     />
+                    <button
+                      type="button"
+                      onClick={handleTogglePassword}
+                      className="absolute inset-y-0 right-0 px-3 py-2 focus:outline-none"
+                    >
+                      {showPassword ? (
+                        <Eye className="w-4" />
+                      ) : (
+                        <EyeOff className="w-4" />
+                      )}
+                    </button>
                   </div>
                 </div>
                 <div className="mt-3">

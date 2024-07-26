@@ -2,12 +2,20 @@ import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import Api from "../Api";
 import toast from "react-hot-toast";
+import { Eye } from "lucide-react";
+import { EyeOff } from "lucide-react";
 
 const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
   const [submitting, setSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [daftarKelas, setDaftarKelas] = useState([]);
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleTogglePassword = () => {
+    setShowPassword(!showPassword);
+  };
 
   useEffect(() => {
     const fetchDaftarKelas = async () => {
@@ -213,7 +221,7 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 className="mt-1 p-2 w-full border rounded-md"
               />
             </div>
-            <div className="mb-4">
+            <div className="mb-4 relative">
               <label
                 htmlFor="password"
                 className="block text-sm font-medium text-gray-600"
@@ -221,13 +229,24 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 Password
               </label>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="password"
                 name="password"
                 value={formData.password || ""}
                 onChange={onInputChange}
                 className=" mt-1 p-2 w-full border rounded-md"
               />
+              <button
+                type="button"
+                onClick={handleTogglePassword}
+                className="absolute top-6 inset-y-0 right-0 px-3 py-2 focus:outline-none"
+              >
+                {showPassword ? (
+                  <Eye className="w-4" />
+                ) : (
+                  <EyeOff className="w-4" />
+                )}
+              </button>
             </div>
           </>
         );
@@ -304,7 +323,7 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 className="mt-1 p-2 w-full border rounded-md"
               />
             </div>
-            <div className="mb-4">
+            <div className="mb-4 relative">
               <label
                 htmlFor="password"
                 className="block text-sm font-medium text-gray-600"
@@ -312,131 +331,155 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 Password
               </label>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="password"
                 name="password"
                 value={formData.password || ""}
                 onChange={onInputChange}
-                className="mt-1 p-2 w-full border rounded-md"
+                className=" mt-1 p-2 w-full border rounded-md"
               />
+              <button
+                type="button"
+                onClick={handleTogglePassword}
+                className="absolute top-6 inset-y-0 right-0 px-3 py-2 focus:outline-none"
+              >
+                {showPassword ? (
+                  <Eye className="w-4" />
+                ) : (
+                  <EyeOff className="w-4" />
+                )}
+              </button>
             </div>
           </>
         );
       case "pembimbing":
         return (
           <>
-            <div className="mb-4">
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-600"
-              >
-                Name
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name || ""}
-                onChange={onInputChange}
-                className="mt-1 p-2 w-full border rounded-md"
-              />
-            </div>
-            <div className="mb-4">
-              <label
-                htmlFor="nip"
-                className="block text-sm font-medium text-gray-600"
-              >
-                NIP
-              </label>
-              <input
-                type="text"
-                id="nip"
-                name="nip"
-                value={formData.nip || ""}
-                onChange={onInputChange}
-                className="mt-1 p-2 w-full border rounded-md"
-              />
-            </div>
-            <div className="mb-4">
-              <label
-                htmlFor="nip"
-                className="block text-sm font-medium text-gray-600"
-              >
-                Jabatan
-              </label>
-              <input
-                type="text"
-                id="jabatan"
-                name="jabatan"
-                value={formData.jabatan || ""}
-                onChange={onInputChange}
-                className="mt-1 p-2 w-full border rounded-md"
-              />
-            </div>
-            <div className="mb-4">
-              <label
-                htmlFor="nip"
-                className="block text-sm font-medium text-gray-600"
-              >
-                Pangkat
-              </label>
-              <input
-                type="text"
-                id="pangkat"
-                name="pangkat"
-                value={formData.pangkat || ""}
-                onChange={onInputChange}
-                className="mt-1 p-2 w-full border rounded-md"
-              />
-            </div>
-            <div className="mb-4">
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-600"
-              >
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email || ""}
-                onChange={onInputChange}
-                className="mt-1 p-2 w-full border rounded-md"
-              />
-            </div>
-            <div className="mb-4">
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-600"
-              >
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password || ""}
-                onChange={onInputChange}
-                className="mt-1 p-2 w-full border rounded-md"
-              />
-            </div>
-            <div className="mb-4">
-              <label
-                htmlFor="nomer_telpon"
-                className="block text-sm font-medium text-gray-600"
-              >
-                Nomor Telepon
-              </label>
-              <input
-                type="number"
-                id="nomer_telpon"
-                name="nomer_telpon"
-                pattern="[0-9]{10,14}"
-                value={formData.nomer_telpon || ""}
-                onChange={onInputChange}
-                className="mt-1 p-2 w-full border rounded-md"
-              />
+            <div className="grid grid-cols-2 gap-5">
+              <div className="mb-4">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-gray-600"
+                >
+                  Name
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name || ""}
+                  onChange={onInputChange}
+                  className="mt-1 p-2 w-full border rounded-md"
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  htmlFor="nip"
+                  className="block text-sm font-medium text-gray-600"
+                >
+                  NIP
+                </label>
+                <input
+                  type="text"
+                  id="nip"
+                  name="nip"
+                  value={formData.nip || ""}
+                  onChange={onInputChange}
+                  className="mt-1 p-2 w-full border rounded-md"
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  htmlFor="nip"
+                  className="block text-sm font-medium text-gray-600"
+                >
+                  Jabatan
+                </label>
+                <input
+                  type="text"
+                  id="jabatan"
+                  name="jabatan"
+                  value={formData.jabatan || ""}
+                  onChange={onInputChange}
+                  className="mt-1 p-2 w-full border rounded-md"
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  htmlFor="nip"
+                  className="block text-sm font-medium text-gray-600"
+                >
+                  Pangkat
+                </label>
+                <input
+                  type="text"
+                  id="pangkat"
+                  name="pangkat"
+                  value={formData.pangkat || ""}
+                  onChange={onInputChange}
+                  className="mt-1 p-2 w-full border rounded-md"
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-600"
+                >
+                  Email
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email || ""}
+                  onChange={onInputChange}
+                  className="mt-1 p-2 w-full border rounded-md"
+                />
+              </div>
+              <div className="mb-4 relative">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-600"
+                >
+                  Password
+                </label>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  name="password"
+                  value={formData.password || ""}
+                  onChange={onInputChange}
+                  className=" mt-1 p-2 w-full border rounded-md"
+                />
+                <button
+                  type="button"
+                  onClick={handleTogglePassword}
+                  className="absolute top-6 inset-y-0 right-0 px-3 py-2 focus:outline-none"
+                >
+                  {showPassword ? (
+                    <Eye className="w-4" />
+                  ) : (
+                    <EyeOff className="w-4" />
+                  )}
+                </button>
+              </div>
+              <div className="mb-4">
+                <label
+                  htmlFor="nomer_telpon"
+                  className="block text-sm font-medium text-gray-600"
+                >
+                  Nomor Telepon
+                </label>
+                <input
+                  type="number"
+                  id="nomer_telpon"
+                  name="nomer_telpon"
+                  pattern="[0-9]{10,14}"
+                  value={formData.nomer_telpon || ""}
+                  onChange={onInputChange}
+                  className="mt-1 p-2 w-full border rounded-md"
+                />
+              </div>
             </div>
           </>
         );
@@ -491,7 +534,7 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 className="mt-1 p-2 w-full border rounded-md"
               />
             </div>
-            <div className="mb-4">
+            <div className="mb-4 relative">
               <label
                 htmlFor="password"
                 className="block text-sm font-medium text-gray-600"
@@ -499,13 +542,24 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 Password
               </label>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="password"
                 name="password"
                 value={formData.password || ""}
                 onChange={onInputChange}
-                className="mt-1 p-2 w-full border rounded-md"
+                className=" mt-1 p-2 w-full border rounded-md"
               />
+              <button
+                type="button"
+                onClick={handleTogglePassword}
+                className="absolute top-6 inset-y-0 right-0 px-3 py-2 focus:outline-none"
+              >
+                {showPassword ? (
+                  <Eye className="w-4" />
+                ) : (
+                  <EyeOff className="w-4" />
+                )}
+              </button>
             </div>
           </>
         );
