@@ -333,7 +333,7 @@ const FormPengajuan = ({ onClose }) => {
               onChange={(e) => handleInputChange(e, "nisn", index)}
             />
 
-            <label className="block text-sm font-semibold mt-4 mb-2"><span className="text-red-500 w-5">*</span>CV:</label>
+            <label className="block text-sm font-semibold mt-4 mb-2"><span className="text-red-500 w-5P">*</span>CV:</label>
             <div className="flex">
               <input
                 type="text"

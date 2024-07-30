@@ -169,7 +169,7 @@ const JurnalSiswa = () => {
         </button>
 
         {showForm && (
-          <div className="fixed inset-0 overflow-y-auto">
+          <div className="fixed inset-0 overflow-y-auto z-[9999]">
             <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
               <div className="fixed inset-0 transition-opacity">
                 <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
@@ -260,7 +260,7 @@ const JurnalSiswa = () => {
                   >
                     {journal.kegiatan}
                   </td>
-                  <td className="py-2 px-4 border relative">
+                  <td className="py-2 px-4 border relative ">
                     <span
                       className={`py-1 px-4 border relative rounded-full ${
                         journal.status === "selesai"
