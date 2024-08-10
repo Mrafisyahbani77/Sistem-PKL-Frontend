@@ -68,10 +68,9 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
-
-    //validasi nama
+  
+    // Validasi nama
     if (!formData.name.trim()) {
-      setErrorMessage("Nama tidak boleh kosong.");
       toast.error("Nama tidak boleh kosong.", {
         position: "top-center",
         duration: 4000,
@@ -79,21 +78,20 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
       setSubmitting(false);
       return;
     }
-
+  
     // Validasi email
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailPattern.test(formData.email)) {
-      toast.error("Email harus valid", {
+      toast.error("Email harus valid example user@gmail.com", {
         position: "top-center",
         duration: 4000,
       });
       setSubmitting(false);
       return;
     }
-
+  
     // Validasi password
     if (formData.password.length < 8) {
-      setErrorMessage("Password harus terdiri dari minimal 8 karakter.");
       toast.error("Password harus terdiri dari minimal 8 karakter.", {
         position: "top-center",
         duration: 4000,
@@ -101,13 +99,22 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
       setSubmitting(false);
       return;
     }
-
+  
+    // Validasi kelas jika role adalah siswa
+    if (formData.role === "siswa" && !formData.kelas) {
+      toast.error("Kelas harus diisi.", {
+        position: "top-center",
+        duration: 4000,
+      });
+      setSubmitting(false);
+      return;
+    }
+  
     // Validasi NIP
     if (formData.role === "pembimbing" || formData.role === "kaprog") {
-      const nipPattern = /^\d{10}$/;
+      const nipPattern = /^\d{18}$/;
       if (!nipPattern.test(formData.nip)) {
-        setErrorMessage("NIP harus valid.");
-        toast.error("NIP harus valid.", {
+        toast.error("NIP harus 18 digit.", {
           position: "top-center",
           duration: 4000,
         });
@@ -115,13 +122,12 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
         return;
       }
     }
-
+  
     // Validasi NISN
     if (formData.role === "siswa") {
       const nisnPattern = /^\d{10}$/;
       if (!nisnPattern.test(formData.nisn)) {
-        setErrorMessage("NISN harus valid.");
-        toast.error("NISN harus valid.", {
+        toast.error("NISN harus 10 digit.", {
           position: "top-center",
           duration: 4000,
         });
@@ -129,30 +135,24 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
         return;
       }
     }
-
+  
     try {
       if (!formData.role) {
         throw new Error("Role tidak boleh kosong.");
       }
-
+  
       const response = await onSubmit(formData);
-      console.log("Response from onSubmit:", response);
-
+  
       if (response && response.error) {
-        throw new Error(response.error); // Jika respons mengandung kesalahan, lemparkan error
+        throw new Error(response.error);
       }
-
-      // Jika tidak ada kesalahan, anggap berhasil
-      setSuccessMessage("Akun berhasil ditambahkan.");
-
-      Swal.fire({
-        icon: "success",
-        title: "Sukses",
-        text: "Akun berhasil ditambahkan.",
+  
+      toast.success("Akun berhasil ditambahkan.", {
+        position: "top-center",
+        duration: 4000,
       });
-
-      setFormData((prevData) => ({
-        ...prevData,
+  
+      setFormData({
         role: "",
         name: "",
         email: "",
@@ -163,26 +163,22 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
         jabatan: "",
         pangkat: "",
         nomer_telpon: "",
-      }));
-
+      });
+  
       onClose();
     } catch (error) {
-      setErrorMessage(
-        error.message ||
-          "Gagal menambahkan akun. Pastikan data yang dimasukkan valid."
+      toast.error(
+        error.message || "Gagal menambahkan akun. Pastikan data yang dimasukkan valid.",
+        {
+          position: "top-center",
+          duration: 4000,
+        }
       );
-
-      Swal.fire({
-        icon: "error",
-        title: "Gagal",
-        text:
-          error.message ||
-          "Gagal menambahkan akun. Pastikan data yang dimasukkan valid.",
-      });
     } finally {
       setSubmitting(false);
     }
   };
+  
 
   const renderFormBasedOnRole = () => {
     switch (formData.role) {
@@ -315,7 +311,7 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 Email
               </label>
               <input
-                type="email"
+                type="text"
                 id="email"
                 name="email"
                 value={formData.email || ""}
@@ -428,7 +424,7 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                   Email
                 </label>
                 <input
-                  type="email"
+                  type="text"
                   id="email"
                   name="email"
                   value={formData.email || ""}
@@ -526,7 +522,7 @@ const FormTambah = ({ onClose, onSubmit, formData, setFormData }) => {
                 Email
               </label>
               <input
-                type="email"
+                type="text"
                 id="email"
                 name="email"
                 value={formData.email || ""}

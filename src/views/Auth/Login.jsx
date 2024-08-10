@@ -195,7 +195,6 @@ export default function Login() {
                       id="password"
                       name="password"
                       type={showPassword ? "text" : "password"}
-                      autoComplete="current-password"
                       placeholder="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -214,6 +213,7 @@ export default function Login() {
                     </button>
                   </div>
                 </div>
+
                 <div className="mt-3">
                   <button
                     type="submit"
