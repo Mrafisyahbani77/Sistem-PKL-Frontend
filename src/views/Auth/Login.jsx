@@ -144,89 +144,118 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gray-100 py-6 flex flex-col justify-center sm:py-12">
+    <div className="min-h-screen w-full bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center p-4">
       <Toaster />
-      <div className="relative py-3 sm:max-w-xl sm:mx-auto">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-blue-600 shadow-xl transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl"></div>
-        <div className="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20">
-          <div className="max-w-md mx-auto">
-            <form onSubmit={login} className="space-y-6 flex items-center">
-              <div className="mr-4">
-                <img
-                  src={pengajuanpkl}
-                  width="200"
-                  className="mb-4 mx-auto rounded-full"
-                  alt=""
-                />
-              </div>
-              <div>
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    <FontAwesomeIcon icon={faEnvelope} className="mr-2" />
-                    Email
-                  </label>
-                  <div className="mt-1">
-                    <input
-                      id="email"
-                      name="email"
-                      type="text"
-                      autoComplete="email"
-                      placeholder="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="block w-full px-4 py-3 rounded-md shadow-sm bg-gray-200 focus:outline-none focus:ring w-max-[100px] whitespace-nowrap overflow-x-auto focus:border-blue-300 sm:text-sm"
-                    />
-                  </div>
+      <div className="w-full max-w-6xl">
+        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
+          <div className="grid lg:grid-cols-2 gap-0">
+            {/* Left Side - Form */}
+            <div className="order-2 lg:order-1 p-8 sm:p-12 lg:p-16 flex flex-col justify-center">
+              <div className="max-w-md w-full mx-auto">
+                <div className="mb-8">
+                  <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-500 to-indigo-600 bg-clip-text text-transparent mb-3">
+                    Selamat Datang
+                  </h1>
+                  <p className="text-gray-600 text-sm sm:text-base">
+                    Silakan login untuk melanjutkan ke Sistem Pengajuan PKL
+                  </p>
                 </div>
 
-                <div className="mt-2">
-                  <label
-                    htmlFor="password"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    <FontAwesomeIcon icon={faLock} className="mr-2" />
-                    Password
-                  </label>
-                  <div className="mt-1 relative">
-                    <input
-                      id="password"
-                      name="password"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="block w-full px-4 py-3 rounded-md shadow-sm bg-gray-200 focus:outline-none focus:ring focus:border-blue-300 sm:text-sm"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleTogglePassword}
-                      className="absolute inset-y-0 right-0 px-3 py-2 focus:outline-none"
+                <form onSubmit={login} className="space-y-6">
+                  <div>
+                    <label
+                      htmlFor="email"
+                      className="block text-sm font-semibold text-gray-700 mb-2"
                     >
-                      {showPassword ? (
-                        <Eye className="w-4" />
-                      ) : (
-                        <EyeOff className="w-4" />
-                      )}
+                      <FontAwesomeIcon
+                        icon={faEnvelope}
+                        className="mr-2 text-blue-500"
+                      />
+                      Email
+                    </label>
+                    <div className="relative">
+                      <input
+                        id="email"
+                        name="email"
+                        type="text"
+                        autoComplete="email"
+                        placeholder="Masukkan email Anda"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="block w-full px-4 py-3.5 rounded-xl border-2 border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="password"
+                      className="block text-sm font-semibold text-gray-700 mb-2"
+                    >
+                      <FontAwesomeIcon
+                        icon={faLock}
+                        className="mr-2 text-blue-500"
+                      />
+                      Password
+                    </label>
+                    <div className="relative">
+                      <input
+                        id="password"
+                        name="password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Masukkan password Anda"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="block w-full px-4 py-3.5 rounded-xl border-2 border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base pr-12"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleTogglePassword}
+                        className="absolute inset-y-0 right-0 px-4 flex items-center focus:outline-none hover:text-blue-500 transition-colors"
+                      >
+                        {showPassword ? (
+                          <Eye className="w-5 h-5 text-gray-500" />
+                        ) : (
+                          <EyeOff className="w-5 h-5 text-gray-500" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="pt-2">
+                    <button
+                      type="submit"
+                      className={`w-full flex justify-center items-center py-3.5 px-4 rounded-xl shadow-lg text-base font-semibold text-white bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all duration-200 ${
+                        buttonLoading ? "cursor-not-allowed opacity-50" : ""
+                      }`}
+                      disabled={loading || buttonLoading}
+                    >
+                      {loading ? "Loading...." : "Login"}
                     </button>
                   </div>
-                </div>
-
-                <div className="mt-3">
-                  <button
-                    type="submit"
-                    className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-indigo-500 hover:bg-indigo-700 focus:outline-none focus:ring focus:border-blue-300 ${
-                      buttonLoading ? "cursor-not-allowed opacity-50" : ""
-                    }`}
-                    disabled={loading || buttonLoading}
-                  >
-                    {loading ? "Loadinggg...." : "Login"}
-                  </button>
-                </div>
+                </form>
               </div>
-            </form>
+            </div>
+
+            {/* Right Side - Image */}
+            <div className="order-1 lg:order-2 bg-gradient-to-br from-blue-400 to-indigo-600 p-8 sm:p-12 lg:p-16 flex items-center justify-center">
+              <div className="text-center">
+                <div className="mb-6 flex justify-center">
+                    <img
+                      src={pengajuanpkl}
+                      className="w-48 h-48 sm:w-64 sm:h-64 lg:w-80 lg:h-80 object-contain mx-auto drop-shadow-2xl"
+                      alt="Icon Pengajuan PKL"
+                    />
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
+                  Sistem Pengajuan PKL
+                </h2>
+                <p className="text-blue-100 text-sm sm:text-base max-w-md mx-auto">
+                  Platform digital untuk memudahkan proses pengajuan dan
+                  pengelolaan Praktik Kerja Lapangan
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
